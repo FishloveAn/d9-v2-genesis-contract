@@ -38,3 +38,18 @@ belong to d9-genesis-adapter in d9-v2-pallets. Standalone tests retain all 56
 negative cases, golden amounts/digests, schema/manifest drift, address checks
 and artifact binding tests. No runtime or business-pallet dependency is needed.
 See CI for verification of the standalone commit.
+
+# Mainnet extraction evidence
+
+`evidence-amm-mainnet-23802000.json` records a read-only extraction from
+`wss://archiver.d9network.com:40300` at finalized V1 block `23,802,000`. The
+receipt binds the block hash, state root, AMM contract address and code hash to
+the child trie. Each LP row retains its raw child-trie key and `StorageData`
+bytes so an independent reader can reproduce the decoding: remove the SCALE
+`Bytes` length prefix (`0x40` for a 16-byte payload), then decode the remaining
+little-endian `u128`.
+
+The receipt contains ten LP positions and their checked sum `7,332,501`. This
+is a source evidence artifact for D9-184, separate from the synthetic RC1
+conformance fixtures. It does not claim to be the complete migration input or
+to represent the eventual cutover pin.

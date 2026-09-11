@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "d9-amm-mainnet-evidence/1",
+  "source": {
+    "endpoint": "wss://archiver.d9network.com:40300",
+    "chain": "D9",
+    "blockNumber": 23802000,
+    "blockHash": "31680db5bae96b514b0a37acfb08871851d345358c64a9a7c146b22bc35197b3",
+    "stateRoot": "16d6ecd69cdf833543dc985608ca7a171f486e5637e0503a10b6f0578d7b6c26",
+    "runtimeSpecVersion": 215,
+    "contract": "z8keEeLwjZFK5NS5PF6xYwTHEbm7jwpH4gBYB1JV6pDTtWg",
+    "contractCodeHash": "8f0149174ef1babed639a41097109759e341925a0856cb36f878c60e418b207d",
+    "childTrieId": "ff1a0c74d7ebc00e3bb5b94c88d2e7b5569b8255fd91fd2ff0058168c26b5e3e",
+    "childStorageKey": "3a6368696c645f73746f726167653a64656661756c743aff1a0c74d7ebc00e3bb5b94c88d2e7b5569b8255fd91fd2ff0058168c26b5e3e",
+    "storageItems": 11,
+    "finalized": true,
+    "finalizedHeadAtProbe": {
+      "blockNumber": 24045933,
+      "blockHash": "8099b16c62cb4882568cb1cfcc73545448c1315d02622d0d071cacba1c89c8d7"
+    }
+  },
+  "decoder": {
+    "mapping": "ink! Mapping<AccountId, Balance>",
+    "keyLayout": "blake2_128(root_key || encoded_account) || little-endian root_key || AccountId32",
+    "valueLayout": "SCALE Bytes wrapper (0x40 for 16-byte payload) || little-endian u128",
+    "rootKey": "838a4d0c",
+    "rawEntriesInclude": true
+  },
+  "positions": [
+    {
+      "account": "uNGFA1jPaGYyDkRedVq2kixfWsckrUkBb1TCKvrqmcDbAr4",
+      "amount": "61",
+      "storageKey": "0x22c85d161589f888b9fbbc86047bff120c4d8a830c739bef64da4354304f9fc7aa2b9a32f1a642f7bfb739ecb5baae0335af4075",
+      "rawValue": "0x403d000000000000000000000000000000"
+    },
+    {
+      "account": "u5wYN1hiX8pa3yAnwWoYArYshhJSMHhzHb9Qivymf2xY6tP",
+      "amount": "29",
+      "storageKey": "0x355555a464423ab14d8e10a89aae7f7f0c4d8a830000b8bce4577e3c8c6137421e50cc578d06fdf6c28e752df615d40579294a60",
+      "rawValue": "0x401d000000000000000000000000000000"
+    },
+    {
+      "account": "uLMBZybPeqVjBpq1eFmrBSkRxnkvP4UVbV6Gizk9HKxkjDy",
+      "amount": "96",
+      "storageKey": "0x395f3c818c2183739518cd93a75d23920c4d8a830afdbddbbc89633d35b75cdbcf97341171cb4f8eab42ad6e27ba251766c16405",
+      "rawValue": "0x4060000000000000000000000000000000"
+    },
+    {
+      "account": "vobz55veN6ejufwW8NMJtAXNvh88GMBQa1LWHX8sQpAd3Dq",
+      "amount": "1831",
+      "storageKey": "0x4903f0cf684aa8d828255e3129cc9a310c4d8a834c036d9bd7f0709ae80bbde5d0f747204a432f5ee19a5d1ac035525d94d86351",
+      "rawValue": "0x4027070000000000000000000000000000"
+    },
+    {
+      "account": "xcUv2vj3x8v5rx1hMpCWBXys6Q38ua65yqVF3kNoqwMCZUD",
+      "amount": "6330260",
+      "storageKey": "0x7fc0a474b37c1cfe78e3789a7e2285ae0c4d8a839c0065aec4143035417d1468d1185b52c60a6d1112fad7b818eae0ebd11d1830",
+      "rawValue": "0x4094976000000000000000000000000000"
+    },
+    {
+      "account": "xE1raMyh1qSkSXZCgvNvpGZWqsXWQPMYhdSEdwMR62dYhfQ",
+      "amount": "46",
+      "storageKey": "0x8944bee18398f7415cc60395a02b03980c4d8a838adde851cddb86007f34b3494efa8d41b3b3d0df31e8094f73e1982245c63039",
+      "rawValue": "0x402e000000000000000000000000000000"
+    },
+    {
+      "account": "wmX5CfYytmQsmbaF61L9QypsQqmK3VAZwwKX3hX1AuGnck9",
+      "amount": "118",
+      "storageKey": "0xbb23e6abaa43c244eb7978ec9a1fa2ec0c4d8a8376a8a318173a1f5cb681fc1bfb8ad79b51442744a31740ee2ee80c3591326271",
+      "rawValue": "0x4076000000000000000000000000000000"
+    },
+    {
+      "account": "uNd3Z1WVrsdY3R76HXv4LCqh55ayPXhzNiJ3US1VV9UZEBt",
+      "amount": "28",
+      "storageKey": "0xc7814d794c480ffa58866c3432233f130c4d8a830cb9a0c1ef36719229bf21891ff8ab3b644cdfd0419315848741258e4524c22b",
+      "rawValue": "0x401c000000000000000000000000000000"
+    },
+    {
+      "account": "xp2bMrdG13Q5q32sHch75Pg9bF9W9eLauykT2PJRYUocc66",
+      "amount": "1000000",
+      "storageKey": "0xd7ca7de899b9eb85aa30500c92e5c5db0c4d8a83a4cebc0412703474b357e95b05cb40c71416833c1df4c72e041d804b00368c66",
+      "rawValue": "0x4040420f00000000000000000000000000"
+    },
+    {
+      "account": "uHh133QMyemHqGvdjqunkYhTHsR8ex9CiTBUdxyQRGiE4x8",
+      "amount": "32",
+      "storageKey": "0xdadb7b1c09243020d05e76d329c195220c4d8a8308f6b8568b337f276fbc6fd5373855cb67838c33dcf0e386b0e44d605891a916",
+      "rawValue": "0x4020000000000000000000000000000000"
+    }
+  ],
+  "totalLpTokens": "7332501",
+  "checks": {
+    "positionCount": 10,
+    "totalMatchesSource": true,
+    "expectedSourceTotal": "7332501"
+  }
+}

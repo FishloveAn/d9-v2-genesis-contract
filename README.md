@@ -20,6 +20,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
 | [fixtures/cases.json](fixtures/cases.json) | 56 mutations and expected failures |
 | [fixture-manifest.json](fixture-manifest.json) | Exact hashes of the shared artifacts |
+| [evidence-amm-mainnet-23802000.json](evidence-amm-mainnet-23802000.json) | Read-only V1 mainnet AMM LP extraction receipt at block 23,802,000 |
 | [REVIEW.md](REVIEW.md) | Pending downstream compatibility acknowledgements |
 | [VERIFICATION.md](VERIFICATION.md) | Validation scope and historical verification |
 
@@ -68,11 +69,15 @@ slices into the actual runtime configuration.
 
 ## Scope and review
 
-All chain-like fixtures are synthetic. Historical LP values have synthetic
-owners; they are not an authenticated V1 snapshot. Mock binding bytes are not a
-usable chain spec or a provenance report. The extraction preserves the RC1 wire
-schema, fixture bytes and contract digest; moving runtime adapters does not
-constitute downstream approval.
+The conformance fixtures remain synthetic. `evidence-amm-mainnet-23802000.json`
+is a separate, read-only V1 mainnet extraction receipt and is not part of the RC1
+golden fixture manifest. It records the pinned block, contract code hash,
+child-trie identifiers, raw entries, decoded LP positions and the checked source
+total. It is evidence for the D9-184 downstream export; it is not a complete
+migration input or a release approval. Mock binding bytes are not a usable chain
+spec or a provenance report. The extraction preserves the RC1 wire schema,
+fixture bytes and contract digest; moving runtime adapters does not constitute
+downstream approval.
 
 The inventory validator here checks portable declaration shape. The pallet
 adapter independently uses the accepted D9-307 API and checks its own source
