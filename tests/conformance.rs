@@ -14,6 +14,87 @@ fn golden() -> Value {
     serde_json::from_str(include_str!("../fixtures/expected.json")).unwrap()
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct Case {
+    id: String,
+    patches: Vec<Patch>,
+    refresh_source: Vec<String>,
+    expected: Expected,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Patch {
+    op: String,
+    path: String,
+    value: Option<Value>,
+}
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct Expected {
+    phase: String,
+    code: String,
+    path_prefix: String,
+}
+
+fn apply(root: &mut Value, patch: Patch) {
+    let (parent, key) = patch.path.rsplit_once('/').unwrap();
+    let parent = root
+        .pointer_mut(parent)
+        .expect("fixture patch must address existing parent");
+    match parent {
+        Value::Object(map) => match patch.op.as_str() {
+            "remove" => {
+                assert!(map.remove(key).is_some());
+            }
+            "replace" => {
+                assert!(map.contains_key(key));
+                map.insert(key.into(), patch.value.unwrap_or(Value::Null));
+            }
+            "add" => {
+                assert!(!map.contains_key(key));
+                map.insert(key.into(), patch.value.unwrap_or(Value::Null));
+            }
+            _ => panic!("unsupported fixture patch"),
+        },
+        Value::Array(rows) => {
+            assert_eq!(patch.op, "replace");
+            rows[key.parse::<usize>().unwrap()] = patch.value.unwrap_or(Value::Null);
+        }
+        _ => panic!("invalid fixture patch parent"),
+    }
+}
+
+fn refresh_evidence(value: &mut Value, datasets: &[String]) {
+    let fields = [
+        ("balances", "/source/balances"),
+        ("assets", "/source/assets"),
+        ("referrals", "/source/referrals"),
+        ("referral-counts", "/source/referralCounts"),
+        ("burn", "/source/burnAccounts"),
+        ("merchant", "/source/merchantAccounts"),
+        ("merchant-expiries", "/source/merchantExpiries"),
+        ("voting", "/source/votingInterests"),
+        ("locks", "/source/locks"),
+        ("lp", "/source/lp/positions"),
+        ("legacy-rewards", "/source/legacyRewardCredits"),
+    ];
+    for name in datasets {
+        let path = fields.iter().find(|(k, _)| k == name).unwrap().1;
+        let rows = value.pointer(path).unwrap().as_array().unwrap();
+        let digest = dataset_digest(name, rows).as_str().to_owned();
+        let count = rows.len().to_string();
+        let e = value["source"]["datasets"]
+            .as_array_mut()
+            .unwrap()
+            .iter_mut()
+            .find(|e| e["dataset"] == name.as_str())
+            .unwrap();
+        e["payloadDigest"] = json!(digest);
+        e["recordCount"] = json!(count);
+    }
+}
+
 #[test]
 fn shared_negative_cases_refuse_at_the_declared_boundary() {
     let cases: Vec<Case> = serde_json::from_str(include_str!("../fixtures/cases.json")).unwrap();
