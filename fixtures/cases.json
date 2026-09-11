@@ -1,0 +1,1204 @@
+[
+  {
+    "id": "retired-version",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/contractVersion",
+        "value": "old/ingest"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "contract_version",
+      "pathPrefix": "/contractVersion"
+    }
+  },
+  {
+    "id": "missing-dataset-inventory",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/datasets",
+        "value": []
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dataset_coverage",
+      "pathPrefix": "/source/datasets"
+    }
+  },
+  {
+    "id": "self-reported-zero-count",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/datasets/0/recordCount",
+        "value": "0"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "record_count_mismatch",
+      "pathPrefix": "/source/datasets/balances"
+    }
+  },
+  {
+    "id": "mixed-source-block",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/datasets/0/blockHash",
+        "value": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_pin_mismatch",
+      "pathPrefix": "/source/datasets/balances"
+    }
+  },
+  {
+    "id": "wrong-source-digest",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/datasets/0/payloadDigest",
+        "value": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dataset_digest_mismatch",
+      "pathPrefix": "/source/datasets/balances"
+    }
+  },
+  {
+    "id": "best-block-not-finalized",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/finalized",
+        "value": false
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "unfinalized_source",
+      "pathPrefix": "/source/finalized"
+    }
+  },
+  {
+    "id": "burner-cannot-own-money",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/datasets/4/sourceMap",
+        "value": "burner.accounts"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "burn_source_authority",
+      "pathPrefix": "/source/datasets/burn"
+    }
+  },
+  {
+    "id": "missing-contract-abi",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/datasets/4/abiDigest",
+        "value": null
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_abi_binding",
+      "pathPrefix": "/source/datasets/burn"
+    }
+  },
+  {
+    "id": "supplement-overrides-money",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/datasets/4/supplements/0/fields",
+        "value": [
+          "balancePaid"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "burn_source_authority",
+      "pathPrefix": "/source/datasets/burn"
+    }
+  },
+  {
+    "id": "voting-delegated-carried",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/votingInterests/0/delegated",
+        "value": "80"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "delegated_nonzero",
+      "pathPrefix": "/state/votingInterests"
+    }
+  },
+  {
+    "id": "burn-paid-history-erased",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/burnAccounts/0/balancePaid",
+        "value": "0"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "burn_paid_history",
+      "pathPrefix": "/state/burnAccounts"
+    }
+  },
+  {
+    "id": "burn-v1-remainder-copied",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/burnAccounts/0/balanceDue",
+        "value": "80"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/burnAccounts"
+    }
+  },
+  {
+    "id": "merchant-anchor-reset",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/merchantAccounts/0/createdAt",
+        "value": "1788314913000"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/merchantAccounts"
+    }
+  },
+  {
+    "id": "merchant-factor-not-scaled",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/merchantAccounts/0/relationshipFactors",
+        "value": [
+          "2",
+          "3"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/merchantAccounts"
+    }
+  },
+  {
+    "id": "merchant-consumer-omitted",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/merchantAccounts",
+        "value": [
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "merit": "9007199254750000",
+            "relationshipFactors": [
+              "20000",
+              "30000"
+            ],
+            "lastConversion": "1788228513000",
+            "redeemedD9": "123456789012345678",
+            "createdAt": "1787450913000"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "record_count_mismatch",
+      "pathPrefix": "/state/merchantAccounts"
+    }
+  },
+  {
+    "id": "old-expiry-capped",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/merchantExpiries/1/expiryMs",
+        "value": "1788314913000"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/merchantExpiries"
+    }
+  },
+  {
+    "id": "orphan-without-declared-exclusion",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedMerchantExpiries",
+        "value": []
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "orphan_expiry",
+      "pathPrefix": "/state/merchantExpiries"
+    }
+  },
+  {
+    "id": "discard-owned-expiry",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedMerchantExpiries",
+        "value": [
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "expiryMs": "1700000000000"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_expiry_exclusion",
+      "pathPrefix": "/changes/excludedMerchantExpiries"
+    }
+  },
+  {
+    "id": "lp-first-only",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/lp/positions",
+        "value": [
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "6330260"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/lp/positions"
+    }
+  },
+  {
+    "id": "lp-wrong-owners-same-sum",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/lp/positions",
+        "value": [
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "1000000"
+          },
+          {
+            "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+            "amount": "6330260"
+          },
+          {
+            "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+            "amount": "1831"
+          },
+          {
+            "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+            "amount": "118"
+          },
+          {
+            "account": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+            "amount": "96"
+          },
+          {
+            "account": "uDqQNnuhnpeB6UVXVuNJV6SsykTJ8DFUkxtf8g5jQ6WLhFd",
+            "amount": "61"
+          },
+          {
+            "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+            "amount": "46"
+          },
+          {
+            "account": "uGU6XS17r91Rx5vz4u5wGzeuBa4EHPmjrd8N8JYFdgDHAr5",
+            "amount": "32"
+          },
+          {
+            "account": "uHnSbkYpsoC4NteiMPwkfwkunUrhMz2sQTFDd7mWkU4kMre",
+            "amount": "29"
+          },
+          {
+            "account": "uK6ng56XuTNgohNSdtoa4trvPPfASaHzxHN57vzmsFvDMBy",
+            "amount": "28"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/lp/positions"
+    }
+  },
+  {
+    "id": "lp-duplicate-owner",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/lp/positions/1",
+        "value": {
+          "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+          "amount": "6330260"
+        }
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "duplicate_key",
+      "pathPrefix": "/state/lp/positions/1"
+    }
+  },
+  {
+    "id": "lp-recomputed-total",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/lp/total",
+        "value": "7538700539894158"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/lp/total"
+    }
+  },
+  {
+    "id": "usdt-reserve-not-scaled",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/lp/usdtReserve",
+        "value": "779365135"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/lp/usdtReserve"
+    }
+  },
+  {
+    "id": "amm-ed-added",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/lp/d9Reserve",
+        "value": "7292089840562774020"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/lp/d9Reserve"
+    }
+  },
+  {
+    "id": "duplicate-asset-holder",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/assets/0/holders",
+        "value": [
+          {
+            "account": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
+            "amount": "7793651350000"
+          },
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "2000000"
+          },
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "2000000"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "duplicate_key",
+      "pathPrefix": "/state/assets/holders/2"
+    }
+  },
+  {
+    "id": "reward-credit-changed",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/rewardCredits/0/amount",
+        "value": "200000000"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/changes/rewardCredits"
+    }
+  },
+  {
+    "id": "reserve-refund-omitted",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/reserveRefunds",
+        "value": []
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/changes/reserveRefunds"
+    }
+  },
+  {
+    "id": "topup-is-not-optional",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/topUps",
+        "value": []
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/changes/topUps"
+    }
+  },
+  {
+    "id": "extra-bootstrap-endowment",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/balances",
+        "value": [
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "1000000001"
+          },
+          {
+            "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+            "amount": "1000000002"
+          },
+          {
+            "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+            "amount": "1000100003"
+          },
+          {
+            "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+            "amount": "1000000"
+          },
+          {
+            "account": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+            "amount": "1000000005"
+          },
+          {
+            "account": "uDqQNnuhnpeB6UVXVuNJV6SsykTJ8DFUkxtf8g5jQ6WLhFd",
+            "amount": "1000000006"
+          },
+          {
+            "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+            "amount": "1100000007"
+          },
+          {
+            "account": "uGU6XS17r91Rx5vz4u5wGzeuBa4EHPmjrd8N8JYFdgDHAr5",
+            "amount": "1000000008"
+          },
+          {
+            "account": "uHnSbkYpsoC4NteiMPwkfwkunUrhMz2sQTFDd7mWkU4kMre",
+            "amount": "1000000009"
+          },
+          {
+            "account": "uK6ng56XuTNgohNSdtoa4trvPPfASaHzxHN57vzmsFvDMBy",
+            "amount": "1000000010"
+          },
+          {
+            "account": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+            "amount": "1000000050"
+          },
+          {
+            "account": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j",
+            "amount": "1000000051"
+          },
+          {
+            "account": "vGPKoW4F7754mXb4anstgoDMfdJmmPFU18Kuz8binTjrkqY",
+            "amount": "1000000052"
+          },
+          {
+            "account": "vHhfspbx8mFhCLJnsHji5kKNGY7EqyWbYxSmUwpyuFbKooT",
+            "amount": "1000000053"
+          },
+          {
+            "account": "vK21x99fARSKd92X9nbXUhRNsSuhvZmj6nZcym4F23SnuPg",
+            "amount": "1000000054"
+          },
+          {
+            "account": "vLLN2ThNC5cx3wkFSHTLseXPUMiB1A2recgUUaHW8qJG7KE",
+            "amount": "1000000055"
+          },
+          {
+            "account": "vMei6nF5DjoaUkTyinKAGbdQ5GWe5kHzCSoKyPWmFd9jPqN",
+            "amount": "1000000056"
+          },
+          {
+            "account": "vNy4B6nnFPzCuZBi1HAyfYjQgBK7ALZ7kGvBUCk2NR1CRHX",
+            "amount": "1000000057"
+          },
+          {
+            "account": "vQHQFRLVH4AqLMuSHn2o4VqRH67aEvpFJ732y1yHVCrfhKM",
+            "amount": "1000000058"
+          },
+          {
+            "account": "vRbkKjtCJiMTmAdAaGtcTSwRszv3KX5Nqw9tTqCYbzi8sDW",
+            "amount": "1000000059"
+          },
+          {
+            "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH",
+            "amount": "1000000060"
+          },
+          {
+            "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX",
+            "amount": "1000000061"
+          },
+          {
+            "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a",
+            "amount": "1000000062"
+          },
+          {
+            "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN",
+            "amount": "1000000063"
+          },
+          {
+            "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK",
+            "amount": "1000000064"
+          },
+          {
+            "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM",
+            "amount": "1000000065"
+          },
+          {
+            "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k",
+            "amount": "1000000066"
+          },
+          {
+            "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo",
+            "amount": "1000000067"
+          },
+          {
+            "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt",
+            "amount": "1000000068"
+          },
+          {
+            "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg",
+            "amount": "1000000069"
+          },
+          {
+            "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg",
+            "amount": "1000000070"
+          },
+          {
+            "account": "vhPuDaSgecYztqFuzFCRCrBZ6vXeGcCwRta8Rbwg1UwkNAc",
+            "amount": "1000000071"
+          },
+          {
+            "account": "viiFHtzPgGjdKdyeGk4EboHZhqL7MCU4yigyvRAw8GoDFz8",
+            "amount": "1000000072"
+          },
+          {
+            "account": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
+            "amount": "7292089840561774020"
+          },
+          {
+            "account": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF",
+            "amount": "9900000000"
+          },
+          {
+            "account": "vqHyfVivpZemTfaHhEMKaYociPLSk9miisHFQVKEiE4Z6Uk",
+            "amount": "1000000"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/balances"
+    }
+  },
+  {
+    "id": "no-authorities",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators",
+        "value": []
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "empty_authorities",
+      "pathPrefix": "/bootstrap/validators"
+    }
+  },
+  {
+    "id": "duplicate-authority",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/1",
+        "value": {
+          "account": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j",
+          "babe": "00000000000000000000000000000000000000000000000000000000000001ff",
+          "grandpa": "0000000000000000000000000000000000000000000000000000000000000200",
+          "imOnline": "0000000000000000000000000000000000000000000000000000000000000201",
+          "discovery": "0000000000000000000000000000000000000000000000000000000000000202",
+          "liveness": "0000000000000000000000000000000000000000000000000000000000000203"
+        }
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "duplicate_key",
+      "pathPrefix": "/bootstrap/validators/1"
+    }
+  },
+  {
+    "id": "duplicate-session-key",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/1/liveness",
+        "value": "0000000000000000000000000000000000000000000000000000000000000203"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_session_key",
+      "pathPrefix": "/bootstrap/validators/1/liveness"
+    }
+  },
+  {
+    "id": "missing-admin-role",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins",
+        "value": [
+          {
+            "pallet": "d9-amm",
+            "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH"
+          },
+          {
+            "pallet": "d9-burn-mining",
+            "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX"
+          },
+          {
+            "pallet": "d9-cross-chain",
+            "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a"
+          },
+          {
+            "pallet": "d9-governance",
+            "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN"
+          },
+          {
+            "pallet": "d9-judicial-penalty",
+            "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK"
+          },
+          {
+            "pallet": "d9-merchant",
+            "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM"
+          },
+          {
+            "pallet": "d9-mining-pool",
+            "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k"
+          },
+          {
+            "pallet": "d9-node-registry",
+            "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo"
+          },
+          {
+            "pallet": "d9-node-rewards",
+            "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt"
+          },
+          {
+            "pallet": "d9-referrals",
+            "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg"
+          },
+          {
+            "pallet": "d9-upgrade-coordinator",
+            "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "admin_coverage",
+      "pathPrefix": "/bootstrap/admins"
+    }
+  },
+  {
+    "id": "no-floor-decision-respected",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/redemptionPriceFloor",
+        "value": true
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "retired_price_floor",
+      "pathPrefix": "/bootstrap/redemptionPriceFloor"
+    }
+  },
+  {
+    "id": "usdt-floor-wrong-units",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtReserveFloor",
+        "value": "1000"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "reserve_floor_units",
+      "pathPrefix": "/bootstrap"
+    }
+  },
+  {
+    "id": "percent-not-bps",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/feeBps",
+        "value": 3
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "amm_policy",
+      "pathPrefix": "/bootstrap"
+    }
+  },
+  {
+    "id": "referral-wrong-parent",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/referrals/2/parent",
+        "value": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/referrals"
+    }
+  },
+  {
+    "id": "referral-baseline-wrong-parent-count",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/referralCounts/0/count",
+        "value": "3"
+      }
+    ],
+    "refreshSource": [
+      "referral-counts"
+    ],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/source/referralCounts"
+    }
+  },
+  {
+    "id": "merchant-scale-overflow",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/merchantAccounts/0/greenPoints",
+        "value": "340282366920938463463374607431768211455"
+      }
+    ],
+    "refreshSource": [
+      "merchant"
+    ],
+    "expected": {
+      "phase": "validation",
+      "code": "overflow",
+      "pathPrefix": "/state/merchantAccounts"
+    }
+  },
+  {
+    "id": "source-created-at-zero",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/merchantAccounts/0/createdAt",
+        "value": "0"
+      }
+    ],
+    "refreshSource": [
+      "merchant"
+    ],
+    "expected": {
+      "phase": "validation",
+      "code": "timestamp_bounds",
+      "pathPrefix": "/state/merchantAccounts"
+    }
+  },
+  {
+    "id": "source-time-in-future",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/merchantAccounts/0/createdAt",
+        "value": "1788314913001"
+      }
+    ],
+    "refreshSource": [
+      "merchant"
+    ],
+    "expected": {
+      "phase": "validation",
+      "code": "timestamp_bounds",
+      "pathPrefix": "/state/merchantAccounts"
+    }
+  },
+  {
+    "id": "unresolved-resolution",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/unresolved",
+        "value": [
+          {
+            "item": "d9-judicial-penalty.Resolutions",
+            "issue": "D9-195"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "unresolved_disposition",
+      "pathPrefix": "/changes/unresolved/0"
+    }
+  },
+  {
+    "id": "unfunded-lock-x1",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/locks",
+        "value": [
+          {
+            "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+            "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+            "session": 912
+          },
+          {
+            "account": "vqHyfVivpZemTfaHhEMKaYociPLSk9miisHFQVKEiE4Z6Uk",
+            "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+            "session": 912
+          }
+        ]
+      }
+    ],
+    "refreshSource": [
+      "locks"
+    ],
+    "expected": {
+      "phase": "validation",
+      "code": "unresolved_lock_x1",
+      "pathPrefix": "/source/locks"
+    }
+  },
+  {
+    "id": "number-instead-of-integer-string",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/merchantAccounts/0/merit",
+        "value": 9007199254750000
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "leading-zero",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/merchantAccounts/0/merit",
+        "value": "01"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "scientific-notation",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/merchantAccounts/0/merit",
+        "value": "1e6"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "negative-amount",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/merchantAccounts/0/merit",
+        "value": "-1"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "u128-overflow",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/merchantAccounts/0/merit",
+        "value": "340282366920938463463374607431768211456"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "u64-overflow",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/timestampMs",
+        "value": "18446744073709551616"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "bad-address-checksum",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo",
+        "value": "abc"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "wrong-field-casing",
+    "patches": [
+      {
+        "op": "add",
+        "path": "/state/merchantAccounts/0/created_at",
+        "value": "1"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "nullable-is-required",
+    "patches": [
+      {
+        "op": "remove",
+        "path": "/state/merchantAccounts/1/lastConversion"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "legacy-ingest-field",
+    "patches": [
+      {
+        "op": "add",
+        "path": "/ingest",
+        "value": {}
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "retired-bootstrap-entry",
+    "patches": [
+      {
+        "op": "add",
+        "path": "/state/initialLiquidity",
+        "value": []
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "real-input-cannot-default-pending-inventory",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "inventory_disposition_pending",
+      "pathPrefix": "/inventory"
+    }
+  },
+  {
+    "id": "wrong-balances-source-map",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/datasets/0/sourceMap",
+        "value": "Balances.Account"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_map_mismatch",
+      "pathPrefix": "/source/datasets/balances"
+    }
+  }
+]

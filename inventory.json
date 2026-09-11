@@ -1,0 +1,1352 @@
+[
+  {
+    "pallet": "Assets",
+    "storage": "Account",
+    "provenance": "Genesis",
+    "genesisField": "accounts",
+    "inputPath": "/state/assets",
+    "owner": "D9-307",
+    "decision": "unique (assetId, AccountId); no duplicate accumulation",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "Assets",
+    "storage": "Asset",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/assets",
+    "owner": "D9-307",
+    "decision": "supply/accounts derived from holders; asset metadata and authorities are V2 config",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "Balances",
+    "storage": "TotalIssuance",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/balances",
+    "owner": "D9-307",
+    "decision": "sum after approved deltas",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "Session",
+    "storage": "NextKeys",
+    "provenance": "NotMigrated",
+    "genesisField": "keys",
+    "inputPath": "/bootstrap/validators",
+    "owner": "D9-370",
+    "decision": "fresh V2 identities: four FRAME keys at node 29a01f1 (babe/grandpa/im_online/authority_discovery); liveness belongs to D9 registry/tracking",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "Sudo",
+    "storage": "Key",
+    "provenance": "NotMigrated",
+    "genesisField": "key",
+    "inputPath": "/bootstrap/sudo",
+    "owner": "D9-370",
+    "decision": "fresh V2 identity; no post-build override",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "System",
+    "storage": "Account",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/balances",
+    "owner": "D9-307",
+    "decision": "Balances, Assets, session and judicial builders own reference counts; no raw copy",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "FeePercent",
+    "provenance": "NotMigrated",
+    "genesisField": "fee_percent",
+    "inputPath": "/bootstrap/feeBps",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "HighestD9Price",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-17: floor removed/disabled at launch; D9-185 implementation still required",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "LiquidityProviders",
+    "provenance": "Genesis",
+    "genesisField": "initial_lp_positions",
+    "inputPath": "/state/lp/positions",
+    "owner": "D9-184",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "LiquidityTolerance",
+    "provenance": "NotMigrated",
+    "genesisField": "liquidity_tolerance",
+    "inputPath": "/bootstrap/liquidityToleranceBps",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "TotalLpTokens",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/lp/positions",
+    "owner": "D9-307",
+    "decision": "checked sum; /state/lp/total is a source assertion, never a separate writer",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-burn-mining",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-burn-mining",
+    "storage": "BurnAccounts",
+    "provenance": "Genesis",
+    "genesisField": "initial_accounts",
+    "inputPath": "/state/burnAccounts",
+    "owner": "D9-173",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-burn-mining",
+    "storage": "GovernedBurnMinimum",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-burn-mining",
+    "storage": "GovernedVotePrice",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-burn-mining",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "Controller",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "CumulativeBridgedOut",
+    "provenance": null,
+    "genesisField": null,
+    "inputPath": "pending",
+    "owner": "Yvan",
+    "decision": "D9-250",
+    "implementation": "decision-pending"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "DispatchHalted",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "GovernedCrossChainVoucherRatio",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "NextTransactionId",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "PendingOutbound",
+    "provenance": null,
+    "genesisField": null,
+    "inputPath": "pending",
+    "owner": "Yvan",
+    "decision": "D9-250: pending-obligation disposition; bridge-disabled is not a disposition",
+    "implementation": "decision-pending"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "TransactionAdmins",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "UserNonce",
+    "provenance": null,
+    "genesisField": null,
+    "inputPath": "pending",
+    "owner": "Yvan",
+    "decision": "D9-250",
+    "implementation": "decision-pending"
+  },
+  {
+    "pallet": "d9-cross-chain",
+    "storage": "Watchdog",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-governance",
+    "storage": "ActiveProposalCount",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-governance",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-governance",
+    "storage": "GovernedExecutionDelay",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-governance",
+    "storage": "GovernedPassingThreshold",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-governance",
+    "storage": "GovernedVotingPeriod",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-governance",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-governance",
+    "storage": "ProposalCount",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-governance",
+    "storage": "Proposals",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-governance",
+    "storage": "Votes",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "Abstentions",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "FrozenAccounts",
+    "provenance": "Genesis",
+    "genesisField": "frozen_accounts",
+    "inputPath": "/state/locks",
+    "owner": "D9-195",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "GovernedProposalFee",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "GovernedSessionsBeforeVote",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "LegacyReferendums",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "NextResolutionId",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "ProposalCursor",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "ProposalOpensAt",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "Proposals",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "ReferendumCursor",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "ReferendumEndsAt",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "ReferendumEndsAtSession",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "Referendums",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "RejectionReasons",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "ResolutionAbstentions",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "ResolutionHistory",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "Resolutions",
+    "provenance": null,
+    "genesisField": null,
+    "inputPath": "pending",
+    "owner": "Yvan",
+    "decision": "D9-195",
+    "implementation": "decision-pending"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "VotingBodies",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
+    "storage": "Whitelist",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-liveness",
+    "storage": "ConsecutiveWindows",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-liveness",
+    "storage": "KeyOwner",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-liveness",
+    "storage": "LastHeartbeat",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-liveness",
+    "storage": "MissedChecks",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-liveness",
+    "storage": "NodeLivenessState",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-liveness",
+    "storage": "RemovedUntil",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-liveness",
+    "storage": "TrackedKeys",
+    "provenance": "NotMigrated",
+    "genesisField": "initial_tracked",
+    "inputPath": "/bootstrap/validators",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-liveness",
+    "storage": "TrackingSince",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "Accounts",
+    "provenance": "Genesis",
+    "genesisField": "initial_accounts",
+    "inputPath": "/state/merchantAccounts",
+    "owner": "D9-183",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "GovernedBandwidthDeductionRatio",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "GovernedEnergyDeductionRatio",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "GovernedEnergyMintRatio",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "GovernedMeritThreshold",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "GovernedSubscriptionFee",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "GovernedVotePrice",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "MerchantExpiry",
+    "provenance": "Genesis",
+    "genesisField": "initial_expiries",
+    "inputPath": "/state/merchantExpiries",
+    "owner": "D9-183",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-mining-pool",
+    "storage": "AccumulativeRewardPool",
+    "provenance": "Genesis",
+    "genesisField": "accumulative_reward_pool",
+    "inputPath": "/state/counters/accumulativeRewardPool",
+    "owner": "D9-173",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-mining-pool",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-mining-pool",
+    "storage": "LastSession",
+    "provenance": "Genesis",
+    "genesisField": "last_session",
+    "inputPath": "/state/counters/lastSession",
+    "owner": "D9-173",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-mining-pool",
+    "storage": "MerchantVolume",
+    "provenance": "Genesis",
+    "genesisField": "merchant_volume",
+    "inputPath": "/state/counters/merchantVolume",
+    "owner": "D9-173",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-mining-pool",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-mining-pool",
+    "storage": "PriceProtectionPercent",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-mining-pool",
+    "storage": "ProposalFeeVolume",
+    "provenance": null,
+    "genesisField": null,
+    "inputPath": "pending",
+    "owner": "Yvan",
+    "decision": "D9-307",
+    "implementation": "decision-pending"
+  },
+  {
+    "pallet": "d9-mining-pool",
+    "storage": "TotalBurnVolume",
+    "provenance": "Genesis",
+    "genesisField": "burn_volume",
+    "inputPath": "/state/counters/burnVolume",
+    "owner": "D9-173",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-mining-pool",
+    "storage": "VolumeAtIndex",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/counters",
+    "owner": "D9-307",
+    "decision": "existing current_volume() at LastSession; D9-247",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-multisig-registry",
+    "storage": "MultisigRegistry",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-multisig-registry",
+    "storage": "SignatoryIndex",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "AdminToNode",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "AspirantKeys",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "AspirantStates",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "BackupSwapActive",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "BackupValidators",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "CandidateCount",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "Candidates",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "CanonicalNames",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "ChallengeNonce",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "CurrentSessionIndex",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "CurrentValidators",
+    "provenance": "NotMigrated",
+    "genesisField": "initial_validators",
+    "inputPath": "/bootstrap/validators",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "DeclaredKeys",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "DisplayNames",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "NodeAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "PendingKeyRotation",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "RewardDestination",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-rewards",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-rewards",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-rewards",
+    "storage": "SessionRewards",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-node-rewards",
+    "storage": "VoteLimit",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-pause-manager",
+    "storage": "GlobalPause",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-pause-manager",
+    "storage": "OperationPaused",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-pause-manager",
+    "storage": "PalletPaused",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-referrals",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-referrals",
+    "storage": "DirectReferralsCount",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/referrals",
+    "owner": "D9-307",
+    "decision": "derive per-parent counts; compare recorded source baseline",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-referrals",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-referrals",
+    "storage": "ReferralRelationships",
+    "provenance": "Genesis",
+    "genesisField": "initial_relationships",
+    "inputPath": "/state/referrals",
+    "owner": "D9-307",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-upgrade-coordinator",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-upgrade-coordinator",
+    "storage": "BackupSwapActive",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-upgrade-coordinator",
+    "storage": "CurrentUpgrade",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-upgrade-coordinator",
+    "storage": "HealthResults",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-upgrade-coordinator",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-upgrade-coordinator",
+    "storage": "PreUpgradeStateRoot",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-upgrade-coordinator",
+    "storage": "ReadyCount",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-upgrade-coordinator",
+    "storage": "ReadyValidators",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-upgrade-coordinator",
+    "storage": "SnapshotBlock",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-voting",
+    "storage": "Admin",
+    "provenance": "NotMigrated",
+    "genesisField": "admin",
+    "inputPath": "/bootstrap/admins",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-voting",
+    "storage": "GovernedMaxCandidates",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-voting",
+    "storage": "LastDelegationBlock",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-voting",
+    "storage": "LastRetractionBlock",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-voting",
+    "storage": "NodeAccumulativeVotes",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "D9-156 Decision 1: delegation graph not migrated",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-voting",
+    "storage": "NodeToUserVotes",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "D9-156 Decision 1: delegation graph not migrated",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-voting",
+    "storage": "PendingAdmin",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "DEC-20: fresh V2 operational state; never import V1 values",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-voting",
+    "storage": "UserToNodeVotes",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "D9-156 Decision 1: delegation graph not migrated",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-voting",
+    "storage": "UsersVotingInterests",
+    "provenance": "Genesis",
+    "genesisField": "initial_interests",
+    "inputPath": "/state/votingInterests",
+    "owner": "D9-173",
+    "decision": "DEC-20; source-bound per-field transform in CONTRACT.md",
+    "implementation": "existing"
+  }
+]

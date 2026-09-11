@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "BuildIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "cargoLockDigest": {
+          "$ref": "#/definitions/Digest"
+        },
+        "nativegenCommit": {
+          "$ref": "#/definitions/Commit"
+        },
+        "nodeCommit": {
+          "$ref": "#/definitions/Commit"
+        },
+        "palletsCommit": {
+          "$ref": "#/definitions/Commit"
+        },
+        "runtimeConfigDigest": {
+          "$ref": "#/definitions/Digest"
+        },
+        "wasmDigest": {
+          "$ref": "#/definitions/Digest"
+        }
+      },
+      "required": [
+        "cargoLockDigest",
+        "nativegenCommit",
+        "nodeCommit",
+        "palletsCommit",
+        "runtimeConfigDigest",
+        "wasmDigest"
+      ],
+      "type": "object"
+    },
+    "Commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "Digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "description": "Detached receipt: raw_spec_digest must not be embedded inside the bytes it hashes. D9-370 records this AFTER the final authority/state composition. This binds bytes and inputs, not their authenticity or storage correctness.",
+  "properties": {
+    "build": {
+      "$ref": "#/definitions/BuildIdentity"
+    },
+    "checkerReportDigest": {
+      "$ref": "#/definitions/Digest"
+    },
+    "contractDigest": {
+      "$ref": "#/definitions/Digest"
+    },
+    "contractVersion": {
+      "type": "string"
+    },
+    "inputDigest": {
+      "$ref": "#/definitions/Digest"
+    },
+    "rawSpecDigest": {
+      "$ref": "#/definitions/Digest"
+    }
+  },
+  "required": [
+    "build",
+    "checkerReportDigest",
+    "contractDigest",
+    "contractVersion",
+    "inputDigest",
+    "rawSpecDigest"
+  ],
+  "title": "ArtifactBinding",
+  "type": "object"
+}

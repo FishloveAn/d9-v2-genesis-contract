@@ -1,0 +1,69 @@
+{
+  "inputDigest": "0f55d1068736b6ea6a18f58aea71db63622e7c02e31d25e3d82f84f8b67427e1",
+  "sourceDatasetDigests": {
+    "balances": "d5b1a9413072962df215d4b6cf75f27b83d053914df33dadbd5256c7ce3354fc",
+    "assets": "6974ece501dd639d7c180e144388ed0ae66e42b87f6e178b90e2553595f0c4aa",
+    "referrals": "887f9c73b3df79fee4f6a58380044306d7a8807908a0ab1dc2f101ce3afde17b",
+    "referral-counts": "5230f122fb578c98f93d5ed7d1da1462c97ca080b708b9da7f76b5836058e594",
+    "burn": "6e64f9e94f1a4031d596e2e6df4656ac45734a71d4b26d26d196146db638d8c0",
+    "merchant": "77b89c19a106780d441f18fdfa0a53db0cd613a0e6f5e7465ef8c4cb90a9eebf",
+    "merchant-expiries": "668b33138024b16c6fe4916035e1bc1267b43f687b398f4fccef87b252061db5",
+    "voting": "b0e3ab087cbe56e38f6accccbae941c0958639164d507f944b224648204e0627",
+    "locks": "bad5ec99bd28ba9740063f4f62de09249fbd587991cc0d94413eb49b0b68fc58",
+    "lp": "2240f76a6eb9aa454afe993f8f77143c7b0b4f6d906e116048fd6d78cbd65858",
+    "counters": "da095cffbfd7b486113699d9f29b528f160b25d9e6f151a2d41db8688387e887",
+    "legacy-rewards": "c2ec6e3b527e8ad0e35a350c21b8e1842cc640415707d0595b31789702e88b71"
+  },
+  "lpPositions": [
+    {
+      "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+      "amount": "6330260"
+    },
+    {
+      "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+      "amount": "1000000"
+    },
+    {
+      "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+      "amount": "1831"
+    },
+    {
+      "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+      "amount": "118"
+    },
+    {
+      "account": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+      "amount": "96"
+    },
+    {
+      "account": "uDqQNnuhnpeB6UVXVuNJV6SsykTJ8DFUkxtf8g5jQ6WLhFd",
+      "amount": "61"
+    },
+    {
+      "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+      "amount": "46"
+    },
+    {
+      "account": "uGU6XS17r91Rx5vz4u5wGzeuBa4EHPmjrd8N8JYFdgDHAr5",
+      "amount": "32"
+    },
+    {
+      "account": "uHnSbkYpsoC4NteiMPwkfwkunUrhMz2sQTFDd7mWkU4kMre",
+      "amount": "29"
+    },
+    {
+      "account": "uK6ng56XuTNgohNSdtoa4trvPPfASaHzxHN57vzmsFvDMBy",
+      "amount": "28"
+    }
+  ],
+  "totalLpTokens": "7332501",
+  "burnRemaining": "80",
+  "merchantMerit": "9007199254750000",
+  "merchantRelationshipFactors": [
+    "20000",
+    "30000"
+  ],
+  "totalIssuance": "7292089882562875474",
+  "ammAccount": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
+  "miningPoolAccount": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF"
+}

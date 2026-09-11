@@ -1,0 +1,1057 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "Address": {
+      "pattern": "^[1-9A-HJ-NP-Za-km-z]{47,48}$",
+      "type": "string"
+    },
+    "AdminRole": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "pallet": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "account",
+        "pallet"
+      ],
+      "type": "object"
+    },
+    "Amount": {
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    },
+    "AssetBook": {
+      "additionalProperties": false,
+      "properties": {
+        "assetId": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "decimals": {
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "holderCount": {
+          "$ref": "#/definitions/Count"
+        },
+        "holders": {
+          "items": {
+            "$ref": "#/definitions/Balance"
+          },
+          "type": "array"
+        },
+        "totalSupply": {
+          "$ref": "#/definitions/Amount"
+        }
+      },
+      "required": [
+        "assetId",
+        "decimals",
+        "holderCount",
+        "holders",
+        "totalSupply"
+      ],
+      "type": "object"
+    },
+    "AssetRehome": {
+      "additionalProperties": false,
+      "properties": {
+        "assetId": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "decision": {
+          "type": "string"
+        },
+        "from": {
+          "$ref": "#/definitions/Address"
+        },
+        "sourceAmount": {
+          "$ref": "#/definitions/Amount"
+        },
+        "to": {
+          "$ref": "#/definitions/Address"
+        }
+      },
+      "required": [
+        "assetId",
+        "decision",
+        "from",
+        "sourceAmount",
+        "to"
+      ],
+      "type": "object"
+    },
+    "Balance": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "amount": {
+          "$ref": "#/definitions/Amount"
+        }
+      },
+      "required": [
+        "account",
+        "amount"
+      ],
+      "type": "object"
+    },
+    "BalanceSource": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "free": {
+          "$ref": "#/definitions/Amount"
+        },
+        "reserved": {
+          "$ref": "#/definitions/Amount"
+        }
+      },
+      "required": [
+        "account",
+        "free",
+        "reserved"
+      ],
+      "type": "object"
+    },
+    "Bootstrap": {
+      "additionalProperties": false,
+      "properties": {
+        "admins": {
+          "items": {
+            "$ref": "#/definitions/AdminRole"
+          },
+          "type": "array"
+        },
+        "ammAccount": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Address"
+            }
+          ],
+          "description": "These accounts are derived from runtime PalletIds, never chosen by a producer."
+        },
+        "d9ReserveFloor": {
+          "$ref": "#/definitions/Amount"
+        },
+        "feeBps": {
+          "description": "Fresh balances require a declared funding transfer in changes, no implicit mint.",
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "liquidityToleranceBps": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "miningPoolAccount": {
+          "$ref": "#/definitions/Address"
+        },
+        "redemptionPriceFloor": {
+          "type": "boolean"
+        },
+        "sudo": {
+          "$ref": "#/definitions/Address"
+        },
+        "usdtReserveFloor": {
+          "$ref": "#/definitions/Amount"
+        },
+        "validators": {
+          "items": {
+            "$ref": "#/definitions/Validator"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "admins",
+        "ammAccount",
+        "d9ReserveFloor",
+        "feeBps",
+        "liquidityToleranceBps",
+        "miningPoolAccount",
+        "redemptionPriceFloor",
+        "sudo",
+        "usdtReserveFloor",
+        "validators"
+      ],
+      "type": "object"
+    },
+    "BuildIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "cargoLockDigest": {
+          "$ref": "#/definitions/Digest"
+        },
+        "nativegenCommit": {
+          "$ref": "#/definitions/Commit"
+        },
+        "nodeCommit": {
+          "$ref": "#/definitions/Commit"
+        },
+        "palletsCommit": {
+          "$ref": "#/definitions/Commit"
+        },
+        "runtimeConfigDigest": {
+          "$ref": "#/definitions/Digest"
+        },
+        "wasmDigest": {
+          "$ref": "#/definitions/Digest"
+        }
+      },
+      "required": [
+        "cargoLockDigest",
+        "nativegenCommit",
+        "nodeCommit",
+        "palletsCommit",
+        "runtimeConfigDigest",
+        "wasmDigest"
+      ],
+      "type": "object"
+    },
+    "BurnAccount": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "amountBurned": {
+          "$ref": "#/definitions/Amount"
+        },
+        "balanceDue": {
+          "$ref": "#/definitions/Amount"
+        },
+        "balancePaid": {
+          "$ref": "#/definitions/Amount"
+        },
+        "lastBurn": {
+          "$ref": "#/definitions/Millis"
+        },
+        "lastInteraction": {
+          "$ref": "#/definitions/Millis"
+        },
+        "lastWithdrawal": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Millis"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "referralBoostCoefficients": {
+          "items": {
+            "$ref": "#/definitions/Amount"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        }
+      },
+      "required": [
+        "account",
+        "amountBurned",
+        "balanceDue",
+        "balancePaid",
+        "lastBurn",
+        "lastInteraction",
+        "lastWithdrawal",
+        "referralBoostCoefficients"
+      ],
+      "type": "object"
+    },
+    "BurnSource": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "amountBurned": {
+          "$ref": "#/definitions/Amount"
+        },
+        "balancePaid": {
+          "$ref": "#/definitions/Amount"
+        },
+        "lastBurn": {
+          "$ref": "#/definitions/Millis"
+        },
+        "lastInteraction": {
+          "$ref": "#/definitions/Millis"
+        },
+        "lastWithdrawal": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Millis"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "referralBoostCoefficients": {
+          "items": {
+            "$ref": "#/definitions/Amount"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "remainingDue": {
+          "$ref": "#/definitions/Amount"
+        }
+      },
+      "required": [
+        "account",
+        "amountBurned",
+        "balancePaid",
+        "lastBurn",
+        "lastInteraction",
+        "lastWithdrawal",
+        "referralBoostCoefficients",
+        "remainingDue"
+      ],
+      "type": "object"
+    },
+    "Changes": {
+      "additionalProperties": false,
+      "properties": {
+        "assetRehomes": {
+          "items": {
+            "$ref": "#/definitions/AssetRehome"
+          },
+          "type": "array"
+        },
+        "excludedMerchantExpiries": {
+          "items": {
+            "$ref": "#/definitions/Expiry"
+          },
+          "type": "array"
+        },
+        "rehomes": {
+          "items": {
+            "$ref": "#/definitions/Rehome"
+          },
+          "type": "array"
+        },
+        "reserveRefunds": {
+          "items": {
+            "$ref": "#/definitions/Balance"
+          },
+          "type": "array"
+        },
+        "rewardCredits": {
+          "items": {
+            "$ref": "#/definitions/Balance"
+          },
+          "type": "array"
+        },
+        "topUps": {
+          "items": {
+            "$ref": "#/definitions/Balance"
+          },
+          "type": "array"
+        },
+        "unresolved": {
+          "description": "Unknown/economic dispositions never become implicit zero/empty defaults.",
+          "items": {
+            "$ref": "#/definitions/PendingDecision"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "assetRehomes",
+        "excludedMerchantExpiries",
+        "rehomes",
+        "reserveRefunds",
+        "rewardCredits",
+        "topUps",
+        "unresolved"
+      ],
+      "type": "object"
+    },
+    "Commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "Count": {
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    },
+    "Counters": {
+      "additionalProperties": false,
+      "properties": {
+        "accumulativeRewardPool": {
+          "$ref": "#/definitions/Amount"
+        },
+        "burnVolume": {
+          "$ref": "#/definitions/Amount"
+        },
+        "lastSession": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "merchantVolume": {
+          "$ref": "#/definitions/Amount"
+        }
+      },
+      "required": [
+        "accumulativeRewardPool",
+        "burnVolume",
+        "lastSession",
+        "merchantVolume"
+      ],
+      "type": "object"
+    },
+    "DatasetEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "abiDigest": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blockHash": {
+          "$ref": "#/definitions/Digest"
+        },
+        "codeHash": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contract": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Address"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Contract datasets require all three; pallet datasets require none."
+        },
+        "dataset": {
+          "type": "string"
+        },
+        "payloadDigest": {
+          "$ref": "#/definitions/Digest"
+        },
+        "recordCount": {
+          "$ref": "#/definitions/Count"
+        },
+        "sourceMap": {
+          "type": "string"
+        },
+        "supplements": {
+          "items": {
+            "$ref": "#/definitions/SupplementEvidence"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "abiDigest",
+        "blockHash",
+        "codeHash",
+        "contract",
+        "dataset",
+        "payloadDigest",
+        "recordCount",
+        "sourceMap",
+        "supplements"
+      ],
+      "type": "object"
+    },
+    "Digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "Expiry": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "expiryMs": {
+          "$ref": "#/definitions/Millis"
+        }
+      },
+      "required": [
+        "account",
+        "expiryMs"
+      ],
+      "type": "object"
+    },
+    "JudicialLock": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "frozenBy": {
+          "$ref": "#/definitions/Address"
+        },
+        "session": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "account",
+        "frozenBy",
+        "session"
+      ],
+      "type": "object"
+    },
+    "LpBook": {
+      "additionalProperties": false,
+      "properties": {
+        "d9Reserve": {
+          "$ref": "#/definitions/Amount"
+        },
+        "positions": {
+          "items": {
+            "$ref": "#/definitions/Balance"
+          },
+          "type": "array"
+        },
+        "total": {
+          "$ref": "#/definitions/Amount"
+        },
+        "usdtReserve": {
+          "$ref": "#/definitions/Amount"
+        }
+      },
+      "required": [
+        "d9Reserve",
+        "positions",
+        "total",
+        "usdtReserve"
+      ],
+      "type": "object"
+    },
+    "MerchantAccount": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "createdAt": {
+          "$ref": "#/definitions/Millis"
+        },
+        "lastConversion": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Millis"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "merit": {
+          "$ref": "#/definitions/Amount"
+        },
+        "redeemedD9": {
+          "$ref": "#/definitions/Amount"
+        },
+        "relationshipFactors": {
+          "items": {
+            "$ref": "#/definitions/Amount"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        }
+      },
+      "required": [
+        "account",
+        "createdAt",
+        "lastConversion",
+        "merit",
+        "redeemedD9",
+        "relationshipFactors"
+      ],
+      "type": "object"
+    },
+    "MerchantSource": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "createdAt": {
+          "$ref": "#/definitions/Millis"
+        },
+        "greenPoints": {
+          "$ref": "#/definitions/Amount"
+        },
+        "lastConversion": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Millis"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "redeemedD9": {
+          "$ref": "#/definitions/Amount"
+        },
+        "relationshipFactors": {
+          "items": {
+            "$ref": "#/definitions/Amount"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        }
+      },
+      "required": [
+        "account",
+        "createdAt",
+        "greenPoints",
+        "lastConversion",
+        "redeemedD9",
+        "relationshipFactors"
+      ],
+      "type": "object"
+    },
+    "MigratedState": {
+      "additionalProperties": false,
+      "properties": {
+        "assets": {
+          "items": {
+            "$ref": "#/definitions/AssetBook"
+          },
+          "type": "array"
+        },
+        "balances": {
+          "items": {
+            "$ref": "#/definitions/Balance"
+          },
+          "type": "array"
+        },
+        "burnAccounts": {
+          "items": {
+            "$ref": "#/definitions/BurnAccount"
+          },
+          "type": "array"
+        },
+        "counters": {
+          "$ref": "#/definitions/Counters"
+        },
+        "locks": {
+          "items": {
+            "$ref": "#/definitions/JudicialLock"
+          },
+          "type": "array"
+        },
+        "lp": {
+          "$ref": "#/definitions/LpBook"
+        },
+        "merchantAccounts": {
+          "items": {
+            "$ref": "#/definitions/MerchantAccount"
+          },
+          "type": "array"
+        },
+        "merchantExpiries": {
+          "items": {
+            "$ref": "#/definitions/Expiry"
+          },
+          "type": "array"
+        },
+        "referrals": {
+          "items": {
+            "$ref": "#/definitions/Referral"
+          },
+          "type": "array"
+        },
+        "votingInterests": {
+          "items": {
+            "$ref": "#/definitions/Voting"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "assets",
+        "balances",
+        "burnAccounts",
+        "counters",
+        "locks",
+        "lp",
+        "merchantAccounts",
+        "merchantExpiries",
+        "referrals",
+        "votingInterests"
+      ],
+      "type": "object"
+    },
+    "Millis": {
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "type": "string"
+    },
+    "PendingDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "issue": {
+          "type": "string"
+        },
+        "item": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "issue",
+        "item"
+      ],
+      "type": "object"
+    },
+    "Purpose": {
+      "enum": [
+        "synthetic-fixture",
+        "migration-input"
+      ],
+      "type": "string"
+    },
+    "Referral": {
+      "additionalProperties": false,
+      "properties": {
+        "child": {
+          "$ref": "#/definitions/Address"
+        },
+        "parent": {
+          "$ref": "#/definitions/Address"
+        }
+      },
+      "required": [
+        "child",
+        "parent"
+      ],
+      "type": "object"
+    },
+    "ReferralCount": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "$ref": "#/definitions/Count"
+        },
+        "parent": {
+          "$ref": "#/definitions/Address"
+        }
+      },
+      "required": [
+        "count",
+        "parent"
+      ],
+      "type": "object"
+    },
+    "Rehome": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "$ref": "#/definitions/Amount"
+        },
+        "decision": {
+          "type": "string"
+        },
+        "from": {
+          "$ref": "#/definitions/Address"
+        },
+        "to": {
+          "$ref": "#/definitions/Address"
+        }
+      },
+      "required": [
+        "amount",
+        "decision",
+        "from",
+        "to"
+      ],
+      "type": "object"
+    },
+    "SourceSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "assets": {
+          "items": {
+            "$ref": "#/definitions/AssetBook"
+          },
+          "type": "array"
+        },
+        "balances": {
+          "items": {
+            "$ref": "#/definitions/BalanceSource"
+          },
+          "type": "array"
+        },
+        "blockHash": {
+          "$ref": "#/definitions/Digest"
+        },
+        "blockNumber": {
+          "$ref": "#/definitions/Count"
+        },
+        "burnAccounts": {
+          "items": {
+            "$ref": "#/definitions/BurnSource"
+          },
+          "type": "array"
+        },
+        "counters": {
+          "$ref": "#/definitions/Counters"
+        },
+        "datasets": {
+          "description": "Dataset references must identify code/ABI as well as chain state.",
+          "items": {
+            "$ref": "#/definitions/DatasetEvidence"
+          },
+          "type": "array"
+        },
+        "finalized": {
+          "type": "boolean"
+        },
+        "genesisHash": {
+          "$ref": "#/definitions/Digest"
+        },
+        "legacyRewardCredits": {
+          "items": {
+            "$ref": "#/definitions/Balance"
+          },
+          "type": "array"
+        },
+        "locks": {
+          "items": {
+            "$ref": "#/definitions/JudicialLock"
+          },
+          "type": "array"
+        },
+        "lp": {
+          "$ref": "#/definitions/LpBook"
+        },
+        "merchantAccounts": {
+          "items": {
+            "$ref": "#/definitions/MerchantSource"
+          },
+          "type": "array"
+        },
+        "merchantExpiries": {
+          "items": {
+            "$ref": "#/definitions/Expiry"
+          },
+          "type": "array"
+        },
+        "referralCounts": {
+          "items": {
+            "$ref": "#/definitions/ReferralCount"
+          },
+          "type": "array"
+        },
+        "referrals": {
+          "items": {
+            "$ref": "#/definitions/Referral"
+          },
+          "type": "array"
+        },
+        "runtimeMetadataDigest": {
+          "$ref": "#/definitions/Digest"
+        },
+        "runtimeSpecVersion": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "stateRoot": {
+          "$ref": "#/definitions/Digest"
+        },
+        "timestampMs": {
+          "$ref": "#/definitions/Millis"
+        },
+        "totalIssuance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "votingInterests": {
+          "items": {
+            "$ref": "#/definitions/Voting"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "assets",
+        "balances",
+        "blockHash",
+        "blockNumber",
+        "burnAccounts",
+        "counters",
+        "datasets",
+        "finalized",
+        "genesisHash",
+        "legacyRewardCredits",
+        "locks",
+        "lp",
+        "merchantAccounts",
+        "merchantExpiries",
+        "referralCounts",
+        "referrals",
+        "runtimeMetadataDigest",
+        "runtimeSpecVersion",
+        "stateRoot",
+        "timestampMs",
+        "totalIssuance",
+        "votingInterests"
+      ],
+      "type": "object"
+    },
+    "SupplementEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "abiDigest": {
+          "$ref": "#/definitions/Digest"
+        },
+        "blockHash": {
+          "$ref": "#/definitions/Digest"
+        },
+        "codeHash": {
+          "$ref": "#/definitions/Digest"
+        },
+        "contract": {
+          "$ref": "#/definitions/Address"
+        },
+        "fields": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "sourceMap": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "abiDigest",
+        "blockHash",
+        "codeHash",
+        "contract",
+        "fields",
+        "sourceMap"
+      ],
+      "type": "object"
+    },
+    "Validator": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "babe": {
+          "$ref": "#/definitions/Digest"
+        },
+        "discovery": {
+          "$ref": "#/definitions/Digest"
+        },
+        "grandpa": {
+          "$ref": "#/definitions/Digest"
+        },
+        "imOnline": {
+          "$ref": "#/definitions/Digest"
+        },
+        "liveness": {
+          "$ref": "#/definitions/Digest"
+        }
+      },
+      "required": [
+        "account",
+        "babe",
+        "discovery",
+        "grandpa",
+        "imOnline",
+        "liveness"
+      ],
+      "type": "object"
+    },
+    "Voting": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "delegated": {
+          "$ref": "#/definitions/Count"
+        },
+        "total": {
+          "$ref": "#/definitions/Count"
+        }
+      },
+      "required": [
+        "account",
+        "delegated",
+        "total"
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "bootstrap": {
+      "$ref": "#/definitions/Bootstrap"
+    },
+    "build": {
+      "$ref": "#/definitions/BuildIdentity"
+    },
+    "changes": {
+      "$ref": "#/definitions/Changes"
+    },
+    "contractVersion": {
+      "type": "string"
+    },
+    "purpose": {
+      "$ref": "#/definitions/Purpose"
+    },
+    "source": {
+      "$ref": "#/definitions/SourceSnapshot"
+    },
+    "state": {
+      "$ref": "#/definitions/MigratedState"
+    }
+  },
+  "required": [
+    "bootstrap",
+    "build",
+    "changes",
+    "contractVersion",
+    "purpose",
+    "source",
+    "state"
+  ],
+  "title": "ContractInput",
+  "type": "object"
+}

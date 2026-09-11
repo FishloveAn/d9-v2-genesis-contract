@@ -1,0 +1,992 @@
+{
+  "contractVersion": "d9-native-genesis/0.1.0-rc.1",
+  "purpose": "synthetic-fixture",
+  "source": {
+    "genesisHash": "0000000000000000000000000000000000000000000000000000000000000001",
+    "blockNumber": "23800000",
+    "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+    "timestampMs": "1788314913000",
+    "runtimeMetadataDigest": "0000000000000000000000000000000000000000000000000000000000000003",
+    "finalized": true,
+    "datasets": [
+      {
+        "dataset": "balances",
+        "sourceMap": "System.Account",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "d5b1a9413072962df215d4b6cf75f27b83d053914df33dadbd5256c7ce3354fc",
+        "recordCount": "35",
+        "contract": null,
+        "codeHash": null,
+        "abiDigest": null,
+        "supplements": []
+      },
+      {
+        "dataset": "assets",
+        "sourceMap": "assets",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "6974ece501dd639d7c180e144388ed0ae66e42b87f6e178b90e2553595f0c4aa",
+        "recordCount": "2",
+        "contract": "wNtHTAquWN3qizqnXAxw5MHsAEZeeL2qtn7jL2oVXCXnEos",
+        "codeHash": "0000000000000000000000000000000000000000000000000000000000000065",
+        "abiDigest": "00000000000000000000000000000000000000000000000000000000000000c9",
+        "supplements": []
+      },
+      {
+        "dataset": "referrals",
+        "sourceMap": "D9Referral.ReferralRelationships",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "887f9c73b3df79fee4f6a58380044306d7a8807908a0ab1dc2f101ce3afde17b",
+        "recordCount": "5",
+        "contract": null,
+        "codeHash": null,
+        "abiDigest": null,
+        "supplements": []
+      },
+      {
+        "dataset": "referral-counts",
+        "sourceMap": "D9Referral.DirectReferralsCount",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "5230f122fb578c98f93d5ed7d1da1462c97ca080b708b9da7f76b5836058e594",
+        "recordCount": "4",
+        "contract": null,
+        "codeHash": null,
+        "abiDigest": null,
+        "supplements": []
+      },
+      {
+        "dataset": "burn",
+        "sourceMap": "main_pool.portfolios",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "6e64f9e94f1a4031d596e2e6df4656ac45734a71d4b26d26d196146db638d8c0",
+        "recordCount": "1",
+        "contract": "wSqKg8V2bLbj1QzyNfYPGCbtxxy3t6pEYGUHpUVGsa6Bg8M",
+        "codeHash": "0000000000000000000000000000000000000000000000000000000000000068",
+        "abiDigest": "00000000000000000000000000000000000000000000000000000000000000cc",
+        "supplements": [
+          {
+            "sourceMap": "burner.accounts",
+            "contract": "wotrsFEM3sXmrJWdvdHTbQG4bXnX9YzKKYMwmW9SkDjfVBm",
+            "codeHash": "0000000000000000000000000000000000000000000000000000000000000078",
+            "abiDigest": "00000000000000000000000000000000000000000000000000000000000000dc",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "fields": [
+              "lastInteraction",
+              "referralBoostCoefficients"
+            ]
+          }
+        ]
+      },
+      {
+        "dataset": "merchant",
+        "sourceMap": "merchant",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "77b89c19a106780d441f18fdfa0a53db0cd613a0e6f5e7465ef8c4cb90a9eebf",
+        "recordCount": "2",
+        "contract": "wU9fkT2jcznMSDihfAQCf9huZsmWxh5N66b9KHiXzMwepgW",
+        "codeHash": "0000000000000000000000000000000000000000000000000000000000000069",
+        "abiDigest": "00000000000000000000000000000000000000000000000000000000000000cd",
+        "supplements": []
+      },
+      {
+        "dataset": "merchant-expiries",
+        "sourceMap": "merchant-expiries",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "668b33138024b16c6fe4916035e1bc1267b43f687b398f4fccef87b252061db5",
+        "recordCount": "3",
+        "contract": "wVU1pmaSeexys2SRwfG246ovAnZz3HLVdvhzp6wo79o7dqB",
+        "codeHash": "000000000000000000000000000000000000000000000000000000000000006a",
+        "abiDigest": "00000000000000000000000000000000000000000000000000000000000000ce",
+        "supplements": []
+      },
+      {
+        "dataset": "voting",
+        "sourceMap": "D9NodeVoting.UsersVotingInterests",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "b0e3ab087cbe56e38f6accccbae941c0958639164d507f944b224648204e0627",
+        "recordCount": "2",
+        "contract": null,
+        "codeHash": null,
+        "abiDigest": null,
+        "supplements": []
+      },
+      {
+        "dataset": "locks",
+        "sourceMap": "CouncilLock.LockedAccounts",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "bad5ec99bd28ba9740063f4f62de09249fbd587991cc0d94413eb49b0b68fc58",
+        "recordCount": "1",
+        "contract": null,
+        "codeHash": null,
+        "abiDigest": null,
+        "supplements": []
+      },
+      {
+        "dataset": "lp",
+        "sourceMap": "lp",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "2240f76a6eb9aa454afe993f8f77143c7b0b4f6d906e116048fd6d78cbd65858",
+        "recordCount": "10",
+        "contract": "wZR43jDZjdWs9Sbco9qUEx7wyWyPH47tHR4ZJYdaTXMXDhv",
+        "codeHash": "000000000000000000000000000000000000000000000000000000000000006d",
+        "abiDigest": "00000000000000000000000000000000000000000000000000000000000000d1",
+        "supplements": []
+      },
+      {
+        "dataset": "counters",
+        "sourceMap": "counters",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "da095cffbfd7b486113699d9f29b528f160b25d9e6f151a2d41db8688387e887",
+        "recordCount": "1",
+        "contract": "wajQ83mGmHhVaFKM5ehHduDxaRmrMeP1qFBQoMrqaKCzQgU",
+        "codeHash": "000000000000000000000000000000000000000000000000000000000000006e",
+        "abiDigest": "00000000000000000000000000000000000000000000000000000000000000d2",
+        "supplements": []
+      },
+      {
+        "dataset": "legacy-rewards",
+        "sourceMap": "legacy-rewards",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payloadDigest": "c2ec6e3b527e8ad0e35a350c21b8e1842cc640415707d0595b31789702e88b71",
+        "recordCount": "1",
+        "contract": "wc3kCNJynwt81435N9Z72rKyBLaKSEe9P5JGJB66h74TQ2Q",
+        "codeHash": "000000000000000000000000000000000000000000000000000000000000006f",
+        "abiDigest": "00000000000000000000000000000000000000000000000000000000000000d3",
+        "supplements": []
+      }
+    ],
+    "totalIssuance": "7292089882561875574",
+    "balances": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "free": "1000000001",
+        "reserved": "0"
+      },
+      {
+        "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "free": "1000000002",
+        "reserved": "0"
+      },
+      {
+        "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+        "free": "1000000003",
+        "reserved": "100000"
+      },
+      {
+        "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+        "free": "100",
+        "reserved": "0"
+      },
+      {
+        "account": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+        "free": "1000000005",
+        "reserved": "0"
+      },
+      {
+        "account": "uDqQNnuhnpeB6UVXVuNJV6SsykTJ8DFUkxtf8g5jQ6WLhFd",
+        "free": "1000000006",
+        "reserved": "0"
+      },
+      {
+        "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+        "free": "1000000007",
+        "reserved": "0"
+      },
+      {
+        "account": "uGU6XS17r91Rx5vz4u5wGzeuBa4EHPmjrd8N8JYFdgDHAr5",
+        "free": "1000000008",
+        "reserved": "0"
+      },
+      {
+        "account": "uHnSbkYpsoC4NteiMPwkfwkunUrhMz2sQTFDd7mWkU4kMre",
+        "free": "1000000009",
+        "reserved": "0"
+      },
+      {
+        "account": "uK6ng56XuTNgohNSdtoa4trvPPfASaHzxHN57vzmsFvDMBy",
+        "free": "1000000010",
+        "reserved": "0"
+      },
+      {
+        "account": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+        "free": "1000000050",
+        "reserved": "0"
+      },
+      {
+        "account": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j",
+        "free": "1000000051",
+        "reserved": "0"
+      },
+      {
+        "account": "vGPKoW4F7754mXb4anstgoDMfdJmmPFU18Kuz8binTjrkqY",
+        "free": "1000000052",
+        "reserved": "0"
+      },
+      {
+        "account": "vHhfspbx8mFhCLJnsHji5kKNGY7EqyWbYxSmUwpyuFbKooT",
+        "free": "1000000053",
+        "reserved": "0"
+      },
+      {
+        "account": "vK21x99fARSKd92X9nbXUhRNsSuhvZmj6nZcym4F23SnuPg",
+        "free": "1000000054",
+        "reserved": "0"
+      },
+      {
+        "account": "vLLN2ThNC5cx3wkFSHTLseXPUMiB1A2recgUUaHW8qJG7KE",
+        "free": "1000000055",
+        "reserved": "0"
+      },
+      {
+        "account": "vMei6nF5DjoaUkTyinKAGbdQ5GWe5kHzCSoKyPWmFd9jPqN",
+        "free": "1000000056",
+        "reserved": "0"
+      },
+      {
+        "account": "vNy4B6nnFPzCuZBi1HAyfYjQgBK7ALZ7kGvBUCk2NR1CRHX",
+        "free": "1000000057",
+        "reserved": "0"
+      },
+      {
+        "account": "vQHQFRLVH4AqLMuSHn2o4VqRH67aEvpFJ732y1yHVCrfhKM",
+        "free": "1000000058",
+        "reserved": "0"
+      },
+      {
+        "account": "vRbkKjtCJiMTmAdAaGtcTSwRszv3KX5Nqw9tTqCYbzi8sDW",
+        "free": "1000000059",
+        "reserved": "0"
+      },
+      {
+        "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH",
+        "free": "1000000060",
+        "reserved": "0"
+      },
+      {
+        "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX",
+        "free": "1000000061",
+        "reserved": "0"
+      },
+      {
+        "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a",
+        "free": "1000000062",
+        "reserved": "0"
+      },
+      {
+        "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN",
+        "free": "1000000063",
+        "reserved": "0"
+      },
+      {
+        "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK",
+        "free": "1000000064",
+        "reserved": "0"
+      },
+      {
+        "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM",
+        "free": "1000000065",
+        "reserved": "0"
+      },
+      {
+        "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k",
+        "free": "1000000066",
+        "reserved": "0"
+      },
+      {
+        "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo",
+        "free": "1000000067",
+        "reserved": "0"
+      },
+      {
+        "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt",
+        "free": "1000000068",
+        "reserved": "0"
+      },
+      {
+        "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg",
+        "free": "1000000069",
+        "reserved": "0"
+      },
+      {
+        "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg",
+        "free": "1000000070",
+        "reserved": "0"
+      },
+      {
+        "account": "vhPuDaSgecYztqFuzFCRCrBZ6vXeGcCwRta8Rbwg1UwkNAc",
+        "free": "1000000071",
+        "reserved": "0"
+      },
+      {
+        "account": "viiFHtzPgGjdKdyeGk4EboHZhqL7MCU4yigyvRAw8GoDFz8",
+        "free": "1000000072",
+        "reserved": "0"
+      },
+      {
+        "account": "w8QUdeq8C82w28vmPhWwiu9kYDkWmqAQrepLs5HdEW9deZk",
+        "free": "7292089840561774020",
+        "reserved": "0"
+      },
+      {
+        "account": "w9iphyNqDnDZSweVgCNm7rFm98YyrRRYQUwCMtWtMJ16mHM",
+        "free": "10000000000",
+        "reserved": "0"
+      }
+    ],
+    "assets": [
+      {
+        "assetId": 1,
+        "decimals": 2,
+        "totalSupply": "779365335",
+        "holders": [
+          {
+            "account": "w8QUdeq8C82w28vmPhWwiu9kYDkWmqAQrepLs5HdEW9deZk",
+            "amount": "779365135"
+          },
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "200"
+          }
+        ],
+        "holderCount": "2"
+      },
+      {
+        "assetId": 2,
+        "decimals": 6,
+        "totalSupply": "99",
+        "holders": [
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "99"
+          }
+        ],
+        "holderCount": "1"
+      }
+    ],
+    "referrals": [
+      {
+        "child": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "parent": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw"
+      },
+      {
+        "child": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "parent": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd"
+      },
+      {
+        "child": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+        "parent": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd"
+      },
+      {
+        "child": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+        "parent": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD"
+      },
+      {
+        "child": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+        "parent": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE"
+      }
+    ],
+    "referralCounts": [
+      {
+        "parent": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "count": "2"
+      },
+      {
+        "parent": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "count": "1"
+      },
+      {
+        "parent": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+        "count": "1"
+      },
+      {
+        "parent": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+        "count": "1"
+      }
+    ],
+    "burnAccounts": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "amountBurned": "100",
+        "remainingDue": "80",
+        "balancePaid": "220",
+        "lastBurn": "1787882913000",
+        "lastWithdrawal": "1788055713000",
+        "lastInteraction": "1788142113000",
+        "referralBoostCoefficients": [
+          "5",
+          "9"
+        ]
+      }
+    ],
+    "merchantAccounts": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "greenPoints": "900719925475",
+        "relationshipFactors": [
+          "2",
+          "3"
+        ],
+        "lastConversion": "1788228513000",
+        "redeemedD9": "123456789012345678",
+        "createdAt": "1787450913000"
+      },
+      {
+        "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "greenPoints": "0",
+        "relationshipFactors": [
+          "0",
+          "0"
+        ],
+        "lastConversion": null,
+        "redeemedD9": "0",
+        "createdAt": "1779674913000"
+      }
+    ],
+    "merchantExpiries": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "expiryMs": "1700000000000"
+      },
+      {
+        "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "expiryMs": "2100000000000"
+      },
+      {
+        "account": "vqHyfVivpZemTfaHhEMKaYociPLSk9miisHFQVKEiE4Z6Uk",
+        "expiryMs": "1700000000001"
+      }
+    ],
+    "votingInterests": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "total": "200",
+        "delegated": "80"
+      },
+      {
+        "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "total": "0",
+        "delegated": "0"
+      }
+    ],
+    "locks": [
+      {
+        "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+        "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+        "session": 912
+      }
+    ],
+    "lp": {
+      "positions": [
+        {
+          "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+          "amount": "6330260"
+        },
+        {
+          "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+          "amount": "1000000"
+        },
+        {
+          "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+          "amount": "1831"
+        },
+        {
+          "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+          "amount": "118"
+        },
+        {
+          "account": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+          "amount": "96"
+        },
+        {
+          "account": "uDqQNnuhnpeB6UVXVuNJV6SsykTJ8DFUkxtf8g5jQ6WLhFd",
+          "amount": "61"
+        },
+        {
+          "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+          "amount": "46"
+        },
+        {
+          "account": "uGU6XS17r91Rx5vz4u5wGzeuBa4EHPmjrd8N8JYFdgDHAr5",
+          "amount": "32"
+        },
+        {
+          "account": "uHnSbkYpsoC4NteiMPwkfwkunUrhMz2sQTFDd7mWkU4kMre",
+          "amount": "29"
+        },
+        {
+          "account": "uK6ng56XuTNgohNSdtoa4trvPPfASaHzxHN57vzmsFvDMBy",
+          "amount": "28"
+        }
+      ],
+      "total": "7332501",
+      "d9Reserve": "7292089840561774020",
+      "usdtReserve": "779365135"
+    },
+    "counters": {
+      "burnVolume": "1234567890123456789",
+      "merchantVolume": "987654321012345678",
+      "accumulativeRewardPool": "42000000000000",
+      "lastSession": 0
+    },
+    "legacyRewardCredits": [
+      {
+        "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+        "amount": "100000000"
+      }
+    ],
+    "stateRoot": "0000000000000000000000000000000000000000000000000000000000000004",
+    "runtimeSpecVersion": 1
+  },
+  "build": {
+    "nodeCommit": "29a01f16c208b28485c39acec4a0bb54ae6ebb98",
+    "palletsCommit": "48b01519ab9d3ce1d43c3a58cdaf0f7309ee93bf",
+    "cargoLockDigest": "0000000000000000000000000000000000000000000000000000000000000384",
+    "wasmDigest": "0000000000000000000000000000000000000000000000000000000000000385",
+    "nativegenCommit": "0000000000000000000000000000000000000386",
+    "runtimeConfigDigest": "0000000000000000000000000000000000000000000000000000000000000387"
+  },
+  "state": {
+    "assets": [
+      {
+        "assetId": 1,
+        "decimals": 6,
+        "totalSupply": "7793653350000",
+        "holders": [
+          {
+            "account": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
+            "amount": "7793651350000"
+          },
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "2000000"
+          }
+        ],
+        "holderCount": "2"
+      },
+      {
+        "assetId": 2,
+        "decimals": 6,
+        "totalSupply": "99",
+        "holders": [
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "99"
+          }
+        ],
+        "holderCount": "1"
+      }
+    ],
+    "referrals": [
+      {
+        "child": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "parent": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw"
+      },
+      {
+        "child": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "parent": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd"
+      },
+      {
+        "child": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+        "parent": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd"
+      },
+      {
+        "child": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+        "parent": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD"
+      },
+      {
+        "child": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+        "parent": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE"
+      }
+    ],
+    "votingInterests": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "total": "200",
+        "delegated": "0"
+      },
+      {
+        "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "total": "0",
+        "delegated": "0"
+      }
+    ],
+    "locks": [
+      {
+        "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+        "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+        "session": 912
+      }
+    ],
+    "lp": {
+      "positions": [
+        {
+          "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+          "amount": "6330260"
+        },
+        {
+          "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+          "amount": "1000000"
+        },
+        {
+          "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+          "amount": "1831"
+        },
+        {
+          "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+          "amount": "118"
+        },
+        {
+          "account": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+          "amount": "96"
+        },
+        {
+          "account": "uDqQNnuhnpeB6UVXVuNJV6SsykTJ8DFUkxtf8g5jQ6WLhFd",
+          "amount": "61"
+        },
+        {
+          "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+          "amount": "46"
+        },
+        {
+          "account": "uGU6XS17r91Rx5vz4u5wGzeuBa4EHPmjrd8N8JYFdgDHAr5",
+          "amount": "32"
+        },
+        {
+          "account": "uHnSbkYpsoC4NteiMPwkfwkunUrhMz2sQTFDd7mWkU4kMre",
+          "amount": "29"
+        },
+        {
+          "account": "uK6ng56XuTNgohNSdtoa4trvPPfASaHzxHN57vzmsFvDMBy",
+          "amount": "28"
+        }
+      ],
+      "total": "7332501",
+      "d9Reserve": "7292089840561774020",
+      "usdtReserve": "7793651350000"
+    },
+    "counters": {
+      "burnVolume": "1234567890123456789",
+      "merchantVolume": "987654321012345678",
+      "accumulativeRewardPool": "42000000000000",
+      "lastSession": 0
+    },
+    "balances": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "amount": "1000000001"
+      },
+      {
+        "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "amount": "1000000002"
+      },
+      {
+        "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+        "amount": "1000100003"
+      },
+      {
+        "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+        "amount": "1000000"
+      },
+      {
+        "account": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+        "amount": "1000000005"
+      },
+      {
+        "account": "uDqQNnuhnpeB6UVXVuNJV6SsykTJ8DFUkxtf8g5jQ6WLhFd",
+        "amount": "1000000006"
+      },
+      {
+        "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+        "amount": "1100000007"
+      },
+      {
+        "account": "uGU6XS17r91Rx5vz4u5wGzeuBa4EHPmjrd8N8JYFdgDHAr5",
+        "amount": "1000000008"
+      },
+      {
+        "account": "uHnSbkYpsoC4NteiMPwkfwkunUrhMz2sQTFDd7mWkU4kMre",
+        "amount": "1000000009"
+      },
+      {
+        "account": "uK6ng56XuTNgohNSdtoa4trvPPfASaHzxHN57vzmsFvDMBy",
+        "amount": "1000000010"
+      },
+      {
+        "account": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+        "amount": "1000000050"
+      },
+      {
+        "account": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j",
+        "amount": "1000000051"
+      },
+      {
+        "account": "vGPKoW4F7754mXb4anstgoDMfdJmmPFU18Kuz8binTjrkqY",
+        "amount": "1000000052"
+      },
+      {
+        "account": "vHhfspbx8mFhCLJnsHji5kKNGY7EqyWbYxSmUwpyuFbKooT",
+        "amount": "1000000053"
+      },
+      {
+        "account": "vK21x99fARSKd92X9nbXUhRNsSuhvZmj6nZcym4F23SnuPg",
+        "amount": "1000000054"
+      },
+      {
+        "account": "vLLN2ThNC5cx3wkFSHTLseXPUMiB1A2recgUUaHW8qJG7KE",
+        "amount": "1000000055"
+      },
+      {
+        "account": "vMei6nF5DjoaUkTyinKAGbdQ5GWe5kHzCSoKyPWmFd9jPqN",
+        "amount": "1000000056"
+      },
+      {
+        "account": "vNy4B6nnFPzCuZBi1HAyfYjQgBK7ALZ7kGvBUCk2NR1CRHX",
+        "amount": "1000000057"
+      },
+      {
+        "account": "vQHQFRLVH4AqLMuSHn2o4VqRH67aEvpFJ732y1yHVCrfhKM",
+        "amount": "1000000058"
+      },
+      {
+        "account": "vRbkKjtCJiMTmAdAaGtcTSwRszv3KX5Nqw9tTqCYbzi8sDW",
+        "amount": "1000000059"
+      },
+      {
+        "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH",
+        "amount": "1000000060"
+      },
+      {
+        "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX",
+        "amount": "1000000061"
+      },
+      {
+        "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a",
+        "amount": "1000000062"
+      },
+      {
+        "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN",
+        "amount": "1000000063"
+      },
+      {
+        "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK",
+        "amount": "1000000064"
+      },
+      {
+        "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM",
+        "amount": "1000000065"
+      },
+      {
+        "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k",
+        "amount": "1000000066"
+      },
+      {
+        "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo",
+        "amount": "1000000067"
+      },
+      {
+        "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt",
+        "amount": "1000000068"
+      },
+      {
+        "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg",
+        "amount": "1000000069"
+      },
+      {
+        "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg",
+        "amount": "1000000070"
+      },
+      {
+        "account": "vhPuDaSgecYztqFuzFCRCrBZ6vXeGcCwRta8Rbwg1UwkNAc",
+        "amount": "1000000071"
+      },
+      {
+        "account": "viiFHtzPgGjdKdyeGk4EboHZhqL7MCU4yigyvRAw8GoDFz8",
+        "amount": "1000000072"
+      },
+      {
+        "account": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
+        "amount": "7292089840561774020"
+      },
+      {
+        "account": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF",
+        "amount": "9900000000"
+      }
+    ],
+    "burnAccounts": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "amountBurned": "100",
+        "balanceDue": "300",
+        "balancePaid": "220",
+        "lastBurn": "1787882913000",
+        "lastWithdrawal": "1788055713000",
+        "lastInteraction": "1788142113000",
+        "referralBoostCoefficients": [
+          "5",
+          "9"
+        ]
+      }
+    ],
+    "merchantAccounts": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "merit": "9007199254750000",
+        "relationshipFactors": [
+          "20000",
+          "30000"
+        ],
+        "lastConversion": "1788228513000",
+        "redeemedD9": "123456789012345678",
+        "createdAt": "1787450913000"
+      },
+      {
+        "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "merit": "0",
+        "relationshipFactors": [
+          "0",
+          "0"
+        ],
+        "lastConversion": null,
+        "redeemedD9": "0",
+        "createdAt": "1779674913000"
+      }
+    ],
+    "merchantExpiries": [
+      {
+        "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+        "expiryMs": "1700000000000"
+      },
+      {
+        "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+        "expiryMs": "2100000000000"
+      }
+    ]
+  },
+  "changes": {
+    "topUps": [
+      {
+        "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+        "amount": "999900"
+      }
+    ],
+    "reserveRefunds": [
+      {
+        "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+        "amount": "100000"
+      }
+    ],
+    "rehomes": [
+      {
+        "from": "w8QUdeq8C82w28vmPhWwiu9kYDkWmqAQrepLs5HdEW9deZk",
+        "to": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
+        "amount": "7292089840561774020",
+        "decision": "synthetic:DEC-20-amm"
+      },
+      {
+        "from": "w9iphyNqDnDZSweVgCNm7rFm98YyrRRYQUwCMtWtMJ16mHM",
+        "to": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF",
+        "amount": "10000000000",
+        "decision": "synthetic:DEC-20-pool"
+      }
+    ],
+    "rewardCredits": [
+      {
+        "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+        "amount": "100000000"
+      }
+    ],
+    "assetRehomes": [
+      {
+        "assetId": 1,
+        "sourceAmount": "779365135",
+        "decision": "synthetic:DEC-20-amm",
+        "from": "w8QUdeq8C82w28vmPhWwiu9kYDkWmqAQrepLs5HdEW9deZk",
+        "to": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V"
+      }
+    ],
+    "excludedMerchantExpiries": [
+      {
+        "account": "vqHyfVivpZemTfaHhEMKaYociPLSk9miisHFQVKEiE4Z6Uk",
+        "expiryMs": "1700000000001"
+      }
+    ],
+    "unresolved": []
+  },
+  "bootstrap": {
+    "sudo": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+    "validators": [
+      {
+        "account": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j",
+        "babe": "00000000000000000000000000000000000000000000000000000000000001ff",
+        "grandpa": "0000000000000000000000000000000000000000000000000000000000000200",
+        "imOnline": "0000000000000000000000000000000000000000000000000000000000000201",
+        "discovery": "0000000000000000000000000000000000000000000000000000000000000202",
+        "liveness": "0000000000000000000000000000000000000000000000000000000000000203"
+      },
+      {
+        "account": "vGPKoW4F7754mXb4anstgoDMfdJmmPFU18Kuz8binTjrkqY",
+        "babe": "0000000000000000000000000000000000000000000000000000000000000209",
+        "grandpa": "000000000000000000000000000000000000000000000000000000000000020a",
+        "imOnline": "000000000000000000000000000000000000000000000000000000000000020b",
+        "discovery": "000000000000000000000000000000000000000000000000000000000000020c",
+        "liveness": "000000000000000000000000000000000000000000000000000000000000020d"
+      }
+    ],
+    "admins": [
+      {
+        "pallet": "d9-amm",
+        "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH"
+      },
+      {
+        "pallet": "d9-burn-mining",
+        "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX"
+      },
+      {
+        "pallet": "d9-cross-chain",
+        "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a"
+      },
+      {
+        "pallet": "d9-governance",
+        "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN"
+      },
+      {
+        "pallet": "d9-judicial-penalty",
+        "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK"
+      },
+      {
+        "pallet": "d9-merchant",
+        "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM"
+      },
+      {
+        "pallet": "d9-mining-pool",
+        "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k"
+      },
+      {
+        "pallet": "d9-node-registry",
+        "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo"
+      },
+      {
+        "pallet": "d9-node-rewards",
+        "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt"
+      },
+      {
+        "pallet": "d9-referrals",
+        "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg"
+      },
+      {
+        "pallet": "d9-upgrade-coordinator",
+        "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg"
+      },
+      {
+        "pallet": "d9-voting",
+        "account": "vhPuDaSgecYztqFuzFCRCrBZ6vXeGcCwRta8Rbwg1UwkNAc"
+      }
+    ],
+    "ammAccount": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
+    "miningPoolAccount": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF",
+    "feeBps": 30,
+    "liquidityToleranceBps": 500,
+    "d9ReserveFloor": "1000",
+    "usdtReserveFloor": "10000000",
+    "redemptionPriceFloor": false
+  }
+}

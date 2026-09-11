@@ -1,0 +1,110 @@
+[
+  {
+    "id": "WIRE",
+    "owner": "D9-380",
+    "phase": "parse",
+    "rule": "All fields required; explicit null; reject unknown/duplicate fields; decimal strings fit u128/u64; canonical SS58 AccountId32 prefix 9."
+  },
+  {
+    "id": "SOURCE",
+    "owner": "D9-378 + D9-307",
+    "phase": "source",
+    "rule": "One finalized block; chain/runtime/contract ABI references; all declared datasets including empty sets; counts and digests from records. Independently authenticate the frozen source outside this checker."
+  },
+  {
+    "id": "UNIQUE",
+    "owner": "D9-307 + pallet builder",
+    "phase": "source/target",
+    "rule": "Unique normalized storage keys. Assets key=(assetId,account). Report both duplicate rows. Cross-map account reuse permitted; no deduplication."
+  },
+  {
+    "id": "DELTA",
+    "owner": "D9-173 + D9-378",
+    "phase": "balances",
+    "rule": "Refund source reserved to free; explicit exact ED topups; simultaneous full-account rehome debits then credits; reward credits equal source and debit pool after rehome. No extra bootstrap mint."
+  },
+  {
+    "id": "ASSET",
+    "owner": "D9-173 + D9-317",
+    "phase": "assets",
+    "rule": "USDT asset 1: 2 to 6 decimals, checked x10000; other declared assets preserve decimals. Holder and supply equality after explicit asset rehomes. Zero holder rows require disposition."
+  },
+  {
+    "id": "REFERRAL",
+    "owner": "D9-173 + d9-referrals",
+    "phase": "referrals",
+    "rule": "Unique child, no self-edge; per-parent source counts and complete edge-set equality. DEC-16 historical cycles carried; no acyclicity filter."
+  },
+  {
+    "id": "BURN",
+    "owner": "D9-173 + d9-burn-mining",
+    "phase": "burn",
+    "rule": "main_pool.portfolios owns money; burner only supplements lastInteraction and boosts. due=source.remaining+source.paid=3*burned; paid=source.paid. Exact fields and checked arithmetic."
+  },
+  {
+    "id": "MERCHANT",
+    "owner": "D9-183 + D9-173",
+    "phase": "merchant",
+    "rule": "Complete accounts including consumers/zero merit. greenPoints and both relationshipFactors x10000; redeemedD9 x1. Preserve Option/time anchors; bounds use pinned source, never genesis now."
+  },
+  {
+    "id": "EXPIRY",
+    "owner": "D9-183 + D9-173",
+    "phase": "merchantExpiries",
+    "rule": "DEC-9: exact historical expiry, no new-subscription cap. Explicit exact orphan rows only; real exclusion-list authenticity needs review. No implicit filtering."
+  },
+  {
+    "id": "LP",
+    "owner": "D9-184 + D9-173",
+    "phase": "lp",
+    "rule": "Complete positive provider book, no sqrt recompute; exact owner/amount equality; checked sum equals source total. TotalLpTokens derived; expected total is assertion-only."
+  },
+  {
+    "id": "RESERVE",
+    "owner": "D9-190 + D9-173",
+    "phase": "lp/bootstrap",
+    "rule": "D9 x1, USDT x10000 at runtime-derived AMM account, no ED add-on. D9 floor=1000 raw; USDT=10000000 raw; distinct from LP minimum. 30/500 bps launch policy; no migration tolerance."
+  },
+  {
+    "id": "VOTING",
+    "owner": "d9-voting + D9-173",
+    "phase": "voting",
+    "rule": "Source total per account preserved; delegated=0; unique account."
+  },
+  {
+    "id": "LOCK",
+    "owner": "D9-195 + Yvan",
+    "phase": "locks",
+    "rule": "Preserve funded locks; actual set_freeze effect remains pallet/output verification. Unfunded X1 conflict rejected, never implicitly funded or dropped."
+  },
+  {
+    "id": "COUNTERS",
+    "owner": "d9-mining-pool + D9-173",
+    "phase": "counters",
+    "rule": "Explicit source-bound normalized counter values; no defaults. VolumeAtIndex derived by current_volume() at LastSession, never independently written."
+  },
+  {
+    "id": "COMPOSE",
+    "owner": "D9-370 + D9-307",
+    "phase": "bootstrap",
+    "rule": "SDK PalletId derivation; nonempty unique authority set, per-role key uniqueness, explicit admins. Authority/state inputs bound together; all runtime configuration pinned externally."
+  },
+  {
+    "id": "FLOOR",
+    "owner": "D9-185",
+    "phase": "bootstrap",
+    "rule": "DEC-17: no redemption floor; D9-185 must remove/disable existing runtime path. This input flag alone does not disable runtime behavior."
+  },
+  {
+    "id": "PENDING",
+    "owner": "Yvan",
+    "phase": "inventory/changes",
+    "rule": "Null provenance is pending, not a fourth enum or NotMigrated fallback. This RC rejects real migration inputs while classifications remain pending."
+  },
+  {
+    "id": "BIND",
+    "owner": "D9-307 + D9-370",
+    "phase": "artifact",
+    "rule": "Detached binding covers input/contract/build/raw-spec/report. Final bytes after composition; later authority/state/WASM/schema edits invalidate prior binding. No self-referential hash."
+  }
+]
