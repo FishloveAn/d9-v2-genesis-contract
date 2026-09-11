@@ -34,9 +34,10 @@ fn hex_bytes(value: &str) -> Vec<u8> {
         .strip_prefix("0x")
         .expect("evidence hex has 0x prefix");
     assert_eq!(value.len() % 2, 0, "hex must contain whole bytes");
-    value
-        .as_bytes()
-        .chunks_exact(2)
+    let (pairs, remainder) = value.as_bytes().as_chunks::<2>();
+    assert!(remainder.is_empty(), "hex must contain whole bytes");
+    pairs
+        .iter()
         .map(|pair| {
             let text = std::str::from_utf8(pair).unwrap();
             u8::from_str_radix(text, 16).unwrap()
