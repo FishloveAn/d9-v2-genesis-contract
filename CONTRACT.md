@@ -1,4 +1,4 @@
-# 创世数据契约 — 0.1.0-rc.1
+# 创世数据契约 — 0.1.0-rc.2
 
 状态：待下游评审。关联：[D9-380](https://linear.app/d9-network/issue/D9-380)。
 这是导出器、native builder、独立验证器共同使用的输入边界。传输 DTO
@@ -33,7 +33,7 @@ typed adapter 完成，roundtrip 测试锁定其行为。
 
 | 字段 | 内容与责任 |
 |---|---|
-| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.1 |
+| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.2 |
 | purpose | synthetic-fixture 或 migration-input；前者只能用于合成对照 |
 | source | 固定 finalized pin 的链 genesisHash、blockNumber/blockHash/stateRoot、timestampMs、runtimeSpecVersion/metadataDigest、规范化源投影及证据引用；由 D9-378 提供 |
 | build | nodeCommit、palletsCommit、cargoLockDigest、runtimeConfigDigest、wasmDigest、nativegenCommit |
@@ -116,7 +116,25 @@ payloadDigest 对应本契约的规范化记录；assets 的顶层记录是 Asse
   asset rehome 单独列出 assetId/from/to/sourceAmount；先移动再缩放。
   任何 drop、缺失资金来源、隐含 endowment 都不在本 RC 的接受集中。
 
-司法锁 X1 的 record 与里程碑互相冲突，本 RC 拒绝 unfunded lock。待决
+司法锁 X1 按 D9-195 / DEC-20 的 2026-09-03 已决规则处理：
+source.locks 保留全部原始行；changes.excludedJudicialLocks 是必填数组，
+仅允许地址 wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq
+（0x60a1014576a16a09fdcbfdf69f27a1d3415231be5f27aa1c64928a8dd823176e）。
+每条包含 account、reason="missing_system_account"、v1LockAmount="1"、
+blockHash（必须等于 source.blockHash）、systemAccountExists=false。
+该地址必须存在于 source.locks，同时不在 source.balances 或 state.balances，
+且不得重复。state.locks 必须精确等于 source.locks 减去已验证排除行；
+未知账户、过期 pin、改变的 marker、重新出现的账户、缺失或重复排除均拒绝。
+若后续 pin 该账户已存在且具备资金，则不作排除，保留冻结。
+
+这些字段是同 pin RPC 观察的声明，不能自行证明 System.Account 不存在。
+D9-378 / D9-173 必须认证原始 storage absence 和 Balances.Locks 的唯一
+council/ amount=1 marker，不能以余额投影缺行代替证明。Exporter 的
+account_id_hex / reason / v1_lock_amount 收据由适配层转换为以上字段，
+并补入被验证的 pin 与存在性观察。既有 1,968→1,967 是历史测量，
+不是数量硬编码；合成 fixture 包含真实获准地址但其 pin、冻结人和观察均为合成。
+
+待决
 inventory 项（Resolutions、ProposalFeeVolume、UserNonce、CumulativeBridgedOut、
 PendingOutbound）保留 null provenance + Yvan/issue 引用；null 不是新枚举。
 bridge disabled 不能自动决定既存余额或待处理义务如何处理。
@@ -188,4 +206,4 @@ D9 源码 storage 名称的测试能发现增删漂移，但不能证明所有 S
 d9-core 的声明校验桥接、读取 pallet 源码的覆盖测试迁回 d9-v2-pallets 的
 d9-genesis-adapter。原有 Rust typed adapter 的责任与字段没有改变。
 消费者固定引用本仓 commit；不得依赖另一工作区的相对路径或保留规范副本。
-RC1 的 wire schema、规则、inventory 和 fixture bytes 保持不变。
+RC2 有意修改 wire schema、规则、inventory 和 fixture bytes；消费者必须重新固定 commit 并评审全部样本。

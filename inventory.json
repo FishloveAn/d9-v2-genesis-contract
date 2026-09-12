@@ -431,6 +431,16 @@
   },
   {
     "pallet": "d9-judicial-penalty",
+    "storage": "JurorBallots",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "Fresh V2 operational state: open-ballot refcounts of non-migrated VotingBodies; no V1 import. pallets main 24a2f97 snapshot/take_voting_body owns updates.",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
     "storage": "LegacyReferendums",
     "provenance": "NotMigrated",
     "genesisField": null,

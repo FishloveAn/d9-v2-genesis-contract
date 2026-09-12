@@ -1,6 +1,6 @@
 # D9-380 review handoff
 
-Candidate: **d9-native-genesis/0.1.0-rc.1**. No downstream acknowledgement yet.
+Candidate: **d9-native-genesis/0.1.0-rc.2**. No downstream acknowledgement yet.
 This file records required evidence, not approval on another person's behalf.
 
 | Owner | Scope | Evidence required | Status |
@@ -9,13 +9,20 @@ This file records required evidence, not approval on another person's behalf.
 | Wen Ryu / D9-184 | full LP owner book and proposed genesis fields | all ten synthetic owners survive; no sqrt; expected total is assertion-only | pending |
 | Wen Ryu / D9-190 | per-asset units, reserve floor, bps and migration boundary | accept fixed source/target values; reserve-floor and post-migration behavior tests in pallet | pending |
 | Yvan / D9-173 | independent verifier | confirm fields/digests and paid-history/exception baseline; independent final-spec decoder planned | pending |
-| Yvan | economic/identity dispositions | resolve X1 conflict and each null inventory item; approve real exception/disposition lists | pending |
+| Yvan | economic/identity dispositions | resolve each null inventory item; authenticate real exception/disposition lists (X1 policy already settled) | pending |
 | D9-370 owner | final composition | confirm complete runtime config digest, five key roles across FRAME Session/D9 registry/liveness, derived pallet identities, final detached binding | pending |
 
 Each acknowledgement must cite the same contract version, contractDigest,
 fixture/expected/cases hashes, source commit and test evidence. If any field,
 policy or expected result changes, re-run the entire shared corpus and update
 the evidence; do not carry acknowledgement across different bytes.
+
+## RC2 X1 reconciliation
+
+The September 3 D9-195 / DEC-20 exclusion ruling is applied; no new X1 policy
+decision is requested. All prior RC1 compatibility evidence must be rerun against
+RC2 hashes. Five unrelated null provenance entries remain unresolved. JurorBallots
+is classified as fresh V2 operational state consistently with VotingBodies.
 
 ## Local implementation acceptance
 

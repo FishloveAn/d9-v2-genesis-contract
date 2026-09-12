@@ -966,7 +966,7 @@
     }
   },
   {
-    "id": "unfunded-lock-x1",
+    "id": "unknown-unfunded-lock",
     "patches": [
       {
         "op": "replace",
@@ -983,6 +983,11 @@
             "session": 912
           }
         ]
+      },
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": []
       }
     ],
     "refreshSource": [
@@ -990,7 +995,7 @@
     ],
     "expected": {
       "phase": "validation",
-      "code": "unresolved_lock_x1",
+      "code": "unfunded_lock",
       "pathPrefix": "/source/locks"
     }
   },
@@ -1199,6 +1204,573 @@
       "phase": "validation",
       "code": "source_map_mismatch",
       "pathPrefix": "/source/datasets/balances"
+    }
+  },
+  {
+    "id": "unknown-lock-exclusion",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks/0/account",
+        "value": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_lock_exclusion",
+      "pathPrefix": "/changes/excludedJudicialLocks"
+    }
+  },
+  {
+    "id": "stale-lock-exclusion-pin",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks/0/blockHash",
+        "value": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_lock_exclusion",
+      "pathPrefix": "/changes/excludedJudicialLocks"
+    }
+  },
+  {
+    "id": "lock-account-exists",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks/0/systemAccountExists",
+        "value": true
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_lock_exclusion",
+      "pathPrefix": "/changes/excludedJudicialLocks"
+    }
+  },
+  {
+    "id": "changed-council-marker",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks/0/v1LockAmount",
+        "value": "2"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_lock_exclusion",
+      "pathPrefix": "/changes/excludedJudicialLocks"
+    }
+  },
+  {
+    "id": "unknown-lock-exclusion-reason",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks/0/reason",
+        "value": "other"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": "/"
+    }
+  },
+  {
+    "id": "missing-lock-exclusion-field",
+    "patches": [
+      {
+        "op": "remove",
+        "path": "/changes/excludedJudicialLocks"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": "/"
+    }
+  },
+  {
+    "id": "duplicate-lock-exclusion",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": [
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          },
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "duplicate_key",
+      "pathPrefix": "/changes/excludedJudicialLocks"
+    }
+  },
+  {
+    "id": "stale-lock-exclusion-row",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/locks",
+        "value": [
+          {
+            "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+            "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+            "session": 912
+          }
+        ]
+      }
+    ],
+    "refreshSource": [
+      "locks"
+    ],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_lock_exclusion",
+      "pathPrefix": "/changes/excludedJudicialLocks"
+    }
+  },
+  {
+    "id": "missing-approved-lock-exclusion",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": []
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "unfunded_lock",
+      "pathPrefix": "/source/locks"
+    }
+  },
+  {
+    "id": "excluded-lock-still-seeded",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/state/locks",
+        "value": [
+          {
+            "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+            "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+            "session": 912
+          },
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+            "session": 912
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/locks"
+    }
+  },
+  {
+    "id": "excluded-account-in-source-balances",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/balances",
+        "value": [
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "free": "1000000001",
+            "reserved": "0"
+          },
+          {
+            "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+            "free": "1000000002",
+            "reserved": "0"
+          },
+          {
+            "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+            "free": "1000000003",
+            "reserved": "100000"
+          },
+          {
+            "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+            "free": "100",
+            "reserved": "0"
+          },
+          {
+            "account": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+            "free": "1000000005",
+            "reserved": "0"
+          },
+          {
+            "account": "uDqQNnuhnpeB6UVXVuNJV6SsykTJ8DFUkxtf8g5jQ6WLhFd",
+            "free": "1000000006",
+            "reserved": "0"
+          },
+          {
+            "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+            "free": "1000000007",
+            "reserved": "0"
+          },
+          {
+            "account": "uGU6XS17r91Rx5vz4u5wGzeuBa4EHPmjrd8N8JYFdgDHAr5",
+            "free": "1000000008",
+            "reserved": "0"
+          },
+          {
+            "account": "uHnSbkYpsoC4NteiMPwkfwkunUrhMz2sQTFDd7mWkU4kMre",
+            "free": "1000000009",
+            "reserved": "0"
+          },
+          {
+            "account": "uK6ng56XuTNgohNSdtoa4trvPPfASaHzxHN57vzmsFvDMBy",
+            "free": "1000000010",
+            "reserved": "0"
+          },
+          {
+            "account": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+            "free": "1000000050",
+            "reserved": "0"
+          },
+          {
+            "account": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j",
+            "free": "1000000051",
+            "reserved": "0"
+          },
+          {
+            "account": "vGPKoW4F7754mXb4anstgoDMfdJmmPFU18Kuz8binTjrkqY",
+            "free": "1000000052",
+            "reserved": "0"
+          },
+          {
+            "account": "vHhfspbx8mFhCLJnsHji5kKNGY7EqyWbYxSmUwpyuFbKooT",
+            "free": "1000000053",
+            "reserved": "0"
+          },
+          {
+            "account": "vK21x99fARSKd92X9nbXUhRNsSuhvZmj6nZcym4F23SnuPg",
+            "free": "1000000054",
+            "reserved": "0"
+          },
+          {
+            "account": "vLLN2ThNC5cx3wkFSHTLseXPUMiB1A2recgUUaHW8qJG7KE",
+            "free": "1000000055",
+            "reserved": "0"
+          },
+          {
+            "account": "vMei6nF5DjoaUkTyinKAGbdQ5GWe5kHzCSoKyPWmFd9jPqN",
+            "free": "1000000056",
+            "reserved": "0"
+          },
+          {
+            "account": "vNy4B6nnFPzCuZBi1HAyfYjQgBK7ALZ7kGvBUCk2NR1CRHX",
+            "free": "1000000057",
+            "reserved": "0"
+          },
+          {
+            "account": "vQHQFRLVH4AqLMuSHn2o4VqRH67aEvpFJ732y1yHVCrfhKM",
+            "free": "1000000058",
+            "reserved": "0"
+          },
+          {
+            "account": "vRbkKjtCJiMTmAdAaGtcTSwRszv3KX5Nqw9tTqCYbzi8sDW",
+            "free": "1000000059",
+            "reserved": "0"
+          },
+          {
+            "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH",
+            "free": "1000000060",
+            "reserved": "0"
+          },
+          {
+            "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX",
+            "free": "1000000061",
+            "reserved": "0"
+          },
+          {
+            "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a",
+            "free": "1000000062",
+            "reserved": "0"
+          },
+          {
+            "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN",
+            "free": "1000000063",
+            "reserved": "0"
+          },
+          {
+            "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK",
+            "free": "1000000064",
+            "reserved": "0"
+          },
+          {
+            "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM",
+            "free": "1000000065",
+            "reserved": "0"
+          },
+          {
+            "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k",
+            "free": "1000000066",
+            "reserved": "0"
+          },
+          {
+            "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo",
+            "free": "1000000067",
+            "reserved": "0"
+          },
+          {
+            "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt",
+            "free": "1000000068",
+            "reserved": "0"
+          },
+          {
+            "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg",
+            "free": "1000000069",
+            "reserved": "0"
+          },
+          {
+            "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg",
+            "free": "1000000070",
+            "reserved": "0"
+          },
+          {
+            "account": "vhPuDaSgecYztqFuzFCRCrBZ6vXeGcCwRta8Rbwg1UwkNAc",
+            "free": "1000000071",
+            "reserved": "0"
+          },
+          {
+            "account": "viiFHtzPgGjdKdyeGk4EboHZhqL7MCU4yigyvRAw8GoDFz8",
+            "free": "1000000072",
+            "reserved": "0"
+          },
+          {
+            "account": "w8QUdeq8C82w28vmPhWwiu9kYDkWmqAQrepLs5HdEW9deZk",
+            "free": "7292089840561774020",
+            "reserved": "0"
+          },
+          {
+            "account": "w9iphyNqDnDZSweVgCNm7rFm98YyrRRYQUwCMtWtMJ16mHM",
+            "free": "10000000000",
+            "reserved": "0"
+          },
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "free": "0",
+            "reserved": "0"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [
+      "balances"
+    ],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_lock_exclusion",
+      "pathPrefix": "/changes/excludedJudicialLocks"
+    }
+  },
+  {
+    "id": "excluded-account-funded-in-target",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/topUps",
+        "value": [
+          {
+            "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+            "amount": "999900"
+          },
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "amount": "1"
+          }
+        ]
+      },
+      {
+        "op": "replace",
+        "path": "/state/balances",
+        "value": [
+          {
+            "account": "u7Fg1CBAeXj2xStt5R5DWLvpyCSxjFwq1pJPebwRp9F1LVd",
+            "amount": "1000000001"
+          },
+          {
+            "account": "u8a25WisgBufPFccMuw2uJ2qa7FRorCxZeRF9RAgvw6UFyw",
+            "amount": "1000000002"
+          },
+          {
+            "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+            "amount": "1000100003"
+          },
+          {
+            "account": "uBCiE9pHjWGvEs44vuefhCErmvrMy2jDfJex93dDAWoQfkE",
+            "amount": "1000000"
+          },
+          {
+            "account": "uCX4JUMzmATYffmoDQWV69LsNqeq3czMD8modrrUHJestVD",
+            "amount": "1000000005"
+          },
+          {
+            "account": "uDqQNnuhnpeB6UVXVuNJV6SsykTJ8DFUkxtf8g5jQ6WLhFd",
+            "amount": "1000000006"
+          },
+          {
+            "account": "uF9kT7TQpUpoXHDFnQE7t3YtafFmCoWcJo1WdVJzWtMotJi",
+            "amount": "1100000007"
+          },
+          {
+            "account": "uGU6XS17r91Rx5vz4u5wGzeuBa4EHPmjrd8N8JYFdgDHAr5",
+            "amount": "1000000008"
+          },
+          {
+            "account": "uHnSbkYpsoC4NteiMPwkfwkunUrhMz2sQTFDd7mWkU4kMre",
+            "amount": "1000000009"
+          },
+          {
+            "account": "uK6ng56XuTNgohNSdtoa4trvPPfASaHzxHN57vzmsFvDMBy",
+            "amount": "1000000010"
+          },
+          {
+            "account": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+            "amount": "1000000050"
+          },
+          {
+            "account": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j",
+            "amount": "1000000051"
+          },
+          {
+            "account": "vGPKoW4F7754mXb4anstgoDMfdJmmPFU18Kuz8binTjrkqY",
+            "amount": "1000000052"
+          },
+          {
+            "account": "vHhfspbx8mFhCLJnsHji5kKNGY7EqyWbYxSmUwpyuFbKooT",
+            "amount": "1000000053"
+          },
+          {
+            "account": "vK21x99fARSKd92X9nbXUhRNsSuhvZmj6nZcym4F23SnuPg",
+            "amount": "1000000054"
+          },
+          {
+            "account": "vLLN2ThNC5cx3wkFSHTLseXPUMiB1A2recgUUaHW8qJG7KE",
+            "amount": "1000000055"
+          },
+          {
+            "account": "vMei6nF5DjoaUkTyinKAGbdQ5GWe5kHzCSoKyPWmFd9jPqN",
+            "amount": "1000000056"
+          },
+          {
+            "account": "vNy4B6nnFPzCuZBi1HAyfYjQgBK7ALZ7kGvBUCk2NR1CRHX",
+            "amount": "1000000057"
+          },
+          {
+            "account": "vQHQFRLVH4AqLMuSHn2o4VqRH67aEvpFJ732y1yHVCrfhKM",
+            "amount": "1000000058"
+          },
+          {
+            "account": "vRbkKjtCJiMTmAdAaGtcTSwRszv3KX5Nqw9tTqCYbzi8sDW",
+            "amount": "1000000059"
+          },
+          {
+            "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH",
+            "amount": "1000000060"
+          },
+          {
+            "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX",
+            "amount": "1000000061"
+          },
+          {
+            "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a",
+            "amount": "1000000062"
+          },
+          {
+            "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN",
+            "amount": "1000000063"
+          },
+          {
+            "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK",
+            "amount": "1000000064"
+          },
+          {
+            "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM",
+            "amount": "1000000065"
+          },
+          {
+            "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k",
+            "amount": "1000000066"
+          },
+          {
+            "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo",
+            "amount": "1000000067"
+          },
+          {
+            "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt",
+            "amount": "1000000068"
+          },
+          {
+            "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg",
+            "amount": "1000000069"
+          },
+          {
+            "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg",
+            "amount": "1000000070"
+          },
+          {
+            "account": "vhPuDaSgecYztqFuzFCRCrBZ6vXeGcCwRta8Rbwg1UwkNAc",
+            "amount": "1000000071"
+          },
+          {
+            "account": "viiFHtzPgGjdKdyeGk4EboHZhqL7MCU4yigyvRAw8GoDFz8",
+            "amount": "1000000072"
+          },
+          {
+            "account": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
+            "amount": "7292089840561774020"
+          },
+          {
+            "account": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF",
+            "amount": "9900000000"
+          },
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "amount": "1"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_lock_exclusion",
+      "pathPrefix": "/changes/excludedJudicialLocks"
     }
   }
 ]

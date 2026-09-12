@@ -1,5 +1,5 @@
 {
-  "contractVersion": "d9-native-genesis/0.1.0-rc.1",
+  "contractVersion": "d9-native-genesis/0.1.0-rc.2",
   "purpose": "synthetic-fixture",
   "source": {
     "genesisHash": "0000000000000000000000000000000000000000000000000000000000000001",
@@ -113,8 +113,8 @@
         "dataset": "locks",
         "sourceMap": "CouncilLock.LockedAccounts",
         "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
-        "payloadDigest": "bad5ec99bd28ba9740063f4f62de09249fbd587991cc0d94413eb49b0b68fc58",
-        "recordCount": "1",
+        "payloadDigest": "cacd8d0931255e2874d780904d6e049677c3811fb686ef2e6a25c2e7e0e65028",
+        "recordCount": "2",
         "contract": null,
         "codeHash": null,
         "abiDigest": null,
@@ -470,6 +470,11 @@
     "locks": [
       {
         "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
+        "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+        "session": 912
+      },
+      {
+        "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
         "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
         "session": 912
       }
@@ -909,7 +914,16 @@
         "expiryMs": "1700000000001"
       }
     ],
-    "unresolved": []
+    "unresolved": [],
+    "excludedJudicialLocks": [
+      {
+        "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+        "reason": "missing_system_account",
+        "v1LockAmount": "1",
+        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+        "systemAccountExists": false
+      }
+    ]
   },
   "bootstrap": {
     "sudo": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",

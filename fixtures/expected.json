@@ -1,5 +1,5 @@
 {
-  "inputDigest": "0f55d1068736b6ea6a18f58aea71db63622e7c02e31d25e3d82f84f8b67427e1",
+  "inputDigest": "73c94c409904f3f163988aa0f6bfd57b06e481dce172895ce057d38dcf0f6341",
   "sourceDatasetDigests": {
     "balances": "d5b1a9413072962df215d4b6cf75f27b83d053914df33dadbd5256c7ce3354fc",
     "assets": "6974ece501dd639d7c180e144388ed0ae66e42b87f6e178b90e2553595f0c4aa",
@@ -9,7 +9,7 @@
     "merchant": "77b89c19a106780d441f18fdfa0a53db0cd613a0e6f5e7465ef8c4cb90a9eebf",
     "merchant-expiries": "668b33138024b16c6fe4916035e1bc1267b43f687b398f4fccef87b252061db5",
     "voting": "b0e3ab087cbe56e38f6accccbae941c0958639164d507f944b224648204e0627",
-    "locks": "bad5ec99bd28ba9740063f4f62de09249fbd587991cc0d94413eb49b0b68fc58",
+    "locks": "cacd8d0931255e2874d780904d6e049677c3811fb686ef2e6a25c2e7e0e65028",
     "lp": "2240f76a6eb9aa454afe993f8f77143c7b0b4f6d906e116048fd6d78cbd65858",
     "counters": "da095cffbfd7b486113699d9f29b528f160b25d9e6f151a2d41db8688387e887",
     "legacy-rewards": "c2ec6e3b527e8ad0e35a350c21b8e1842cc640415707d0595b31789702e88b71"
@@ -65,5 +65,16 @@
   ],
   "totalIssuance": "7292089882562875474",
   "ammAccount": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
-  "miningPoolAccount": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF"
+  "miningPoolAccount": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF",
+  "rawLockCount": "2",
+  "seededLockCount": "1",
+  "excludedJudicialLocks": [
+    {
+      "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+      "reason": "missing_system_account",
+      "v1LockAmount": "1",
+      "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+      "systemAccountExists": false
+    }
+  ]
 }

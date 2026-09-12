@@ -1,7 +1,7 @@
 {
-  "contractVersion": "d9-native-genesis/0.1.0-rc.1",
-  "contractDigest": "ea076b985652959680cd99a2cd1dffa458360fe1782943f489e0e24c6f6f8d3c",
-  "inputDigest": "0f55d1068736b6ea6a18f58aea71db63622e7c02e31d25e3d82f84f8b67427e1",
+  "contractVersion": "d9-native-genesis/0.1.0-rc.2",
+  "contractDigest": "e81c197b25ce529ba0fd3bb83926eeaa03fd11a5e3fe5fe5ee253ffc1388f18f",
+  "inputDigest": "73c94c409904f3f163988aa0f6bfd57b06e481dce172895ce057d38dcf0f6341",
   "build": {
     "nodeCommit": "29a01f16c208b28485c39acec4a0bb54ae6ebb98",
     "palletsCommit": "48b01519ab9d3ce1d43c3a58cdaf0f7309ee93bf",

@@ -75,7 +75,7 @@
     "id": "LOCK",
     "owner": "D9-195 + Yvan",
     "phase": "locks",
-    "rule": "Preserve funded locks; actual set_freeze effect remains pallet/output verification. Unfunded X1 conflict rejected, never implicitly funded or dropped."
+    "rule": "Preserve all raw source locks; state locks equal source minus explicit D9-195/DEC-20 approved dangling account exclusion. Exclusion requires same-pin System.Account absence declaration and council/ amount 1, absent source/target balance account, exact known raw account and no duplicates. Unknown/stale/funded exclusions refuse. Independently authenticate raw observations in D9-378/173; actual set_freeze effect remains pallet/output verification."
   },
   {
     "id": "COUNTERS",

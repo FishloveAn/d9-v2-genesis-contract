@@ -1,7 +1,7 @@
 # D9 native-genesis contract
 
 The shared contract for D9 V2 exporters, pallet genesis builders and independent
-verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.1**.
+verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.2**.
 
 This repository is the authoritative home for the contract, schemas, provenance
 inventory, rules and shared conformance fixtures extracted from D9-380 at pallets
@@ -14,11 +14,11 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [CONTRACT.md](CONTRACT.md) | Field semantics, units, invariant ownership and encoding |
 | [schema.json](schema.json) | Input schema generated from the Rust DTOs |
 | [binding.schema.json](binding.schema.json) | Detached final-artifact binding |
-| [inventory.json](inventory.json) | 135 candidate provenance entries with explicit pending decisions |
+| [inventory.json](inventory.json) | 136 candidate provenance entries with explicit pending decisions |
 | [rules.json](rules.json) | 18 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
-| [fixtures/cases.json](fixtures/cases.json) | 56 mutations and expected failures |
+| [fixtures/cases.json](fixtures/cases.json) | 68 mutations and expected failures |
 | [fixture-manifest.json](fixture-manifest.json) | Exact hashes of the shared artifacts |
 | [evidence-amm-mainnet-23802000.json](evidence-amm-mainnet-23802000.json) | Read-only V1 mainnet AMM LP extraction receipt at block 23,802,000 |
 | [REVIEW.md](REVIEW.md) | Pending downstream compatibility acknowledgements |
@@ -87,3 +87,14 @@ Real migration inputs are refused while pending classifications remain.
 D9-380 still requires downstream acknowledgement. D9-307 owns complete provenance
 checks, D9-173 owns independent final-state reconciliation, D9-370 owns composition,
 and D9-315 owns reproducible WASM. See [D9-380](https://linear.app/d9-network/issue/D9-380).
+
+## RC2 exclusion revision
+
+RC2 applies the settled D9-195 / DEC-20 dangling-lock rule with a required
+`changes.excludedJudicialLocks` array, pinned declared absence evidence and
+source-minus-exclusion equality. Raw source rows remain inclusive. The complete
+synthetic fixture now exercises the approved address; it does not authenticate
+historical absence. Five unrelated dispositions remain unresolved and real
+migration input still fails closed. JurorBallots adds current pallet inventory
+coverage as fresh V2 operational state. All RC1 consumer acknowledgements must
+be rerun against the RC2 artifacts.

@@ -164,6 +164,7 @@ pub fn validate(input: &ContractInput) -> Result<ContractReport, Violation> {
         }
     }
     source::check(input)?;
+    people::check_locks(input)?;
     composition::check(input)?;
     balances::check(input)?;
     people::check(input)?;

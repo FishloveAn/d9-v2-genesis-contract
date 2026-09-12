@@ -53,3 +53,20 @@ The receipt contains ten LP positions and their checked sum `7,332,501`. This
 is a source evidence artifact for D9-184, separate from the synthetic RC1
 conformance fixtures. It does not claim to be the complete migration input or
 to represent the eventual cutover pin.
+
+## RC2 X1 alignment — 2026-09-12
+
+The settled D9-195 / DEC-20 rule is implemented with explicit same-pin absence
+declarations and exact source-minus-exclusion reconciliation. The synthetic
+fixture contains two raw locks, one declared approved exclusion and one seeded
+freeze; it is not raw V1 proof. A funded future-pin instance is retained without
+an exclusion. The corpus now contains 68 negative cases. All 13 standalone tests
+passed, including every corpus case, schema/bundle binding and historical AMM
+receipt checks. Clippy all-targets -D warnings, formatting and diff checks passed.
+
+JurorBallots is a V2 open-ballot reference count, updated by snapshot/take of
+VotingBodies and backfilled from that map during runtime upgrade (pallets main
+24a2f97, judicial lib.rs). Its NotMigrated classification follows the existing
+VotingBodies/Referendums fresh operational-state rule. Inventory count is 136;
+the five null provenance decisions are unchanged. No downstream acknowledgement,
+source authentication, nativegen run, reproduction or release gate is claimed.
