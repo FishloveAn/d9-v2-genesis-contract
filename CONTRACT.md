@@ -137,6 +137,11 @@ account_id_hex / reason / v1_lock_amount 收据由适配层转换为以上字段
 并补入被验证的 pin 与存在性观察。既有 1,968→1,967 是历史测量，
 不是数量硬编码；合成 fixture 包含真实获准地址但其 pin、冻结人和观察均为合成。
 
+RC3 的 LOCK 规则与错误消息中的 `council/ amount 1` 是上述条件的简写：
+输入校验实际比较 `v1LockAmount == "1"`（解码后的整数等于 1），不会查询
+链上 marker。唯一 `council/` marker 的原始存储证明仍由 D9-378 / D9-173
+核验。本说明澄清已有条件，保留已确认的 rules.json 与错误消息 bytes。
+
 2026-09-12，Yvan 已通过五项独立 ADR（inventory.json 的完整链接）裁定：
 
 | 项目 | Provenance 与 V2 初值 | 独立交付义务 |

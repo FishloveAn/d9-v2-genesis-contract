@@ -121,6 +121,14 @@ classification requires contract review and a new digest. The contract does not 
 config or authenticate its archive/settlement evidence. RC1/RC2 acknowledgements
 cannot be carried across the new contract and fixture digests.
 
+The checker does **not** reject arbitrary non-empty decision text added by a
+future source-code change merely because that text has no approval. Such a
+change modifies the compiled contract and its digest, not a caller-controlled
+input field. Downstream consumers must pin the reviewed revision and verify
+the accepted digest; the digest itself does not authenticate approval.
+See [RC3 review dispositions](review/rc3-comments.md) for the comment-by-comment
+assessment and the distinction between input validation and source review.
+
 ## RC4 reserve-depth policy
 
 Yvan approved [D9-190](https://linear.app/d9-network/issue/D9-190) minimum reserves
