@@ -1,5 +1,5 @@
 {
-  "inputDigest": "07cfca886ef0668699209be61b4e878a042db04140087a86698adae6c416bb07",
+  "inputDigest": "199ba03b0f72322cd4facf1814c7dfc053aee585a7a875f2d60cf1043f60f253",
   "sourceDatasetDigests": {
     "balances": "d5b1a9413072962df215d4b6cf75f27b83d053914df33dadbd5256c7ce3354fc",
     "assets": "6974ece501dd639d7c180e144388ed0ae66e42b87f6e178b90e2553595f0c4aa",
@@ -76,5 +76,7 @@
       "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
       "systemAccountExists": false
     }
-  ]
+  ],
+  "d9ReserveFloor": "600000000000000000",
+  "usdtReserveFloor": "600000000000"
 }

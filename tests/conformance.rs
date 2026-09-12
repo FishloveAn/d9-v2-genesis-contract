@@ -300,3 +300,26 @@ fn migration_input_conformance_is_not_archive_settlement_or_release_approval() {
     });
     assert_eq!(validate(&input).unwrap_err().code, "unresolved_disposition");
 }
+
+#[test]
+fn approved_reserve_depth_uses_whole_token_units() {
+    let input = input();
+    let expected = golden();
+    assert_eq!(
+        input.bootstrap.d9_reserve_floor.0,
+        600_000 * 1_000_000_000_000u128
+    );
+    assert_eq!(
+        input.bootstrap.usdt_reserve_floor.0,
+        600_000 * 1_000_000u128
+    );
+    assert_eq!(
+        serde_json::to_value(input.bootstrap.d9_reserve_floor).unwrap(),
+        expected["d9ReserveFloor"]
+    );
+    assert_eq!(
+        serde_json::to_value(input.bootstrap.usdt_reserve_floor).unwrap(),
+        expected["usdtReserveFloor"]
+    );
+    validate(&input).unwrap();
+}

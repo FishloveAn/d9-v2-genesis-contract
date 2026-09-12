@@ -93,3 +93,27 @@ provenance. It does not test or enforce an approval allowlist for non-empty
 decision text in a modified build. Inventory is compiled from repository source;
 source review, revision pinning and comparison with an accepted contract digest
 remain necessary. See [the review dispositions](review/rc3-comments.md).
+
+## RC4 reserve-depth consistency — 2026-09-12
+
+Standalone cargo test: 16 passed, including the 75-case rejection corpus.
+Clippy all-targets with -D warnings, formatting and diff checks passed. Added
+independent whole-token golden assertions and rejections for RC3, each retired
+parity floor, and one raw unit above/below each approved policy value. Source,
+target state, changes/exception declarations, inventory and historical AMM
+evidence remain unchanged. Only launch-policy floor literals and contract version
+change the complete fixture. Schema regeneration produces identical DTO schemas.
+
+This record does not claim downstream acceptance, runtime floor enforcement,
+oracle security, performance weights or release-gate completion.
+
+## RC5 fixed 600k reserve minima — 2026-09-12
+
+The user superseded RC4's 1M-token minima with fixed 600,000-token minima:
+600000000000000000 raw D9 and 600000000000 raw USDT. Standalone cargo test:
+16 passed, including 78 rejection cases. RC4 version and both retired 1M policy
+values are rejected; boundary cases now target the accepted 600k values.
+Clippy all-targets -D warnings, formatting and diff checks passed. Source,
+state, changes/exception declarations and inventory are unchanged. Historical
+RC4 artifacts and verification remain identified separately above. No runtime
+integration, downstream acknowledgement or release approval is claimed here.

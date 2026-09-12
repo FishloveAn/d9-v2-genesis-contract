@@ -1,5 +1,5 @@
 {
-  "contractVersion": "d9-native-genesis/0.1.0-rc.3",
+  "contractVersion": "d9-native-genesis/0.1.0-rc.5",
   "purpose": "synthetic-fixture",
   "source": {
     "genesisHash": "0000000000000000000000000000000000000000000000000000000000000001",
@@ -999,8 +999,8 @@
     "miningPoolAccount": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF",
     "feeBps": 30,
     "liquidityToleranceBps": 500,
-    "d9ReserveFloor": "1000",
-    "usdtReserveFloor": "10000000",
+    "d9ReserveFloor": "600000000000000000",
+    "usdtReserveFloor": "600000000000",
     "redemptionPriceFloor": false
   }
 }
