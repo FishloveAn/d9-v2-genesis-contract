@@ -1,8 +1,8 @@
 {
-  "contractVersion": "d9-native-genesis/0.1.0-rc.3",
-  "contractDigest": "d0f06baa97856920c43ac871736e5cfc4b675af82a84f46103d78db718098c6a",
+  "contractVersion": "d9-native-genesis/0.1.0-rc.4",
+  "contractDigest": "cc8caa3a1663c3240e8b8cae3adbb23d197bf5f0727b1e3ac77b84adc02759af",
   "purpose": "synthetic-conformance-only",
-  "negativeCases": 68,
+  "negativeCases": 75,
   "files": [
     {
       "path": "schema.json",
@@ -21,28 +21,28 @@
     },
     {
       "path": "rules.json",
-      "size": 5623,
-      "sha256": "c43f8a7e44241257c4a0d4e78cb6ac7017f4bc318c9c85a34d1df3c9c3f5c1de"
+      "size": 6215,
+      "sha256": "2ef3fee291155bb1f2461a2362a4510f1477359d05efbc2f15ad8c96bf7e614c"
     },
     {
       "path": "fixtures/complete.json",
-      "size": 32176,
-      "sha256": "0fe760c02a7788ff1cf5c377995b8c572d8f45bd7fc72be58e5a5c5ad899c366"
+      "size": 32196,
+      "sha256": "ad3a8bc696e740b4a331bab85912495d0206cc0c5e982d11186a8996ad4b56ef"
     },
     {
       "path": "fixtures/expected.json",
-      "size": 2886,
-      "sha256": "a6a0432f931c267371eee384649d15eacc4b1d0ebd9dac57df5afc6bf5e5de1d"
+      "size": 2968,
+      "sha256": "aeb7239a4df0058c3db704ada8539892293e7082856005a211df6a0e28c7f9e8"
     },
     {
       "path": "fixtures/cases.json",
-      "size": 45599,
-      "sha256": "b8630c237681166756120c1fcc98110c31e241a4fc66b6931dd7ff344f44df33"
+      "size": 47960,
+      "sha256": "36dc1bf6d59836bbe658ccaf3c52d543b1f4184c1c8d5ca05515fa54082cb9af"
     },
     {
       "path": "fixtures/binding.json",
       "size": 892,
-      "sha256": "28672961d863304d37529f233818fa488b546574f65458f367bad9233209cf8e"
+      "sha256": "3aff326b3660c3b7714f1c870ee9af52381706d3e16f7f964e102495e3bd60b4"
     },
     {
       "path": "fixtures/mock-spec.bytes",

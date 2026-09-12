@@ -1,6 +1,6 @@
 # D9-380 review handoff
 
-Candidate: **d9-native-genesis/0.1.0-rc.3**. No downstream acknowledgement yet.
+Candidate: **d9-native-genesis/0.1.0-rc.4**. No downstream acknowledgement yet.
 This file records required evidence, not approval on another person's behalf.
 
 | Owner | Scope | Evidence required | Status |
@@ -47,3 +47,11 @@ deliveries to be finished in this issue. Archive verification, legacy settlement
 clean processing, final-state checks and reproduction remain mandatory in their
 own cutover/release gates under the ADRs and D9-307 / D9-173 / D9-370 / D9-315.
 Neither contract tests nor D9-380 closure mark those gates passed.
+
+## RC4 reserve-depth review
+
+D9-190 policy is 1M whole tokens on each side: D9 10^18 raw, USDT 10^12 raw.
+The source/target reserve amounts, LP owner map and five RC3 dispositions stay
+unchanged. Verify quote/swap/withdrawal exact-boundary and one-below rejection
+against the composed runtime. No prior compatibility acknowledgement or release
+approval is implied by this candidate.

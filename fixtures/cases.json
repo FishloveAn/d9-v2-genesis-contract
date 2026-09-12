@@ -1772,5 +1772,117 @@
       "code": "invalid_lock_exclusion",
       "pathPrefix": "/changes/excludedJudicialLocks"
     }
+  },
+  {
+    "id": "rc3-contract-version-refused",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/contractVersion",
+        "value": "d9-native-genesis/0.1.0-rc.3"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "contract_version",
+      "pathPrefix": "/contractVersion"
+    }
+  },
+  {
+    "id": "d9-floor-one-below",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/d9ReserveFloor",
+        "value": "999999999999999999"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "reserve_floor_units",
+      "pathPrefix": "/bootstrap"
+    }
+  },
+  {
+    "id": "d9-floor-one-above",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/d9ReserveFloor",
+        "value": "1000000000000000001"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "reserve_floor_units",
+      "pathPrefix": "/bootstrap"
+    }
+  },
+  {
+    "id": "d9-floor-retired-parity",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/d9ReserveFloor",
+        "value": "1000"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "reserve_floor_units",
+      "pathPrefix": "/bootstrap"
+    }
+  },
+  {
+    "id": "usdt-floor-one-below",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtReserveFloor",
+        "value": "999999999999"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "reserve_floor_units",
+      "pathPrefix": "/bootstrap"
+    }
+  },
+  {
+    "id": "usdt-floor-one-above",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtReserveFloor",
+        "value": "1000000000001"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "reserve_floor_units",
+      "pathPrefix": "/bootstrap"
+    }
+  },
+  {
+    "id": "usdt-floor-retired-parity",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtReserveFloor",
+        "value": "10000000"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "reserve_floor_units",
+      "pathPrefix": "/bootstrap"
+    }
   }
 ]

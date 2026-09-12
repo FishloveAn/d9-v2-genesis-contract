@@ -31,11 +31,13 @@ pub(super) fn check(i: &ContractInput) -> Check {
             "recorded launch policy: 30 bps fee, 500 bps post-migration liquidity tolerance",
         ));
     }
-    if b.d9_reserve_floor.0 != 1_000 || b.usdt_reserve_floor.0 != 10_000_000 {
+    if b.d9_reserve_floor.0 != 1_000_000_000_000_000_000
+        || b.usdt_reserve_floor.0 != 1_000_000_000_000
+    {
         return Err(fail(
             "reserve_floor_units",
             "/bootstrap",
-            "D9 floor 1000 raw; USDT floor 10000000 raw; LP minimum is a separate quantity",
+            "D9-190: 1M D9 = 1000000000000000000 raw; 1M USDT = 1000000000000 raw; LP minimum is separate",
         ));
     }
     if b.validators.is_empty() {

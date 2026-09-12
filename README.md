@@ -1,7 +1,7 @@
 # D9 native-genesis contract
 
 The shared contract for D9 V2 exporters, pallet genesis builders and independent
-verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.3**.
+verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.4**.
 
 This repository is the authoritative home for the contract, schemas, provenance
 inventory, rules and shared conformance fixtures extracted from D9-380 at pallets
@@ -115,3 +115,13 @@ archive, settlement, processing-boundary and final-state checks. An unknown futu
 disposition still fails closed. The contract does not read the external runtime
 config or authenticate its archive/settlement evidence. RC1/RC2 acknowledgements
 cannot be carried across the new contract and fixture digests.
+
+## RC4 reserve-depth policy
+
+Yvan approved [D9-190](https://linear.app/d9-network/issue/D9-190) minimum reserves
+of 1M whole D9 and 1M whole USDT on
+2026-09-12: 10^18 D9 raw and 10^12 USDT raw. This deliberately replaces V1
+parity minima; it does not rebase source reserves or LP positions. The retired
+redemption price floor remains disabled. Liquidity-depth protection is not an
+oracle-security guarantee. RC3 dispositions remain unchanged; RC3 acceptance
+does not automatically cover RC4 bytes. Review the new policy and artifact hashes.

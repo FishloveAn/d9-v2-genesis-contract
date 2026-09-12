@@ -86,3 +86,16 @@ and binding hash checks, future-decision refusal and conformance-not-release
 coverage. Clippy all-targets -D warnings, formatting and diff checks passed.
 The input schema is byte-identical to RC2 because the DTO fields are unchanged;
 version, inventory, rules, input and binding digests were regenerated coherently.
+
+## RC4 reserve-depth consistency — 2026-09-12
+
+Standalone cargo test: 16 passed, including the 75-case rejection corpus.
+Clippy all-targets with -D warnings, formatting and diff checks passed. Added
+independent whole-token golden assertions and rejections for RC3, each retired
+parity floor, and one raw unit above/below each approved policy value. Source,
+target state, changes/exception declarations, inventory and historical AMM
+evidence remain unchanged. Only launch-policy floor literals and contract version
+change the complete fixture. Schema regeneration produces identical DTO schemas.
+
+This record does not claim downstream acceptance, runtime floor enforcement,
+oracle security, performance weights or release-gate completion.

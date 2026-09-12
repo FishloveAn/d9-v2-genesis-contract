@@ -1,4 +1,4 @@
-# 创世数据契约 — 0.1.0-rc.3
+# 创世数据契约 — 0.1.0-rc.4
 
 状态：待下游评审。关联：[D9-380](https://linear.app/d9-network/issue/D9-380)。
 这是导出器、native builder、独立验证器共同使用的输入边界。传输 DTO
@@ -33,7 +33,7 @@ typed adapter 完成，roundtrip 测试锁定其行为。
 
 | 字段 | 内容与责任 |
 |---|---|
-| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.3 |
+| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.4 |
 | purpose | synthetic-fixture 或 migration-input；前者只能用于合成对照 |
 | source | 固定 finalized pin 的链 genesisHash、blockNumber/blockHash/stateRoot、timestampMs、runtimeSpecVersion/metadataDigest、规范化源投影及证据引用；由 D9-378 提供 |
 | build | nodeCommit、palletsCommit、cargoLockDigest、runtimeConfigDigest、wasmDigest、nativegenCommit |
@@ -105,8 +105,11 @@ payloadDigest 对应本契约的规范化记录；assets 的顶层记录是 Asse
   均携带。合成 fixture 的 orphan 只是机制样本，不替代真实十地址批准清单。
 - DEC-16：历史推荐环保留；self-referral、duplicate child 仍拒绝。运行期
   遍历防重复付奖另由 D9-192 负责。
-- AMM D9 reserve ×1、USDT ×10000，ED 无额外加项。储备底限分别为 D9
-  1000 raw 与 USDT 10000000 raw，与 LP-token MINIMUM_LIQUIDITY 分开。
+- AMM D9 reserve ×1、USDT ×10000，ED 无额外加项。储备底限按 Yvan 2026-09-12 的 D9-190 决策改为各 100 万整币：
+  D9 1000000000000000000 raw（12 decimals），USDT 1000000000000 raw
+  （6 decimals）。这是 V2 流动性保护政策，不是 V1 最小值的单位换算；
+  不改变迁移储备金额、LP owner 或 LP 数量，也不构成 oracle 安全保证。
+  与 LP-token MINIMUM_LIQUIDITY 和 DEC-17 redemption price floor 分开。
   30bps fee / 500bps post-migration tolerance 使用既定决策；runtime 的
   swap/remove_liquidity 储备检查由 D9-190 实现。
 - DEC-17：上线无 redemption price floor。当前 runtime 的删除/禁用由

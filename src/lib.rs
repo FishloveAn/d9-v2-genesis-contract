@@ -24,7 +24,7 @@ pub use model::*;
 pub use scalar::*;
 pub use validation::{validate, ContractReport, Violation};
 
-pub const CONTRACT_VERSION: &str = "d9-native-genesis/0.1.0-rc.3";
+pub const CONTRACT_VERSION: &str = "d9-native-genesis/0.1.0-rc.4";
 
 pub fn schema() -> schemars::schema::RootSchema {
     let mut schema = schemars::schema_for!(ContractInput);

@@ -778,7 +778,7 @@ dependencies = [
 
 [[package]]
 name = "d9-genesis-contract"
-version = "0.1.0-rc.3"
+version = "0.1.0-rc.4"
 dependencies = [
  "frame-support",
  "schemars 0.8.22",

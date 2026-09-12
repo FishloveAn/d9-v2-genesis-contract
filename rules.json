@@ -112,5 +112,11 @@
     "phase": "composition",
     "rule": "Yvan 2026-09-12 ADRs: Resolutions empty with verified external V1 history archive; ProposalFeeVolume zero with derived opening watermark; UserNonce zero under clean V2 processing without a mandatory hash change solely for equal archived IDs; CumulativeBridgedOut zero first band; PendingOutbound empty with separately verified legacy settlement. These exact runtime states and external obligations require independent evidence; input conformance and a runtimeConfigDigest are not proof of their completion.",
     "owner": "D9-370 + D9-173 + D9-211"
+  },
+  {
+    "id": "RESERVE_DEPTH",
+    "owner": "D9-190 + D9-370",
+    "phase": "bootstrap/runtime",
+    "rule": "Yvan 2026-09-12 approved minimum remaining reserves of 1M whole D9 (1000000000000000000 raw,12 decimals) and 1M whole USDT (1000000000000 raw,6 decimals). This V2 liquidity-depth policy supersedes the V1 parity minima; source/target reserve equality and exact LP ownership are unchanged. Separate from LP-token minimum and the retired redemption price floor; not an oracle-security guarantee. Runtime swap/quote and withdrawal boundary enforcement requires independent tests."
   }
 ]
