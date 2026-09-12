@@ -117,6 +117,14 @@ inventory classification or an entry in `changes.unresolved` fails closed.
 The inventory is compiled from this repository, not supplied by an input
 producer; its decision text is part of the reviewed contract digest. The shape
 validator does not authenticate decisions or approve source changes. Any new
-classification requires contract review and a new digest. The contract does not read the external runtime
-config or authenticate its archive/settlement evidence. RC1/RC2 acknowledgements
+classification requires contract review and a new digest. The contract does not
+read the external runtime config or authenticate its archive/settlement evidence. RC1/RC2 acknowledgements
 cannot be carried across the new contract and fixture digests.
+
+The checker does **not** reject arbitrary non-empty decision text added by a
+future source-code change merely because that text has no approval. Such a
+change modifies the compiled contract and its digest, not a caller-controlled
+input field. Downstream consumers must pin the reviewed revision and verify
+the accepted digest; the digest itself does not authenticate approval.
+See [RC3 review dispositions](review/rc3-comments.md) for the comment-by-comment
+assessment and the distinction between input validation and source review.
