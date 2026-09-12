@@ -174,7 +174,7 @@ pub fn validate(input: &ContractInput) -> Result<ContractReport, Violation> {
             "D9-173 independent raw-spec/chain reconciliation",
             "D9-370 final composition",
             "D9-315 reproducible WASM",
-            "D9-195 verified complete V1 resolution archive before cutover",
+            "D9-380 ADR verified complete V1 resolution archive before cutover; delivery owner unassigned",
             "D9-211 legacy settlement completion/refund or approved funded arrangement before irreversible cutover",
             "D9-250 clean V2 processing boundary before bridge activation",
             "D9-370/173 fresh zero/empty dispositions and opening reward watermark readback",
