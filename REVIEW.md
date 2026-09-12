@@ -1,6 +1,6 @@
 # D9-380 review handoff
 
-Candidate: **d9-native-genesis/0.1.0-rc.4**. Yvan approved the new economic reserve policy on 2026-09-12; exact RC4 downstream compatibility verification remains separate.
+Candidate: **d9-native-genesis/0.1.0-rc.5**. Yvan approved the new economic reserve policy on 2026-09-12; exact RC5 downstream compatibility verification remains separate.
 
 The table below preserves the three recorded **RC3** interface acknowledgements. D9-173 remains pending. These historical acknowledgements are not automatically relabeled as RC4 verification.
 This file records existing decisions and their evidence, not new approval on another person's behalf.
@@ -73,10 +73,17 @@ clean processing, final-state checks and reproduction remain mandatory in their
 own cutover/release gates under the ADRs and D9-307 / D9-173 / D9-370 / D9-315.
 Neither contract tests nor D9-380 closure mark those gates passed.
 
-## RC4 reserve-depth review
+## RC4 reserve-depth review (historical; superseded by RC5)
 
 D9-190 policy is 1M whole tokens on each side: D9 10^18 raw, USDT 10^12 raw.
 The source/target reserve amounts, LP owner map and five RC3 dispositions stay
 unchanged. Verify quote/swap/withdrawal exact-boundary and one-below rejection
 against the composed runtime. No prior compatibility acknowledgement or release
 approval is implied by this candidate.
+
+## RC5 reserve-depth review
+
+Review fixed 600,000-token minima: D9 600000000000000000 raw and USDT
+600000000000 raw, with no change to source/target reserves, LP ownership or
+prior migration dispositions. Verify the new version, digest, fixture hashes
+and exact-boundary runtime evidence. No prior acknowledgement is carried over.

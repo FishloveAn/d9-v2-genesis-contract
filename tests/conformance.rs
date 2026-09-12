@@ -307,11 +307,11 @@ fn approved_reserve_depth_uses_whole_token_units() {
     let expected = golden();
     assert_eq!(
         input.bootstrap.d9_reserve_floor.0,
-        1_000_000 * 1_000_000_000_000u128
+        600_000 * 1_000_000_000_000u128
     );
     assert_eq!(
         input.bootstrap.usdt_reserve_floor.0,
-        1_000_000 * 1_000_000u128
+        600_000 * 1_000_000u128
     );
     assert_eq!(
         serde_json::to_value(input.bootstrap.d9_reserve_floor).unwrap(),

@@ -117,6 +117,6 @@
     "id": "RESERVE_DEPTH",
     "owner": "D9-190 + D9-370",
     "phase": "bootstrap/runtime",
-    "rule": "Yvan 2026-09-12 approved minimum remaining reserves of 1M whole D9 (1000000000000000000 raw,12 decimals) and 1M whole USDT (1000000000000 raw,6 decimals). This V2 liquidity-depth policy supersedes the V1 parity minima; source/target reserve equality and exact LP ownership are unchanged. Separate from LP-token minimum and the retired redemption price floor; not an oracle-security guarantee. Runtime swap/quote and withdrawal boundary enforcement requires independent tests."
+    "rule": "Yvan 2026-09-12 approved minimum remaining reserves of 600k whole D9 (600000000000000000 raw,12 decimals) and 600k whole USDT (600000000000 raw,6 decimals). This V2 liquidity-depth policy supersedes both the V1 parity minima and the RC4 1M-token policy; source/target reserve equality and exact LP ownership are unchanged. Separate from LP-token minimum and the retired redemption price floor; not an oracle-security guarantee. Runtime swap/quote and withdrawal boundary enforcement requires independent tests."
   }
 ]

@@ -1,7 +1,7 @@
 # D9 native-genesis contract
 
 The shared contract for D9 V2 exporters, pallet genesis builders and independent
-verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.4**.
+verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.5**.
 
 This repository is the authoritative home for the contract, schemas, provenance
 inventory, rules and shared conformance fixtures extracted from D9-380 at pallets
@@ -129,7 +129,7 @@ the accepted digest; the digest itself does not authenticate approval.
 See [RC3 review dispositions](review/rc3-comments.md) for the comment-by-comment
 assessment and the distinction between input validation and source review.
 
-## RC4 reserve-depth policy
+## RC4 reserve-depth policy (historical; superseded by RC5)
 
 Yvan approved [D9-190](https://linear.app/d9-network/issue/D9-190) minimum reserves
 of 1M whole D9 and 1M whole USDT on
@@ -138,3 +138,12 @@ parity minima; it does not rebase source reserves or LP positions. The retired
 redemption price floor remains disabled. Liquidity-depth protection is not an
 oracle-security guarantee. RC3 dispositions remain unchanged; RC3 acceptance
 does not automatically cover RC4 bytes. Review the new policy and artifact hashes.
+
+## RC5 fixed reserve minima
+
+Yvan superseded RC4 on 2026-09-12 with fixed minima of 600,000 whole D9
+(600000000000000000 raw) and 600,000 whole USDT (600000000000 raw).
+No dynamic floor formula is introduced. Source balances and every LP position
+remain unchanged; the same quote/swap/withdrawal boundary semantics apply.
+Prior versions and the retired 1M-token policy are rejected. RC4 remains a
+published historical artifact; its acknowledgements do not imply RC5 approval.
