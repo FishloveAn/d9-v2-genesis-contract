@@ -70,3 +70,19 @@ VotingBodies and backfilled from that map during runtime upgrade (pallets main
 VotingBodies/Referendums fresh operational-state rule. Inventory count is 136;
 the five null provenance decisions are unchanged. No downstream acknowledgement,
 source authentication, nativegen run, reproduction or release gate is claimed.
+
+## RC3 five accepted dispositions — 2026-09-12
+
+All five September 12 ADR classifications are now NotMigrated with full decision
+links. The 136-entry inventory has no pending classifications. Unknown future
+inventory decisions and explicit unresolved input still refuse; the old RC2
+version is rejected. Migration-input conformance can now succeed, while reports
+explicitly retain releaseGateEvaluated=false and require independent archive,
+legacy settlement, clean processing-boundary and fresh-state/watermark evidence.
+No runtime config, final spec, archive or settlement evidence was authenticated.
+
+15 standalone tests passed, including all 68 negative corpus entries, manifest
+and binding hash checks, future-decision refusal and conformance-not-release
+coverage. Clippy all-targets -D warnings, formatting and diff checks passed.
+The input schema is byte-identical to RC2 because the DTO fields are unchanged;
+version, inventory, rules, input and binding digests were regenerated coherently.

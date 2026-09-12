@@ -1,7 +1,7 @@
 # D9 native-genesis contract
 
 The shared contract for D9 V2 exporters, pallet genesis builders and independent
-verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.2**.
+verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.3**.
 
 This repository is the authoritative home for the contract, schemas, provenance
 inventory, rules and shared conformance fixtures extracted from D9-380 at pallets
@@ -14,8 +14,8 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [CONTRACT.md](CONTRACT.md) | Field semantics, units, invariant ownership and encoding |
 | [schema.json](schema.json) | Input schema generated from the Rust DTOs |
 | [binding.schema.json](binding.schema.json) | Detached final-artifact binding |
-| [inventory.json](inventory.json) | 136 candidate provenance entries with explicit pending decisions |
-| [rules.json](rules.json) | 18 rules and their implementation owners |
+| [inventory.json](inventory.json) | 136 provenance entries with explicit disposition references |
+| [rules.json](rules.json) | 19 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
 | [fixtures/cases.json](fixtures/cases.json) | 68 mutations and expected failures |
@@ -94,7 +94,24 @@ RC2 applies the settled D9-195 / DEC-20 dangling-lock rule with a required
 `changes.excludedJudicialLocks` array, pinned declared absence evidence and
 source-minus-exclusion equality. Raw source rows remain inclusive. The complete
 synthetic fixture now exercises the approved address; it does not authenticate
-historical absence. Five unrelated dispositions remain unresolved and real
-migration input still fails closed. JurorBallots adds current pallet inventory
+historical absence. RC3 subsequently records the five accepted dispositions
+described below. JurorBallots adds current pallet inventory
 coverage as fresh V2 operational state. All RC1 consumer acknowledgements must
 be rerun against the RC2 artifacts.
+
+## RC3 accepted dispositions
+
+Yvan's five September 12 migration ADRs classify Resolutions, ProposalFeeVolume,
+UserNonce, CumulativeBridgedOut and PendingOutbound as NotMigrated. V2 starts
+those maps/counters empty/zero. Resolution history requires a verified external
+archive; V1 obligations require separate verified settlement or an approved funded
+arrangement; live V2 processing stays separate from archived V1 work. Equal
+archived transfer-ID bytes do not impose a mandatory hash change. The proposal-fee
+watermark and initial redemption band must match the accepted fresh values.
+
+`migration-input` may pass input conformance now that the five classifications
+are settled. Reports still say `releaseGateEvaluated: false` and name all remaining
+archive, settlement, processing-boundary and final-state checks. An unknown future
+disposition still fails closed. The contract does not read the external runtime
+config or authenticate its archive/settlement evidence. RC1/RC2 acknowledgements
+cannot be carried across the new contract and fixture digests.

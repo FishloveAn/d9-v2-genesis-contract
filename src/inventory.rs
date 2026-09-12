@@ -60,12 +60,21 @@ fn validate_rows(rows: &[Item<'_>]) -> Result<(), String> {
 mod tests {
     use super::*;
     #[test]
-    fn inventory_retains_pending_decisions_and_rejects_conflicting_declarations() {
+    fn inventory_records_decisions_and_rejects_conflicting_declarations() {
         validate_inventory().unwrap();
         let mut rows = inventory();
-        assert!(rows
-            .iter()
-            .any(|r| r.storage == "Resolutions" && r.provenance.is_none()));
+        for storage in [
+            "Resolutions",
+            "ProposalFeeVolume",
+            "UserNonce",
+            "CumulativeBridgedOut",
+            "PendingOutbound",
+        ] {
+            let row = rows.iter().find(|r| r.storage == storage).unwrap();
+            assert_eq!(row.provenance, Some("NotMigrated"));
+            assert!(row.decision.contains("2026-09-12"));
+            assert!(row.decision.contains("/docs/decisions/migration/"));
+        }
         rows.push(rows[0].clone());
         assert!(validate_rows(&rows)
             .unwrap_err()

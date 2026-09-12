@@ -1,5 +1,5 @@
 {
-  "contractVersion": "d9-native-genesis/0.1.0-rc.2",
+  "contractVersion": "d9-native-genesis/0.1.0-rc.3",
   "purpose": "synthetic-fixture",
   "source": {
     "genesisHash": "0000000000000000000000000000000000000000000000000000000000000001",

@@ -106,5 +106,11 @@
     "owner": "D9-307 + D9-370",
     "phase": "artifact",
     "rule": "Detached binding covers input/contract/build/raw-spec/report. Final bytes after composition; later authority/state/WASM/schema edits invalidate prior binding. No self-referential hash."
+  },
+  {
+    "id": "FRESH_V2",
+    "phase": "composition",
+    "rule": "Yvan 2026-09-12 ADRs: Resolutions empty with verified external V1 history archive; ProposalFeeVolume zero with derived opening watermark; UserNonce zero under clean V2 processing without a mandatory hash change solely for equal archived IDs; CumulativeBridgedOut zero first band; PendingOutbound empty with separately verified legacy settlement. These exact runtime states and external obligations require independent evidence; input conformance and a runtimeConfigDigest are not proof of their completion.",
+    "owner": "D9-370 + D9-173 + D9-211"
   }
 ]

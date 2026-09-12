@@ -275,3 +275,28 @@ fn funded_approved_account_is_retained_without_an_exclusion() {
     let input = parse(&serde_json::to_vec(&value).unwrap()).unwrap();
     assert!(!validate(&input).unwrap().release_gate_evaluated);
 }
+
+#[test]
+fn migration_input_conformance_is_not_archive_settlement_or_release_approval() {
+    let mut input = input();
+    input.purpose = Purpose::MigrationInput;
+    let report = validate(&input).unwrap();
+    assert_eq!(report.check, "input-contract-conformance");
+    assert!(!report.release_gate_evaluated);
+    for required in [
+        "resolution archive",
+        "legacy settlement",
+        "clean V2 processing",
+        "watermark readback",
+    ] {
+        assert!(report
+            .independent_evidence_required
+            .iter()
+            .any(|line| line.contains(required)));
+    }
+    input.changes.unresolved.push(PendingDecision {
+        item: "future.Unclassified".into(),
+        issue: "future-decision-required".into(),
+    });
+    assert_eq!(validate(&input).unwrap_err().code, "unresolved_disposition");
+}

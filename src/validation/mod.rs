@@ -148,20 +148,9 @@ pub fn validate(input: &ContractInput) -> Result<ContractReport, Violation> {
         ));
     }
     // Null inventory items must never silently become absent runtime storage.
-    // Synthetic cases exercise the agreed slice while real decisions are open.
+    // Future unresolved classifications continue to block real input conformance.
     if input.purpose == Purpose::MigrationInput {
-        let pending: Vec<_> = inventory()
-            .into_iter()
-            .filter(|r| r.provenance.is_none())
-            .map(|r| format!("{}.{} ({})", r.pallet, r.storage, r.decision))
-            .collect();
-        if !pending.is_empty() {
-            return Err(fail(
-                "inventory_disposition_pending",
-                "/inventory",
-                pending.join("; "),
-            ));
-        }
+        require_resolved_inventory(&inventory())?;
     }
     source::check(input)?;
     people::check_locks(input)?;
@@ -185,6 +174,49 @@ pub fn validate(input: &ContractInput) -> Result<ContractReport, Violation> {
             "D9-173 independent raw-spec/chain reconciliation",
             "D9-370 final composition",
             "D9-315 reproducible WASM",
+            "D9-195 verified complete V1 resolution archive before cutover",
+            "D9-211 legacy settlement completion/refund or approved funded arrangement before irreversible cutover",
+            "D9-250 clean V2 processing boundary before bridge activation",
+            "D9-370/173 fresh zero/empty dispositions and opening reward watermark readback",
         ],
     })
+}
+
+fn require_resolved_inventory(rows: &[InventoryItem<'_>]) -> Check {
+    let pending: Vec<_> = rows
+        .iter()
+        .filter(|r| r.provenance.is_none())
+        .map(|r| format!("{}.{} ({})", r.pallet, r.storage, r.decision))
+        .collect();
+    if !pending.is_empty() {
+        return Err(fail(
+            "inventory_disposition_pending",
+            "/inventory",
+            pending.join("; "),
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn any_future_unresolved_inventory_still_blocks_migration_input() {
+        let mut rows = inventory();
+        require_resolved_inventory(&rows).unwrap();
+        rows.push(InventoryItem {
+            pallet: "future",
+            storage: "Unclassified",
+            provenance: None,
+            genesis_field: None,
+            input_path: "pending",
+            owner: "Yvan",
+            decision: "future decision",
+            implementation: "decision-pending",
+        });
+        let error = require_resolved_inventory(&rows).unwrap_err();
+        assert_eq!(error.code, "inventory_disposition_pending");
+        assert!(error.message.contains("future.Unclassified"));
+    }
 }

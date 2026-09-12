@@ -945,15 +945,15 @@
     }
   },
   {
-    "id": "unresolved-resolution",
+    "id": "future-unresolved-disposition",
     "patches": [
       {
         "op": "replace",
         "path": "/changes/unresolved",
         "value": [
           {
-            "item": "d9-judicial-penalty.Resolutions",
-            "issue": "D9-195"
+            "item": "future.Unclassified",
+            "issue": "future-decision-required"
           }
         ]
       }
@@ -1175,19 +1175,19 @@
     }
   },
   {
-    "id": "real-input-cannot-default-pending-inventory",
+    "id": "rc2-contract-version-refused",
     "patches": [
       {
         "op": "replace",
-        "path": "/purpose",
-        "value": "migration-input"
+        "path": "/contractVersion",
+        "value": "d9-native-genesis/0.1.0-rc.2"
       }
     ],
     "refreshSource": [],
     "expected": {
       "phase": "validation",
-      "code": "inventory_disposition_pending",
-      "pathPrefix": "/inventory"
+      "code": "contract_version",
+      "pathPrefix": "/contractVersion"
     }
   },
   {

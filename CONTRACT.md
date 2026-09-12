@@ -1,4 +1,4 @@
-# 创世数据契约 — 0.1.0-rc.2
+# 创世数据契约 — 0.1.0-rc.3
 
 状态：待下游评审。关联：[D9-380](https://linear.app/d9-network/issue/D9-380)。
 这是导出器、native builder、独立验证器共同使用的输入边界。传输 DTO
@@ -33,7 +33,7 @@ typed adapter 完成，roundtrip 测试锁定其行为。
 
 | 字段 | 内容与责任 |
 |---|---|
-| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.2 |
+| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.3 |
 | purpose | synthetic-fixture 或 migration-input；前者只能用于合成对照 |
 | source | 固定 finalized pin 的链 genesisHash、blockNumber/blockHash/stateRoot、timestampMs、runtimeSpecVersion/metadataDigest、规范化源投影及证据引用；由 D9-378 提供 |
 | build | nodeCommit、palletsCommit、cargoLockDigest、runtimeConfigDigest、wasmDigest、nativegenCommit |
@@ -134,15 +134,27 @@ account_id_hex / reason / v1_lock_amount 收据由适配层转换为以上字段
 并补入被验证的 pin 与存在性观察。既有 1,968→1,967 是历史测量，
 不是数量硬编码；合成 fixture 包含真实获准地址但其 pin、冻结人和观察均为合成。
 
-待决
-inventory 项（Resolutions、ProposalFeeVolume、UserNonce、CumulativeBridgedOut、
-PendingOutbound）保留 null provenance + Yvan/issue 引用；null 不是新枚举。
-bridge disabled 不能自动决定既存余额或待处理义务如何处理。
+2026-09-12，Yvan 已通过五项独立 ADR（inventory.json 的完整链接）裁定：
 
-只要这些分类尚未统一，purpose=migration-input 就返回
-inventory_disposition_pending。真实排除名单、合约资产去向和债务归属的
-批准不由输入字符串证明；后续必须绑定 Yvan 已有/新决策。合成样本的通过
-只用于让四个下游并行实现共同接口。
+| 项目 | Provenance 与 V2 初值 | 独立交付义务 |
+|---|---|---|
+| Resolutions | NotMigrated；空 | V1 全量原始历史与无损解码，固定 pin、count/digest，外部永久档案在 cutover 前独立验证；当前 freezes 仍迁移 |
+| ProposalFeeVolume | NotMigrated；0 | 只计 V2 实际 proposal-fee inflow；opening VolumeAtIndex 等于 burn+merchant+proposal(0)，不能把历史当新活动 |
+| UserNonce | NotMigrated；每用户 0 | V1 历史只归档，与 V2 live records/queues/dedup 分离；相同历史 ID bytes 本身不要求改变 hash 格式 |
+| CumulativeBridgedOut | NotMigrated；0 | V2 第一档（25% external / 75% AMM）；只累计成功 finalization 的 V2 gross |
+| PendingOutbound | NotMigrated；空 | V1 每项义务在不可逆 cutover 前完成付款/退款或有明确批准且有资金支持的安排；未决阻断 cutover，归档不等于偿债 |
+
+这五个初值没有可导入字段；实际 runtime config 和最终 raw spec 必须由
+D9-370 / D9-173 按上述值独立核验。本输入 DTO 的 runtimeConfigDigest
+仅绑定 bytes，不能证明 bytes 中的初值正确。未知字段仍拒绝，不得把
+V1 的计数或历史塞入 DTO 来绕过 NotMigrated。对应规则为 FRESH_V2。
+
+purpose=migration-input 现在可以通过输入一致性检查，但仍明确报告
+releaseGateEvaluated=false。归档、legacy settlement、clean V2 processing、
+最终初值和 watermark 的验证仍列为 independentEvidenceRequired，不能由
+输入字符串或本检查结果证明完成。任何新的 changes.unresolved 或未来
+null inventory 分类仍 fail closed；null 不是第四种 Provenance。真实排除名单、
+合约资产去向和债务归属仍须绑定适用的已有/新裁定。
 
 ## 5. 不变量的责任分层
 
@@ -206,4 +218,4 @@ D9 源码 storage 名称的测试能发现增删漂移，但不能证明所有 S
 d9-core 的声明校验桥接、读取 pallet 源码的覆盖测试迁回 d9-v2-pallets 的
 d9-genesis-adapter。原有 Rust typed adapter 的责任与字段没有改变。
 消费者固定引用本仓 commit；不得依赖另一工作区的相对路径或保留规范副本。
-RC2 有意修改 wire schema、规则、inventory 和 fixture bytes；消费者必须重新固定 commit 并评审全部样本。
+RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/binding digests；消费者必须重新固定 commit 并评审全部样本。
