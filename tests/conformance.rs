@@ -137,6 +137,19 @@ fn complete_fixture_matches_independently_authored_values_and_hashes() {
         serde_json::to_value(&input.state.lp.positions).unwrap(),
         golden["lpPositions"]
     );
+    assert_eq!(input.source.locks.len().to_string(), golden["rawLockCount"]);
+    assert_eq!(
+        input.state.locks.len().to_string(),
+        golden["seededLockCount"]
+    );
+    assert_eq!(
+        serde_json::to_value(&input.changes.excluded_judicial_locks).unwrap(),
+        golden["excludedJudicialLocks"]
+    );
+    assert_eq!(
+        input.source.locks.len(),
+        input.state.locks.len() + input.changes.excluded_judicial_locks.len()
+    );
     let burn = &input.state.burn_accounts[0];
     assert_eq!(
         (burn.balance_due.0 - burn.balance_paid.0).to_string(),
@@ -230,4 +243,60 @@ fn schema_is_generated_from_the_same_rust_contract() {
         actual["definitions"]["MerchantAccount"]["additionalProperties"],
         false
     );
+}
+
+#[test]
+fn funded_approved_account_is_retained_without_an_exclusion() {
+    let mut value = input_value();
+    let raw = value["source"]["locks"]
+        .as_array()
+        .unwrap()
+        .last()
+        .unwrap()
+        .clone();
+    let account = raw["account"].clone();
+    value["changes"]["excludedJudicialLocks"] = json!([]);
+    value["source"]["balances"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({"account": account, "free": "1000000", "reserved": "0"}));
+    let issuance = value["source"]["totalIssuance"]
+        .as_str()
+        .unwrap()
+        .parse::<u128>()
+        .unwrap();
+    value["source"]["totalIssuance"] = json!((issuance + 1000000).to_string());
+    value["state"]["balances"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({"account": account, "amount": "1000000"}));
+    value["state"]["locks"].as_array_mut().unwrap().push(raw);
+    refresh_evidence(&mut value, &["balances".to_owned()]);
+    let input = parse(&serde_json::to_vec(&value).unwrap()).unwrap();
+    assert!(!validate(&input).unwrap().release_gate_evaluated);
+}
+
+#[test]
+fn migration_input_conformance_is_not_archive_settlement_or_release_approval() {
+    let mut input = input();
+    input.purpose = Purpose::MigrationInput;
+    let report = validate(&input).unwrap();
+    assert_eq!(report.check, "input-contract-conformance");
+    assert!(!report.release_gate_evaluated);
+    for required in [
+        "resolution archive",
+        "legacy settlement",
+        "clean V2 processing",
+        "watermark readback",
+    ] {
+        assert!(report
+            .independent_evidence_required
+            .iter()
+            .any(|line| line.contains(required)));
+    }
+    input.changes.unresolved.push(PendingDecision {
+        item: "future.Unclassified".into(),
+        issue: "future-decision-required".into(),
+    });
+    assert_eq!(validate(&input).unwrap_err().code, "unresolved_disposition");
 }

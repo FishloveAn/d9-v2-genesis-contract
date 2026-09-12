@@ -336,6 +336,12 @@
           },
           "type": "array"
         },
+        "excludedJudicialLocks": {
+          "items": {
+            "$ref": "#/definitions/JudicialLockExclusion"
+          },
+          "type": "array"
+        },
         "excludedMerchantExpiries": {
           "items": {
             "$ref": "#/definitions/Expiry"
@@ -376,6 +382,7 @@
       },
       "required": [
         "assetRehomes",
+        "excludedJudicialLocks",
         "excludedMerchantExpiries",
         "rehomes",
         "reserveRefunds",
@@ -529,6 +536,41 @@
         "session"
       ],
       "type": "object"
+    },
+    "JudicialLockExclusion": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/Address"
+        },
+        "blockHash": {
+          "$ref": "#/definitions/Digest"
+        },
+        "reason": {
+          "$ref": "#/definitions/JudicialLockExclusionReason"
+        },
+        "systemAccountExists": {
+          "description": "Declared pinned RPC observation; independently authenticated by D9-378/173.",
+          "type": "boolean"
+        },
+        "v1LockAmount": {
+          "$ref": "#/definitions/Amount"
+        }
+      },
+      "required": [
+        "account",
+        "blockHash",
+        "reason",
+        "systemAccountExists",
+        "v1LockAmount"
+      ],
+      "type": "object"
+    },
+    "JudicialLockExclusionReason": {
+      "enum": [
+        "missing_system_account"
+      ],
+      "type": "string"
     },
     "LpBook": {
       "additionalProperties": false,

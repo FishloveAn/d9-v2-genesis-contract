@@ -75,7 +75,7 @@
     "id": "LOCK",
     "owner": "D9-195 + Yvan",
     "phase": "locks",
-    "rule": "Preserve funded locks; actual set_freeze effect remains pallet/output verification. Unfunded X1 conflict rejected, never implicitly funded or dropped."
+    "rule": "Preserve all raw source locks; state locks equal source minus explicit D9-195/DEC-20 approved dangling account exclusion. Exclusion requires same-pin System.Account absence declaration and council/ amount 1, absent source/target balance account, exact known raw account and no duplicates. Unknown/stale/funded exclusions refuse. Independently authenticate raw observations in D9-378/173; actual set_freeze effect remains pallet/output verification."
   },
   {
     "id": "COUNTERS",
@@ -106,5 +106,11 @@
     "owner": "D9-307 + D9-370",
     "phase": "artifact",
     "rule": "Detached binding covers input/contract/build/raw-spec/report. Final bytes after composition; later authority/state/WASM/schema edits invalidate prior binding. No self-referential hash."
+  },
+  {
+    "id": "FRESH_V2",
+    "phase": "composition",
+    "rule": "Yvan 2026-09-12 ADRs: Resolutions empty with verified external V1 history archive; ProposalFeeVolume zero with derived opening watermark; UserNonce zero under clean V2 processing without a mandatory hash change solely for equal archived IDs; CumulativeBridgedOut zero first band; PendingOutbound empty with separately verified legacy settlement. These exact runtime states and external obligations require independent evidence; input conformance and a runtimeConfigDigest are not proof of their completion.",
+    "owner": "D9-370 + D9-173 + D9-211"
   }
 ]

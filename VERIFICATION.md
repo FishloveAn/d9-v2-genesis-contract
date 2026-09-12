@@ -53,3 +53,36 @@ The receipt contains ten LP positions and their checked sum `7,332,501`. This
 is a source evidence artifact for D9-184, separate from the synthetic RC1
 conformance fixtures. It does not claim to be the complete migration input or
 to represent the eventual cutover pin.
+
+## RC2 X1 alignment — 2026-09-12
+
+The settled D9-195 / DEC-20 rule is implemented with explicit same-pin absence
+declarations and exact source-minus-exclusion reconciliation. The synthetic
+fixture contains two raw locks, one declared approved exclusion and one seeded
+freeze; it is not raw V1 proof. A funded future-pin instance is retained without
+an exclusion. The corpus now contains 68 negative cases. All 13 standalone tests
+passed, including every corpus case, schema/bundle binding and historical AMM
+receipt checks. Clippy all-targets -D warnings, formatting and diff checks passed.
+
+JurorBallots is a V2 open-ballot reference count, updated by snapshot/take of
+VotingBodies and backfilled from that map during runtime upgrade (pallets main
+24a2f97, judicial lib.rs). Its NotMigrated classification follows the existing
+VotingBodies/Referendums fresh operational-state rule. Inventory count is 136;
+the five null provenance decisions are unchanged. No downstream acknowledgement,
+source authentication, nativegen run, reproduction or release gate is claimed.
+
+## RC3 five accepted dispositions — 2026-09-12
+
+All five September 12 ADR classifications are now NotMigrated with full decision
+links. The 136-entry inventory has no pending classifications. Unknown future
+inventory decisions and explicit unresolved input still refuse; the old RC2
+version is rejected. Migration-input conformance can now succeed, while reports
+explicitly retain releaseGateEvaluated=false and require independent archive,
+legacy settlement, clean processing-boundary and fresh-state/watermark evidence.
+No runtime config, final spec, archive or settlement evidence was authenticated.
+
+15 standalone tests passed, including all 68 negative corpus entries, manifest
+and binding hash checks, future-decision refusal and conformance-not-release
+coverage. Clippy all-targets -D warnings, formatting and diff checks passed.
+The input schema is byte-identical to RC2 because the DTO fields are unchanged;
+version, inventory, rules, input and binding digests were regenerated coherently.

@@ -1,13 +1,13 @@
 {
-  "contractVersion": "d9-native-genesis/0.1.0-rc.1",
-  "contractDigest": "ea076b985652959680cd99a2cd1dffa458360fe1782943f489e0e24c6f6f8d3c",
+  "contractVersion": "d9-native-genesis/0.1.0-rc.3",
+  "contractDigest": "d0f06baa97856920c43ac871736e5cfc4b675af82a84f46103d78db718098c6a",
   "purpose": "synthetic-conformance-only",
-  "negativeCases": 56,
+  "negativeCases": 68,
   "files": [
     {
       "path": "schema.json",
-      "size": 23793,
-      "sha256": "cd0d84a22df08dfd75d95aca9ac4febe2ce74f1310d1870b5d3fd512298fa5c2"
+      "size": 24880,
+      "sha256": "5448d799a90479a9fdce1e1aee0ac20d644d897400b0062207060e108887dfff"
     },
     {
       "path": "binding.schema.json",
@@ -16,33 +16,33 @@
     },
     {
       "path": "inventory.json",
-      "size": 41804,
-      "sha256": "e699ed63614d796f58aa061609200ef38d1bb199770021231651ecae1d85e586"
+      "size": 43726,
+      "sha256": "747dcdf899ca5c3b3d256255cede5a34feb8b25d46f5aa4bc095c791548501fd"
     },
     {
       "path": "rules.json",
-      "size": 4704,
-      "sha256": "cfae046bef5832f89b4794a5acacfd97211696fb5e78b313e52f49c0d2136169"
+      "size": 5623,
+      "sha256": "c43f8a7e44241257c4a0d4e78cb6ac7017f4bc318c9c85a34d1df3c9c3f5c1de"
     },
     {
       "path": "fixtures/complete.json",
-      "size": 31672,
-      "sha256": "063d0f2854ab70fc3b0977d7ffee534aacb90fd0b1d0f38271b28409828f603d"
+      "size": 32176,
+      "sha256": "0fe760c02a7788ff1cf5c377995b8c572d8f45bd7fc72be58e5a5c5ad899c366"
     },
     {
       "path": "fixtures/expected.json",
-      "size": 2532,
-      "sha256": "952f14b512901cdeb23166c2c53cd850439b8071796115351962d4e0c61e7840"
+      "size": 2886,
+      "sha256": "a6a0432f931c267371eee384649d15eacc4b1d0ebd9dac57df5afc6bf5e5de1d"
     },
     {
       "path": "fixtures/cases.json",
-      "size": 28953,
-      "sha256": "900af8460ee495fe467c8a8af881ecb612f434d63d8eb54eff7835dbbad617b8"
+      "size": 45599,
+      "sha256": "b8630c237681166756120c1fcc98110c31e241a4fc66b6931dd7ff344f44df33"
     },
     {
       "path": "fixtures/binding.json",
       "size": 892,
-      "sha256": "b71e4316f0072b2239245ecaa6fcb6cf011194852c564ba99434383334bc171f"
+      "sha256": "28672961d863304d37529f233818fa488b546574f65458f367bad9233209cf8e"
     },
     {
       "path": "fixtures/mock-spec.bytes",

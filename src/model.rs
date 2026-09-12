@@ -142,6 +142,7 @@ record!(Changes {
     rehomes: Vec<Rehome>, reward_credits: Vec<Balance>,
     asset_rehomes: Vec<AssetRehome>,
     excluded_merchant_expiries: Vec<Expiry>,
+    excluded_judicial_locks: Vec<JudicialLockExclusion>,
     /// Unknown/economic dispositions never become implicit zero/empty defaults.
     unresolved: Vec<PendingDecision>,
 });
@@ -190,3 +191,17 @@ fn required_nullable<'de, D: serde::Deserializer<'de>, T: serde::Deserialize<'de
 ) -> Result<Option<T>, D::Error> {
     Option::<T>::deserialize(de)
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum JudicialLockExclusionReason {
+    MissingSystemAccount,
+}
+record!(JudicialLockExclusion {
+    account: Address,
+    reason: JudicialLockExclusionReason,
+    v1_lock_amount: Amount,
+    block_hash: Digest,
+    /// Declared pinned RPC observation; independently authenticated by D9-378/173.
+    system_account_exists: bool,
+});

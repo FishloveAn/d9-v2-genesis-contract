@@ -202,12 +202,12 @@
   {
     "pallet": "d9-cross-chain",
     "storage": "CumulativeBridgedOut",
-    "provenance": null,
+    "provenance": "NotMigrated",
     "genesisField": null,
-    "inputPath": "pending",
-    "owner": "Yvan",
-    "decision": "D9-250",
-    "implementation": "decision-pending"
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "Yvan 2026-09-12: V2 zero, first global tier band; finalized V2 gross outbound volume only. ADR: https://github.com/D-Nine-Chain/d9-v2-docs/blob/d5ee2915cd5e5703099b16e86eacb37d7755bb1c/docs/decisions/migration/2026-09-12-cumulative-bridged-out-starts-at-zero.md",
+    "implementation": "existing"
   },
   {
     "pallet": "d9-cross-chain",
@@ -252,12 +252,12 @@
   {
     "pallet": "d9-cross-chain",
     "storage": "PendingOutbound",
-    "provenance": null,
+    "provenance": "NotMigrated",
     "genesisField": null,
-    "inputPath": "pending",
-    "owner": "Yvan",
-    "decision": "D9-250: pending-obligation disposition; bridge-disabled is not a disposition",
-    "implementation": "decision-pending"
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "Yvan 2026-09-12: V2 empty; legacy obligations require verified completion/refund or approved funded settlement before irreversible cutover; archive is not discharge. ADR: https://github.com/D-Nine-Chain/d9-v2-docs/blob/d5ee2915cd5e5703099b16e86eacb37d7755bb1c/docs/decisions/migration/2026-09-12-pending-outbound-starts-empty.md",
+    "implementation": "existing"
   },
   {
     "pallet": "d9-cross-chain",
@@ -272,12 +272,12 @@
   {
     "pallet": "d9-cross-chain",
     "storage": "UserNonce",
-    "provenance": null,
+    "provenance": "NotMigrated",
     "genesisField": null,
-    "inputPath": "pending",
-    "owner": "Yvan",
-    "decision": "D9-250",
-    "implementation": "decision-pending"
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "Yvan 2026-09-12: V2 zero; V1 identifiers archival, isolated from live V2 queues/dedup. Equal historical ID bytes alone require no hash change. ADR: https://github.com/D-Nine-Chain/d9-v2-docs/blob/d5ee2915cd5e5703099b16e86eacb37d7755bb1c/docs/decisions/migration/2026-09-12-cross-chain-user-nonce-clean-break.md",
+    "implementation": "existing"
   },
   {
     "pallet": "d9-cross-chain",
@@ -431,6 +431,16 @@
   },
   {
     "pallet": "d9-judicial-penalty",
+    "storage": "JurorBallots",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "Fresh V2 operational state: open-ballot refcounts of non-migrated VotingBodies; no V1 import. pallets main 24a2f97 snapshot/take_voting_body owns updates.",
+    "implementation": "existing"
+  },
+  {
+    "pallet": "d9-judicial-penalty",
     "storage": "LegacyReferendums",
     "provenance": "NotMigrated",
     "genesisField": null,
@@ -562,12 +572,12 @@
   {
     "pallet": "d9-judicial-penalty",
     "storage": "Resolutions",
-    "provenance": null,
+    "provenance": "NotMigrated",
     "genesisField": null,
-    "inputPath": "pending",
-    "owner": "Yvan",
-    "decision": "D9-195",
-    "implementation": "decision-pending"
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "Yvan 2026-09-12: V2 empty; complete pinned V1 history preserved in independently verified external archive before cutover. ADR: https://github.com/D-Nine-Chain/d9-v2-docs/blob/d5ee2915cd5e5703099b16e86eacb37d7755bb1c/docs/decisions/migration/2026-09-12-judicial-resolution-history-external-archive.md",
+    "implementation": "existing"
   },
   {
     "pallet": "d9-judicial-penalty",
@@ -832,12 +842,12 @@
   {
     "pallet": "d9-mining-pool",
     "storage": "ProposalFeeVolume",
-    "provenance": null,
+    "provenance": "NotMigrated",
     "genesisField": null,
-    "inputPath": "pending",
-    "owner": "Yvan",
-    "decision": "D9-307",
-    "implementation": "decision-pending"
+    "inputPath": "external-runtime-config",
+    "owner": "D9-370",
+    "decision": "Yvan 2026-09-12: V2 zero; count actual V2 proposal-fee inflows only; opening VolumeAtIndex includes zero and preserves migrated burn/merchant volumes. ADR: https://github.com/D-Nine-Chain/d9-v2-docs/blob/d5ee2915cd5e5703099b16e86eacb37d7755bb1c/docs/decisions/migration/2026-09-12-proposal-fee-volume-starts-at-zero.md",
+    "implementation": "existing"
   },
   {
     "pallet": "d9-mining-pool",
