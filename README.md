@@ -96,8 +96,9 @@ source-minus-exclusion equality. Raw source rows remain inclusive. The complete
 synthetic fixture now exercises the approved address; it does not authenticate
 historical absence. RC3 subsequently records the five accepted dispositions
 described below. JurorBallots adds current pallet inventory
-coverage as fresh V2 operational state. All RC1 consumer acknowledgements must
-be rerun against the RC2 artifacts.
+coverage as fresh V2 operational state. For the historical RC2 revision, RC1
+consumer acknowledgements required reruns against RC2 artifacts. Current
+compatibility evidence must instead refer to RC3, as recorded in REVIEW.md.
 
 ## RC3 accepted dispositions
 
@@ -111,8 +112,12 @@ watermark and initial redemption band must match the accepted fresh values.
 
 `migration-input` may pass input conformance now that the five classifications
 are settled. Reports still say `releaseGateEvaluated: false` and name all remaining
-archive, settlement, processing-boundary and final-state checks. An unknown future
-disposition still fails closed. The contract does not read the external runtime
+archive, settlement, processing-boundary and final-state checks. A future null
+inventory classification or an entry in `changes.unresolved` fails closed.
+The inventory is compiled from this repository, not supplied by an input
+producer; its decision text is part of the reviewed contract digest. The shape
+validator does not authenticate decisions or approve source changes. Any new
+classification requires contract review and a new digest. The contract does not read the external runtime
 config or authenticate its archive/settlement evidence. RC1/RC2 acknowledgements
 cannot be carried across the new contract and fixture digests.
 
