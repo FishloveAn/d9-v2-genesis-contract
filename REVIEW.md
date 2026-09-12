@@ -1,5 +1,52 @@
 # D9-380 review handoff
 
+## Current RC5 compatibility disposition — 2026-09-12
+
+All four interface scopes have now been technically reviewed against
+`d9-native-genesis/0.1.0-rc.5`, contract source
+`57b270d4922c2bab7aae33ce575a930ca08d893b`, contract digest
+`65af6b84e0f940cb87f73a5bc851a4f8ffa22ff22fe77fda8c461504d6397f9c`.
+Codex performed the current reconciliation under Yvan's instruction. This is
+new technical review evidence, not a relabeling of historical RC3 approvals
+or a signature on another person's behalf.
+
+| Scope | Current RC5 evidence | Disposition |
+|---|---|---|
+| D9-183 merchant | 103 merchant tests and shared adapter storage tests; full history, nullable timestamps and expiry semantics unchanged in RC3-to-RC5 source diff | compatible |
+| D9-184 LP | 58 AMM tests (one existing ignored) and shared adapter storage tests; complete ownership/amount map and reserve equality unchanged | compatible |
+| D9-190 reserve policy | Yvan's 600k policy recorded on the issue; RC5 adapter pin and current runtime at pallets `a91d9cc8dabe43d324912dd39182b5799c54cee3`; boundary tests pass | compatible |
+| D9-173 independent verifier | exact input/dataset/contract hashes independently reproduced, all seven gate interfaces reviewed; [full evidence](https://linear.app/d9-network/document/d9-173-rc5-compatibility-review-and-independent-fixture-evidence-f4cec6cfe9e1) | compatible for implementation |
+
+### Reproducible consumer check
+
+In a disposable worktree at pallets `a91d9cc8dabe43d324912dd39182b5799c54cee3`,
+apply merchant commit `11f8f98e8552d905dc863c7b7b4c2117c52b48ad` using
+`git cherry-pick --no-commit`. It applies cleanly and retains the exact RC5 pin.
+Run `cargo test --locked --offline -p d9-genesis-adapter -p pallet-d9-merchant -p pallet-d9-amm`.
+Result: 9 adapter + 103 merchant + 58 AMM tests passed; one existing AMM test
+ignored, zero failures. This integration worktree is review evidence, not an
+additional published runtime branch. Shared `cargo test --locked --offline`
+also passed: 16 tests, including the 78-case rejection corpus.
+
+Exact SHA-256 pins:
+- complete fixture: `4ab1df08174dc553d425614c32cc8b739d470ab0721dc59f069d7e8f7baad2bc`
+- expected: `8c2ff0ff1ccf0101c85a4f870fa6ebd68df1b502b00ada0d06f4fd932ccb6b4f`
+- cases: `16a6ae2d985b79b0e273950f8c70cf45d0333399b031ca508bc4588456579ea7`
+
+`RESERVE_DEPTH` explicitly supersedes the older `RESERVE` numeric clause:
+minimum remaining reserves are 600000000000000000 raw D9 and
+600000000000 raw USDT. Source balances and LP ownership remain exact. This
+documentation correction changes no contract, schema, rule or fixture bytes.
+
+The compatibility gap is resolved. Runtime PR integration, authenticated
+frozen-source delivery, final composition/decoding, archive and legacy
+settlement evidence, reproduction and release remain separate gates.
+The dated sections below are historical and their pending-status statements
+are superseded by this section.
+
+## Historical review handoff
+
+
 Candidate: **d9-native-genesis/0.1.0-rc.5**. Yvan approved the new economic reserve policy on 2026-09-12; exact RC5 downstream compatibility verification remains separate.
 
 The table below preserves the three recorded **RC3** interface acknowledgements. D9-173 remains pending. These historical acknowledgements are not automatically relabeled as RC4 verification.
