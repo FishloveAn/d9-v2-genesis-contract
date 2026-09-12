@@ -40,7 +40,10 @@ is classified as fresh V2 operational state consistently with VotingBodies.
 - [ ] Archive, legacy settlement, clean V2 processing and fresh-state verification.
 - [ ] Full final runtime build, provenance gate and independent state readback.
 
-The unchecked delivery/review obligations are not satisfied by this implementation
-or its unit tests. D9-380 must not be marked Done or its four interface blocks removed until
-the required review evidence exists. D9-307 / D9-173 / D9-370 / D9-315 retain
-their separate release work.
+D9-380 is the bounded interface milestone: its four compatibility acknowledgements
+must exist against this contract and fixture revision before marking it Done or
+removing the interface blocks. That does not require the separate cutover/release
+deliveries to be finished in this issue. Archive verification, legacy settlement,
+clean processing, final-state checks and reproduction remain mandatory in their
+own cutover/release gates under the ADRs and D9-307 / D9-173 / D9-370 / D9-315.
+Neither contract tests nor D9-380 closure mark those gates passed.
