@@ -1,7 +1,7 @@
 # D9 native-genesis contract
 
 The shared contract for D9 V2 exporters, pallet genesis builders and independent
-verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.5**.
+verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.6**.
 
 This repository is the authoritative home for the contract, schemas, provenance
 inventory, rules and shared conformance fixtures extracted from D9-380 at pallets
@@ -18,7 +18,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [rules.json](rules.json) | 19 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
-| [fixtures/cases.json](fixtures/cases.json) | 68 mutations and expected failures |
+| [fixtures/cases.json](fixtures/cases.json) | 80 mutations and expected failures |
 | [fixture-manifest.json](fixture-manifest.json) | Exact hashes of the shared artifacts |
 | [evidence-amm-mainnet-23802000.json](evidence-amm-mainnet-23802000.json) | Read-only V1 mainnet AMM LP extraction receipt at block 23,802,000 |
 | [REVIEW.md](REVIEW.md) | Pending downstream compatibility acknowledgements |

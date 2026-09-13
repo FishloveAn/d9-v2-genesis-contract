@@ -1,4 +1,4 @@
-# 创世数据契约 — 0.1.0-rc.5
+# 创世数据契约 — 0.1.0-rc.6
 
 状态：待下游评审。关联：[D9-380](https://linear.app/d9-network/issue/D9-380)。
 这是导出器、native builder、独立验证器共同使用的输入边界。传输 DTO
@@ -33,7 +33,7 @@ typed adapter 完成，roundtrip 测试锁定其行为。
 
 | 字段 | 内容与责任 |
 |---|---|
-| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.5 |
+| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.6 |
 | purpose | synthetic-fixture 或 migration-input；前者只能用于合成对照 |
 | source | 固定 finalized pin 的链 genesisHash、blockNumber/blockHash/stateRoot、timestampMs、runtimeSpecVersion/metadataDigest、规范化源投影及证据引用；由 D9-378 提供 |
 | build | nodeCommit、palletsCommit、cargoLockDigest、runtimeConfigDigest、wasmDigest、nativegenCommit |
@@ -98,7 +98,7 @@ payloadDigest 对应本契约的规范化记录；assets 的顶层记录是 Asse
 ## 4. 时间、例外和经济边界
 
 - Merchant createdAt 必须非零且不晚于 source.timestampMs；Some(lastConversion)
-  同样检查。不使用 genesis Timestamp::Now 或机器墙钟。None 不变为 Some(0)。
+  同样检查，并要求 lastConversion >= createdAt（Yvan 2026-09-13 决定）。相等及 None 有效；逆序记录拒绝整个输入，不修正、不丢弃、不保留例外。不使用 genesis Timestamp::Now 或机器墙钟。None 不变为 Some(0)。
 - Burn 的 lastBurn、lastInteraction、Some(lastWithdrawal) 均以 source.timestampMs
   为上界。时间顺序与额外异常不得凭理想模型修复。
 - DEC-9：过期、超出现行新订阅期限、expiry<createdAt 的已存账户到期记录

@@ -1,6 +1,25 @@
 # D9-380 review handoff
 
-## Current RC5 compatibility disposition — 2026-09-12
+## RC6 chronology correction — 2026-09-13
+
+Yvan requires inverted merchant dates to be rejected, including authenticated
+legacy rows: [decision](https://linear.app/d9-network/issue/D9-183#comment-a1f9a8dc-a8eb-4931-b049-26f29886e40d).
+RC6 requires Some(lastConversion) >= createdAt, retaining the existing nonzero
+source-time bounds. Equality and None remain valid. No clamp, dropped account or
+legacy exception is permitted. Expiry policy is unchanged.
+
+Contract digest: `94b42ed2efd9915b6f476ffb7da1c3ffb2d0e57e63183e6d360f4b3540841981`.
+Shared tests: 17 passed, including 80 rejection cases. The chronology regression
+failed before the fix. The paired local merchant genesis correction passed all
+103 merchant tests, including refusal before storage writes and equality/None
+preservation. These are synthetic/local checks, not real source acceptance.
+
+RC6 is a local candidate. Existing RC5/RC3 consumer pins do not enforce this new
+shared rule. Publish and repin the adapter/composer/exporter consumers coherently
+before declaring integrated enforcement. Historical compatibility below applies
+only to its stated revisions; it is not automatically RC6 acceptance.
+
+## Historical RC5 compatibility disposition — 2026-09-12
 
 All four interface scopes have now been technically reviewed against
 `d9-native-genesis/0.1.0-rc.5`, contract source

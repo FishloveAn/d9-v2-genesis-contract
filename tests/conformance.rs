@@ -302,6 +302,32 @@ fn migration_input_conformance_is_not_archive_settlement_or_release_approval() {
 }
 
 #[test]
+fn merchant_conversion_must_not_predate_creation() {
+    let original = input_value();
+    let created = original["source"]["merchantAccounts"][0]["createdAt"]
+        .as_str()
+        .unwrap()
+        .parse::<u64>()
+        .unwrap();
+    for last in [None, Some(created - 1), Some(created), Some(created + 1)] {
+        let mut value = original.clone();
+        let timestamp = last.map(|t| json!(t.to_string())).unwrap_or(Value::Null);
+        value["source"]["merchantAccounts"][0]["lastConversion"] = timestamp.clone();
+        value["state"]["merchantAccounts"][0]["lastConversion"] = timestamp;
+        refresh_evidence(&mut value, &["merchant".to_owned()]);
+        let parsed = parse(&serde_json::to_vec(&value).unwrap()).unwrap();
+        let result = validate(&parsed);
+        if last == Some(created - 1) {
+            let error = result.unwrap_err();
+            assert_eq!(error.code, "merchant_timestamp_order");
+            assert!(error.path.ends_with("/lastConversion"));
+        } else {
+            result.unwrap();
+        }
+    }
+}
+
+#[test]
 fn approved_reserve_depth_uses_whole_token_units() {
     let input = input();
     let expected = golden();

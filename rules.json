@@ -45,7 +45,7 @@
     "id": "MERCHANT",
     "owner": "D9-183 + D9-173",
     "phase": "merchant",
-    "rule": "Complete accounts including consumers/zero merit. greenPoints and both relationshipFactors x10000; redeemedD9 x1. Preserve Option/time anchors; bounds use pinned source, never genesis now."
+    "rule": "Complete accounts including consumers/zero merit. greenPoints and both relationshipFactors x10000; redeemedD9 x1. Preserve Option/time anchors; bounds use pinned source, never genesis now. Yvan 2026-09-13: Some(lastConversion) must be >= createdAt; equality and None are valid. Reject inverted source/target history; no clamping, dropping or legacy exceptions."
   },
   {
     "id": "EXPIRY",
