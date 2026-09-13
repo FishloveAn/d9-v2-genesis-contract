@@ -1,5 +1,23 @@
 # Historical pallet-workspace verification — 2026-09-10
 
+## D9-204 SessionRanking inventory extension — 2026-09-13
+
+The inventory now contains 137 unique pallet-storage rows. The added
+`d9-node-rewards::SessionRanking` row is `NotMigrated`, has no genesis field,
+and is marked `proposed` pending the pallets implementation merge. The contract
+digest is
+`9b41f0cda8ad25b2b07db60dd0053078d88ab44cc5d4c717a87fcada7602ab72`;
+the fixture binding and manifest hashes were regenerated from the changed
+inventory bytes.
+
+`cargo test --locked --workspace` passed all 17 tests, including the 80-case
+rejection corpus, inventory validation, exact artifact hashes and detached
+binding checks. `cargo run --locked -q -- check fixtures/complete.json` returned
+the same contract digest and retained input digest
+`5eb35bf564b4982e5e4243ab95f300315b9590c2fc795221d2799ec72b328a55`.
+Formatting passed. No schema, rule, source fixture, source acceptance, runtime
+composition or release gate changed.
+
 Current local RC6 correction (2026-09-13): all 17 standalone tests passed,
 including 80 negative cases and exact schema/fixture/binding digest checks.
 Before the fix, the new one-millisecond-before-creation regression failed

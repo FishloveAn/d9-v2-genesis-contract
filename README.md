@@ -14,7 +14,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [CONTRACT.md](CONTRACT.md) | Field semantics, units, invariant ownership and encoding |
 | [schema.json](schema.json) | Input schema generated from the Rust DTOs |
 | [binding.schema.json](binding.schema.json) | Detached final-artifact binding |
-| [inventory.json](inventory.json) | 136 provenance entries with explicit disposition references |
+| [inventory.json](inventory.json) | 137 provenance entries with explicit disposition references |
 | [rules.json](rules.json) | 19 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
@@ -147,3 +147,16 @@ No dynamic floor formula is introduced. Source balances and every LP position
 remain unchanged; the same quote/swap/withdrawal boundary semantics apply.
 Prior versions and the retired 1M-token policy are rejected. RC4 remains a
 published historical artifact; its acknowledgements do not imply RC5 approval.
+
+## D9-204 session-ranking inventory extension
+
+[D9-204](https://linear.app/d9-network/issue/D9-204/align-v2-validator-election-and-reward-eligibility-zero-vote-operators)
+adds `d9-node-rewards::SessionRanking` as fresh V2 session-planning state. The
+inventory classifies it as `NotMigrated`: it has no V1 value or genesis field to
+import, and the runtime derives it from eligible operators when planning a
+session. The item remains marked `proposed` until the corresponding pallets
+change is merged.
+
+This classification changes the reviewed inventory and contract digest without
+changing the RC6 wire schema, complete fixture or input digest. Prior RC6 bundle
+acknowledgements do not automatically cover the extended inventory.
