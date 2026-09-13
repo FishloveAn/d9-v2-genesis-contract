@@ -1,5 +1,13 @@
 # Historical pallet-workspace verification — 2026-09-10
 
+Current local RC6 correction (2026-09-13): all 17 standalone tests passed,
+including 80 negative cases and exact schema/fixture/binding digest checks.
+Before the fix, the new one-millisecond-before-creation regression failed
+because RC5 accepted it. None, equality and later conversion timestamps pass.
+The paired merchant genesis change passes all 103 merchant tests, including
+rejection before storage writes. No real export, integrated runtime or remote
+CI result is claimed by these checks.
+
 Toolchain: rustc 1.98.1 (48a229cea, 2026-09-01), local macOS host.
 Baseline: pallets aec116756eaf21fb455c7da068a91615b0ae700b.
 The recovered D9-307 patch was verified byte-for-byte against its published

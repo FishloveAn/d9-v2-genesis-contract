@@ -1,7 +1,7 @@
 # D9 native-genesis contract
 
 The shared contract for D9 V2 exporters, pallet genesis builders and independent
-verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.5**.
+verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.6**.
 
 This repository is the authoritative home for the contract, schemas, provenance
 inventory, rules and shared conformance fixtures extracted from D9-380 at pallets

@@ -79,6 +79,13 @@ pub(super) fn check(i: &ContractInput) -> Check {
         timestamp(src.created_at, s.timestamp_ms, &path)?;
         if let Some(t) = src.last_conversion {
             timestamp(t, s.timestamp_ms, &path)?;
+            if t < src.created_at {
+                return Err(fail(
+                    "merchant_timestamp_order",
+                    format!("{path}/lastConversion"),
+                    "lastConversion predates createdAt",
+                ));
+            }
         }
         let expected = MerchantAccount {
             account: id,

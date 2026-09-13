@@ -1932,5 +1932,44 @@
       "code": "reserve_floor_units",
       "pathPrefix": "/bootstrap"
     }
+  },
+  {
+    "id": "merchant-conversion-before-creation",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/source/merchantAccounts/0/lastConversion",
+        "value": "1787450912999"
+      },
+      {
+        "op": "replace",
+        "path": "/state/merchantAccounts/0/lastConversion",
+        "value": "1787450912999"
+      }
+    ],
+    "refreshSource": [
+      "merchant"
+    ],
+    "expected": {
+      "phase": "validate",
+      "code": "merchant_timestamp_order",
+      "pathPrefix": "/state/merchantAccounts/"
+    }
+  },
+  {
+    "id": "reject-rc5-version",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/contractVersion",
+        "value": "d9-native-genesis/0.1.0-rc.5"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validate",
+      "code": "contract_version",
+      "pathPrefix": "/contractVersion"
+    }
   }
 ]
