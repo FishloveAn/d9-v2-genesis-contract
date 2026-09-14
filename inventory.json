@@ -341,16 +341,6 @@
   },
   {
     "pallet": "d9-governance",
-    "storage": "LegacyProposals",
-    "provenance": "NotMigrated",
-    "genesisField": null,
-    "inputPath": "external-runtime-config",
-    "owner": "D9-383",
-    "decision": "D9-383: V2 starts without V1 proposal history; this archive is populated only when an in-flight V1 vote is lazily restarted after upgrade",
-    "implementation": "proposed"
-  },
-  {
-    "pallet": "d9-governance",
     "storage": "PendingAdmin",
     "provenance": "NotMigrated",
     "genesisField": null,
@@ -381,16 +371,6 @@
   },
   {
     "pallet": "d9-governance",
-    "storage": "SnapshotVotes",
-    "provenance": "NotMigrated",
-    "genesisField": null,
-    "inputPath": "external-runtime-config",
-    "owner": "D9-383",
-    "decision": "D9-383: V2 snapshots begin with new or restarted V2 proposals; V1 ballots remain audit-only and are never imported into this ballot map",
-    "implementation": "proposed"
-  },
-  {
-    "pallet": "d9-governance",
     "storage": "Votes",
     "provenance": "NotMigrated",
     "genesisField": null,
@@ -406,7 +386,7 @@
     "genesisField": null,
     "inputPath": "external-runtime-config",
     "owner": "D9-383",
-    "decision": "D9-383: no V1 validator cohort can be reconstructed; immutable voter bodies begin with new or restarted V2 proposals",
+    "decision": "D9-383: governance begins in V2; immutable voter bodies are captured for each new proposal",
     "implementation": "proposed"
   },
   {
