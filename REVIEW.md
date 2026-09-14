@@ -33,7 +33,8 @@ RC6 requires Some(lastConversion) >= createdAt, retaining the existing nonzero
 source-time bounds. Equality and None remain valid. No clamp, dropped account or
 legacy exception is permitted. Expiry policy is unchanged.
 
-Contract digest: `94b42ed2efd9915b6f476ffb7da1c3ffb2d0e57e63183e6d360f4b3540841981`.
+Chronology-only RC6 bundle digest, historical after the D9-204 inventory
+extension: `94b42ed2efd9915b6f476ffb7da1c3ffb2d0e57e63183e6d360f4b3540841981`.
 Shared tests: 17 passed, including 80 rejection cases. The chronology regression
 failed before the fix. The paired local merchant genesis correction passed all
 103 merchant tests, including refusal before storage writes and equality/None
