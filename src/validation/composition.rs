@@ -6,6 +6,26 @@ use super::*;
 use sp_runtime::traits::AccountIdConversion;
 use std::collections::BTreeSet;
 
+/// CR4-02 (yvan 2026-09-14): an sr25519 session key (babe, liveness, discovery)
+/// must be a canonical Ristretto encoding. No secret key corresponds to any other 32
+/// bytes, so such a validator could never author, heartbeat or be discovered.
+// VERIFIED: curve25519-dalek 4.1.3 `CompressedRistretto::decompress` returns `None` for
+// non-canonical or negative encodings and for points off the curve (`src/ristretto.rs:255-270`).
+// CHOICE: validator accounts are not checked: an AccountId32 may be an ed25519 key or an
+// ecdsa blake2 hash, which are legitimately not Ristretto encodings.
+// CHOICE: reuses invalid_session_key, which already names an unusable session key.
+fn sr25519_session_key_decodes(key: &[u8; 32], path: String) -> Check {
+    use curve25519_dalek::ristretto::CompressedRistretto;
+    if CompressedRistretto(*key).decompress().is_none() {
+        return Err(fail(
+            "invalid_session_key",
+            path,
+            "sr25519 session key is not a canonical Ristretto point; no secret key can use it",
+        ));
+    }
+    Ok(())
+}
+
 fn pallet_account(pallet: &[u8; 8]) -> Address {
     Address::from_account_id(frame_support::PalletId(*pallet).into_account_truncating())
 }
@@ -68,7 +88,7 @@ pub(super) fn check(i: &ContractInput) -> Check {
         for (role, key) in session_key_slots(v) {
             let path = format!("/bootstrap/validators/{index}/{role}");
             // Digest decoding guarantees 64 lowercase hex characters, so hex32
-            // cannot panic. babe/imOnline/discovery/liveness are sr25519 and
+            // cannot panic. babe/liveness/discovery are sr25519 and
             // grandpa is ed25519; every scheme's deny list is checked for each.
             let key = hex32(key.as_str());
             if key == [0; 32] {
@@ -87,7 +107,12 @@ pub(super) fn check(i: &ContractInput) -> Check {
             if role == "grandpa" {
                 not_ed25519_prime_order(&key, path.clone())?;
             }
-            not_development(&key, path)?;
+            not_development(&key, path.clone())?;
+            if role != "grandpa" {
+                // CHOICE: after the deny list, so a well-known development key reports as
+                // dev_key_authority even when it is not a valid sr25519 encoding.
+                sr25519_session_key_decodes(&key, path)?;
+            }
         }
     }
     for (index, v) in b.validators.iter().enumerate() {

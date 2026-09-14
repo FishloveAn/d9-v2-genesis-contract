@@ -36,7 +36,7 @@
     "genesisField": "keys",
     "inputPath": "/bootstrap/validators",
     "owner": "D9-370",
-    "decision": "fresh V2 identities: four FRAME keys at node 29a01f1 (babe/grandpa/im_online/authority_discovery); liveness belongs to D9 registry/tracking",
+    "decision": "fresh V2 identities: four FRAME keys at node 1320fe8 (babe/grandpa/liveness/authority_discovery), identical to D9SessionKeys (block_authority/grandpa/liveness/discovery)",
     "implementation": "existing"
   },
   {

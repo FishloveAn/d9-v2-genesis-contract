@@ -55,12 +55,12 @@ authority 数据与迁移金额必须形成一份确定的完整输入，再做�
 build。不得把 bootstrap 的测试网 endowment 追加到迁移余额中。需要的资金
 通过已有来源和明确的 rehome/credit 表达，不能由构建工具默认铸造。
 
-Session、NodeRegistry、Liveness 应由同一 validator 记录投影。node 29a01f1
-当前 FRAME SessionKeys 只有四项：babe、grandpa、im_online、authority_discovery；
-契约的 imOnline/discovery 分别映射到后两项。D9SessionKeys 使用
-block_authority=babe、grandpa、liveness、discovery；Liveness 使用
-account/liveness。因此契约有五类 key，但不能把第五项强塞进当前 FRAME
-SessionKeys。目标 node revision 改变时 D9-370 必须重新核验映射。
+Session、NodeRegistry、Liveness 应由同一 validator 记录投影。node 1320fe8
+（D9-133 `15ca1d8` 起）的 FRAME SessionKeys 为四项：babe、grandpa、liveness、
+authority_discovery，与 D9SessionKeys（block_authority=babe、grandpa、liveness、
+discovery）一一对应；Liveness 使用 account/liveness。契约的 validator 恰好携带这四个
+key（babe、grandpa、liveness、discovery），不再有 imOnline（修订 6，yvan 2026-09-14）。
+目标 node revision 改变时 D9-370 必须重新核验映射。
 额外 session key、缺少派生表或写入后
 不一致都必须由 D9-370 最终配置检查拒绝，不能退到启动后的 sudo 补写。
 
@@ -257,14 +257,14 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 | multisig_signatory_limit | n > 20（runtime MaxSignatories） |
 | multisig_threshold_exceeds_signatories | threshold > n |
 | multisig_signatory_order | signatories 未按字节严格升序或重复 |
-| custody_pop_weak_key | 任一 signatory、multisig address、validators[].account 或 session key 是可被任何人伪造签名的公钥：全零（sr25519 Ristretto 单位元，也是 ed25519 order-4 点），或任何 ed25519 small-order 点的编码（含非规范编码）；在签名验证之前检查，与 scheme 无关 |
-| ed25519_key_not_prime_order | scheme 为 ed25519 的 signatory 或 grandpa session key 不是曲线点、不是规范编码、带 torsion 分量或为单位元（torsion twin `A + T` 用 `A` 的私钥即可签名，会让一个私钥冒充多个 signatory） |
+| custody_pop_weak_key | 任一 signatory、multisig address、validators[].account 或 session key 是可被任何人伪造签名的公钥：全零（sr25519 Ristretto 单位元，也是 ed25519 order-4 点），或任何 ed25519 small-order 点的编码（含非规范编码）；在签名验证之前检查，与 scheme 无关。例外：全零 session key 报 invalid_session_key，rehome 目标报 rehome_destination_not_allowed |
+| ed25519_key_not_prime_order | scheme 为 ed25519 的 signatory 或 grandpa session key 不是曲线点、不是规范编码、带 torsion 分量或为单位元（torsion twin `A + T` 用 `A` 的私钥即可签名，会让一个私钥通过 torsion twin 冒充多个 signatory）。它不能证明 signatory 由不同的人持有：同一标量也可作为 sr25519 key 使用，signatory 独立性属于 ceremony 证据（CR4-01 = a） |
 | multisig_self_signatory | signatory 等于其 multisig address |
-| dev_key_authority | multisig address/signatory、validators[].account 或任一 session key（babe、grandpa、imOnline、discovery、liveness）等于开发密钥。以下每个 URI 均含 sr25519 与 ed25519 公钥及 ecdsa 账户 blake2_256(压缩公钥)，共 183 个：sp-keyring 48.0.0 的 //Alice、//Bob、//Charlie、//Dave、//Eve、//Ferdie 及各自 //stash、//One、//Two，sp-core DEV_PHRASE 根密钥；d9 自身提交的 authority SURI：//LocalValidator1..6（d9-v2-node e13a19d `runtime/src/genesis_config_presets.rs` 的 LOCAL_DEV_*_PUBS 与 `local-keys/README.md`）、//Mainnet0..5//{stash,babe,imon,audi,live,grandpa}、//OCWTest//{Babe,Grandpa,Liveness,Discovery} |
+| dev_key_authority | multisig address/signatory、validators[].account 或任一 session key（babe、grandpa、discovery、liveness）等于开发密钥。以下每个 URI 均含 sr25519 与 ed25519 公钥及 ecdsa 账户 blake2_256(压缩公钥)，共 183 个：sp-keyring 48.0.0 的 //Alice、//Bob、//Charlie、//Dave、//Eve、//Ferdie 及各自 //stash、//One、//Two，sp-core DEV_PHRASE 根密钥；d9 自身提交的 authority SURI：//LocalValidator1..6（d9-v2-node e13a19d `runtime/src/genesis_config_presets.rs` 的 LOCAL_DEV_*_PUBS 与 `local-keys/README.md`）、//Mainnet0..5//{stash,babe,imon,audi,live,grandpa}、//OCWTest//{Babe,Grandpa,Liveness,Discovery} |
 | multisig_nested_signatory | signatory 等于本文档中另一个角色的 multisig address |
 | authority_pallet_account | multisig address、signatory 或 validators[].account 等于 ammAccount、miningPoolAccount 或以 b"modl" 开头的 PalletId 账户 |
 | authority_session_key | multisig address、signatory 或任一 validators[].account（含该 validator 自身）等于任一 validator 的 session key |
-| invalid_session_key | session key 为零，或同一 key 出现在任一 validator 的两个 slot 中（同一 validator 内或跨 validator） |
+| invalid_session_key | session key 为零；同一 key 出现在任一 validator 的两个 slot 中（同一 validator 内或跨 validator）；或 sr25519 session key（babe、liveness、discovery）不是规范 Ristretto 点（没有私钥能使用它，CR4-02） |
 | authority_validator_account | multisig address 或 signatory 等于任一 validators[].account |
 | multisig_address_not_derived | address 不等于 multisig_account(signatories, threshold) |
 | authority_role_not_distinct | sudo.address 等于 usdtOwner.address 或任一 admins[].multisig.address |

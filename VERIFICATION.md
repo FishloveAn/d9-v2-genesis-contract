@@ -2,6 +2,35 @@
 
 ## RC7 multisig custody, chain identity and asset set — 2026-09-14
 
+Revision 6 (round-4 review/audit and Yvan's rulings: imOnline removed, CR4-02, CR4-01 = a,
+torsion.rs on audited hazmat). The same four commands exit 0 (`cargo fmt --all -- --check`,
+`cargo clippy --locked --all-targets -- -D warnings`, `cargo test --locked`, `cargo run
+--locked -- check fixtures/complete.json`). 44 tests pass: 10 unit, 3 binding, 29
+conformance, 1 manifest and 1 mainnet evidence, including the 199-case rejection corpus.
+New: an `imOnline` validator field fails decoding; every fixture sr25519 session key
+decompresses as Ristretto; a non-Ristretto babe, liveness or discovery key is refused
+(`invalid_session_key`); every torsion-twin signature built through ed25519-dalek 2.2.0
+`hazmat::raw_sign` still verifies under sp-core and is refused. Contract digest
+`94d89e1e6272ff9cd8aae75d9e0e13a69bba498ffcf99c8c2f98c4ca72abdf40`, input digest
+`92fcf87d35f8fa435ff44cebdb1ad7a9c70247a02d2a97372d0a5730ce0bb989`.
+
+Dependency delta: dev-dependency `ed25519-dalek = { version = "=2.2.0", default-features =
+false, features = ["hazmat", "zeroize"] }`; `Cargo.lock` gains only that name in the crate's
+dependency list (396 packages before and after).
+
+The six fixture sr25519 session keys (babe, liveness, discovery for two validators) come
+from one run of `cargo run --release --example custody_pop_fixture -- testnet
+d9_testnet_fixture <out> <worktree> <scratch>` with the committed example (SHA-256
+`83ed85f47b54f178688b6a6df7ba5eed4bf7da84bb95b6edeb1b26c243dcee14`) and
+`tests/support/torsion.rs` (SHA-256
+`93185e1cc008968e0d7c37dadb506b646259f144f7f7d1a1291e66f568d0294c`). That run generated 51
+seeds; only its `sessionKeys` public keys were merged. Custody signatories, proofs,
+multisig addresses, grandpa keys and torsion-twin cases are unchanged from revision 5
+below. Its seed scan covered 46 files (the worktree and the output directory, not
+`$TMPDIR`): 0 matches, canary control matched once.
+
+Revision 5 record (superseded counts and digests):
+
 Standalone commands in a fresh worktree (macOS host, stable toolchain):
 `cargo fmt --all -- --check`, `cargo clippy --locked --all-targets -- -D warnings`,
 `cargo test --locked` and `cargo run --locked -- check fixtures/complete.json`

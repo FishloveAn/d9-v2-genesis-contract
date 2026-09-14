@@ -19,3 +19,10 @@ sha2 = "0.10"
 # Pinned to the version and registry source Cargo.lock already carries through schnorrkel
 # and ed25519-zebra; no default features are needed for decompress/compress/is_torsion_free.
 curve25519-dalek = { version = "=4.1.3", default-features = false }
+
+[dev-dependencies]
+# Test and example only (revision 6 torsion.rs ruling): builds torsion-twin signatures
+# through the audited hazmat raw-signing API instead of hand-written RFC 8032 steps, and
+# zeroizes the expanded secret on drop. Already in Cargo.lock at this version; resolver 2
+# keeps these features out of normal builds.
+ed25519-dalek = { version = "=2.2.0", default-features = false, features = ["hazmat", "zeroize"] }

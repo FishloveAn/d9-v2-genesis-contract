@@ -365,7 +365,6 @@ record!(Validator {
     account: Address,
     babe: Digest,
     grandpa: Digest,
-    im_online: Digest,
     discovery: Digest,
     liveness: Digest,
 });

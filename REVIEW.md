@@ -9,20 +9,19 @@ address to its signatories in the contract (CS-1 = A), required multisig custody
 every purpose and ladder rung, and made sudo distinct from other roles (CS-4). S-6 (chain identity not bound to purpose) and R-4
 (extra asset IDs pass) are included.
 
-Contract digest: `e85bd779e974845c510cad1f0428c6d257a8ea154e22addcfe451dfc2800ac97`. Input digest: `5c8133b8c7ca6296a54074e7dd623ed44f27769f2d0b77f5d2df7af52451f0fd`.
-Rejection corpus: 195 cases. Exact SHA-256 pins:
-- complete fixture: `a19f7533ad56d690d08f74dfcca1711dbd7c7cda9938cd8497f3fe7010e7936b`
-- expected: `6562ce42d4b02ab4921e7d3a8cf6e87d414112af3e9090047056a3170d28cec0`
-- cases: `866b139fda35e0c29f9be5e053eadd0f1fbdaf215f1b3b160e44440cb33f67de`
-- rules: `5f9d7609e2c516eda7efb4ace97f8aa176c8c6f8c0368e615e16b8840cb2c2d7`
-- schema: `f03390dccf1039c842d6ea87cfaa018067c11b9c5c49ff72f5bf80ca8fdfaf70`
-- inventory: `20f1bfd0323ecd4c8209fc7ea029bea8e8dc4273721a48a63df46ba46f47da9a`
+Contract digest: `94d89e1e6272ff9cd8aae75d9e0e13a69bba498ffcf99c8c2f98c4ca72abdf40`. Input digest: `92fcf87d35f8fa435ff44cebdb1ad7a9c70247a02d2a97372d0a5730ce0bb989`.
+Rejection corpus: 199 cases. Exact SHA-256 pins:
+- complete fixture: `fa25335ef558a0ff49ac5cd096ec0ce23ae20c591956620d610d944c42f5e2d8`
+- expected: `c969547fee19b02d42642c230fd7bdb045c3d20ed68fb1652697cc989709b79d`
+- cases: `f6f9ab48b1f29f7ab8626fc7a67fddf3ce8f577e07218a08b4e024c7b9d30440`
+- rules: `28188c7b95335c668123984489aa110a51b0a9e8a267ead07d853bd4fd1979a0`
+- schema: `ca9deea8a1504411ea48f7f08daf045727f0ae024e2fdca5d258ba5e6c7b5228`
+- inventory: `f4d7e21fad8f7ec78cb7131f90927b5bd7d75a25b71596c02b0588c5bcc93c22`
 
 Review points:
 - The synthetic fixture's 14 multisig addresses are true `pallet_multisig`
-  derivations of deterministic 2-of-3 filled-byte signatories (0xa0..0xc9),
-  computed with d9-v2-tools `d9-bootstrap derive-admins` at tools `a5938f7` and
-  independently recomputed in Python. The contract now re-derives and requires
+  derivations of 2-of-3 signatories generated from OS randomness by
+  `examples/custody_pop_fixture.rs` (revision 5). The contract re-derives and requires
   them, and a test asserts all 14.
 - The development-key deny list applies to all purposes; its constants are
   re-derived from seed URIs with sp-core in a unit test.
@@ -32,7 +31,8 @@ Review points:
   a producer obligation (rule ASSET_SET).
 
 Revision after PR #10 code review and security audit (same day):
-- CS-2: validator accounts and all five session keys refuse development keys.
+- CS-2: validator accounts and all session keys refuse development keys (five keys at the
+  time; four since revision 6).
 - CS-3: no signatory may be another role's address; no address or signatory may be
   ammAccount, miningPoolAccount, any `b"modl"` PalletId account or a validator
   account. Multisigs nested outside the document are ceremony evidence.
@@ -109,13 +109,15 @@ Revision 4, Yvan's rulings of 2026-09-14 04:34 UTC:
 Revision 5, round-3 review/audit of `537855b..b26f6f1` and Yvan's 05:46 UTC decisions:
 - CR3-01 = CS3-1 (Critical): forgeable public keys (the all-zero sr25519 identity and every
   ed25519 small-order encoding) verified constant signatures and passed PoP. They are now
-  refused before verification in every account position (`custody_pop_weak_key`); a unit
-  test proves each forgery against `sp_core::Pair::verify` and covers all 14 reviewed
-  ed25519 encodings.
+  refused before verification in every account position (`custody_pop_weak_key`; a zero
+  session key reports `invalid_session_key` and a rehome destination
+  `rehome_destination_not_allowed`); a unit test proves each forgery against
+  `sp_core::Pair::verify` and covers all 14 reviewed ed25519 encodings.
 - Decision A: `curve25519-dalek` 4.1.3 is a direct dependency (no new lock package); every
   ed25519 signatory and grandpa key must be a canonical, torsion-free, non-identity point
-  (`ed25519_key_not_prime_order`), which refuses torsion twins, one-seed quorums and the
-  independence bypass.
+  (`ed25519_key_not_prime_order`), which refuses torsion twins, including one-seed
+  quorums and the twin form of the independence bypass. It does not prove signatories are
+  independent (see revision 6, CR4-01).
 - Decision B: at most threshold - 1 enclave-attested signatories per role
   (`custody_attested_quorum`).
 - Decision C: `BLESSED_SIGNER_PCR0` is empty; every enclave-attested signatory is refused
@@ -129,6 +131,33 @@ Revision 5, round-3 review/audit of `537855b..b26f6f1` and Yvan's 05:46 UTC deci
   identity kind; cases assert `relatedPath`. CS3-5: `rehome_source_not_allowed`.
 - Fixture custody keys, grandpa keys and torsion-twin cases were regenerated from OS
   randomness; the generator's seed scan found none.
+
+Revision 6, round-4 review/audit of `b26f6f1..10a3d0c` and Yvan's 2026-09-14 rulings
+(threat model: every custodian is Yvan, so the contract guards against mistakes):
+- imOnline removed. `Validator` carries exactly the four SessionKeys of d9-v2-node
+  `1320fe8` (babe, grandpa, liveness, discovery = authority_discovery); an `imOnline` field
+  is a decode error. CONTRACT.md and the `Session.NextKeys` inventory decision are
+  repinned to `1320fe8`, where FRAME SessionKeys map one-to-one to D9SessionKeys. The
+  `//Mainnet0..5//imon` deny-list entries stay. Tools' `d9-bootstrap` must emit `liveness`
+  (node vendor `284b94a`) when tools #72 adopts RC7.
+- CR4-02 = CS4-4: every sr25519 session key (babe, liveness, discovery) must be a canonical
+  Ristretto point (`invalid_session_key`); no secret can use any other encoding, so the
+  validator could never author. Validator accounts are not checked, because an ed25519 key
+  or ecdsa-derived account is legitimately not a Ristretto encoding. The fixture's sr25519
+  session keys were placeholder bytes (7 of 8 invalid) and are now real keys from the
+  example; custody, grandpa and torsion data are unchanged from revision 5.
+- CR4-01 = a: signer independence is ceremony evidence. One scalar can serve as an ed25519
+  and an sr25519 signatory, and detecting that would need a hand-written Ristretto map, so
+  decision A's text is narrowed to torsion twins.
+- `tests/support/torsion.rs` signs twins with ed25519-dalek 2.2.0 `hazmat::raw_sign` (a
+  dev-dependency already in Cargo.lock; package count unchanged) instead of hand-written
+  RFC 8032 steps; the expanded secret is zeroized on drop.
+- Docs: weak-key code exceptions (zero session key, rehome destination) and the stale
+  filled-byte fixture description are corrected.
+- Deferred by Yvan to the PCR0-blessing RC: CS4-1 (scheme and key checks for
+  enclave-attested signatories), CS4-3 (typed pending-attestation outcome) and CS4-6
+  (`cfg(test)` blessed-set override). Not taken: CS4-2 (validator-account torsion twins),
+  which needs a malicious producer.
 
 No downstream acknowledgement exists for RC7. Tools, node and the pallets adapter
 must repin and adopt the new fields before integrated enforcement is claimed.
@@ -240,7 +269,7 @@ This file records existing decisions and their evidence, not new approval on ano
 | Yvan / D9-173 | independent verifier | confirm fields/digests and paid-history/exception baseline; independent final-spec decoder planned | pending |
 | Yvan | five economic/identity dispositions | five 2026-09-12 migration ADRs, linked in inventory | decided; delivery evidence pending |
 | D9-380 ADR (archive owner unassigned) / D9-211 / D9-370 / D9-173 | archive, legacy settlement, fresh initial state | verified archive and funded disposition; empty/zero final-state readback and watermark | pending |
-| Wen Ryu / D9-370 | final composition | confirm complete runtime config digest, five key roles across FRAME Session/D9 registry/liveness, derived pallet identities, final detached binding | pending |
+| Wen Ryu / D9-370 | final composition | confirm complete runtime config digest, the four session keys (babe, grandpa, liveness, discovery) across FRAME Session/D9 registry/liveness, derived pallet identities, final detached binding | pending |
 
 Each acknowledgement must cite the same contract version, contractDigest,
 fixture/expected/cases hashes, source commit and test evidence. If any field,

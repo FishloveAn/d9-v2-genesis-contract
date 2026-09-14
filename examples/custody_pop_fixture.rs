@@ -1,6 +1,6 @@
 //! Synthetic custody fixture generator for `fixtures/complete.json` (D9-400).
 //!
-//! Generates every custody signatory and the fixture grandpa keys as fresh keypairs from
+//! Generates every custody signatory and the fixture session keys as fresh keypairs from
 //! OS randomness, signs each raw proof-of-possession in memory with
 //! `custody_pop_message`, and writes ONLY public keys, multisig addresses, signatures
 //! and the ceremony nonce. It also emits the ed25519 torsion-twin authorities used by
@@ -24,8 +24,9 @@ use std::path::Path;
 #[path = "../tests/support/torsion.rs"]
 mod torsion;
 
-/// Every seed this run creates: 14 roles x 3, one twin source and two grandpa keys.
-const SEED_CAPACITY: usize = 14 * 3 + 1 + 2;
+/// Every seed this run creates: 14 roles x 3, one twin source, and two validators x four
+/// session keys (babe, grandpa, liveness, discovery).
+const SEED_CAPACITY: usize = 14 * 3 + 1 + 2 * 4;
 
 enum Key {
     Sr(Box<sr25519::Pair>),
@@ -267,9 +268,19 @@ fn main() -> std::process::ExitCode {
         )))
         .collect();
     let sudo_independence_bypass = authority(CustodyRole::Sudo, &bypass_members, &seeds);
-    // Real ed25519 grandpa public keys for the two fixture validators.
-    let grandpa: Vec<String> = (0..2)
-        .map(|_| hex(&custodian(true, &mut seeds).public()))
+    // Real session public keys for the two fixture validators: ed25519 grandpa and
+    // sr25519 babe, liveness and discovery (CR4-02: every sr25519 slot must decode).
+    let session_keys: Vec<Value> = (0..2)
+        .map(|_| {
+            let mut sr = || hex(&custodian(false, &mut seeds).public());
+            let (babe, liveness, discovery) = (sr(), sr(), sr());
+            json!({
+                "babe": babe,
+                "grandpa": hex(&custodian(true, &mut seeds).public()),
+                "liveness": liveness,
+                "discovery": discovery,
+            })
+        })
         .collect();
     // A genuine proof by sudo's first signatory, but for the usdtOwner role and
     // multisig: valid signature, wrong role. Used by a negative conformance case.
@@ -285,7 +296,7 @@ fn main() -> std::process::ExitCode {
     let document = json!({
         "ceremonyNonce": hex(&nonce),
         "roles": out_roles,
-        "grandpa": grandpa,
+        "sessionKeys": session_keys,
         "alternates": {
             "sudoSignatory0AsUsdtOwner": hex(&sudo_first.sign(&other_role)),
             "sudoWithTorsionTwin": sudo_with_twin,
@@ -355,7 +366,7 @@ fn main() -> std::process::ExitCode {
         wipe(seed);
     }
     println!(
-        "wrote {out}: 14 roles, 42 signatories, 3 twin authorities, 2 grandpa keys; seed leak scan: {} seeds x 3 encodings over {files} files, {matches} files matched; canary control matched {control_matches} of {control_files} files",
+        "wrote {out}: 14 roles, 42 signatories, 3 twin authorities, 2 validators x 4 session keys; seed leak scan: {} seeds x 3 encodings over {files} files, {matches} files matched; canary control matched {control_matches} of {control_files} files",
         seeds.len()
     );
     if matches == 0 && control_matches == 1 {

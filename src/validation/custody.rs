@@ -1134,7 +1134,7 @@ pub(super) fn not_pallet_account(key: &[u8; 32], bootstrap: &Bootstrap, path: St
     Ok(())
 }
 
-/// Every validator's five session-key bytes, mapped to the first slot that uses them.
+/// Every validator's four session-key bytes, mapped to the first slot that uses them.
 pub(super) fn session_keys(bootstrap: &Bootstrap) -> BTreeMap<[u8; 32], String> {
     let mut keys = BTreeMap::new();
     for (index, v) in bootstrap.validators.iter().enumerate() {
@@ -1146,11 +1146,13 @@ pub(super) fn session_keys(bootstrap: &Bootstrap) -> BTreeMap<[u8; 32], String> 
     keys
 }
 
-pub(super) fn session_key_slots(v: &Validator) -> [(&'static str, &Digest); 5] {
+/// The node runtime's SessionKeys at d9-v2-node `1320fe8` (`runtime/src/lib.rs:73-80`):
+/// babe, grandpa, liveness and authority_discovery (`discovery`). imOnline was removed
+/// in revision 6 (yvan 2026-09-14).
+pub(super) fn session_key_slots(v: &Validator) -> [(&'static str, &Digest); 4] {
     [
         ("babe", &v.babe),
         ("grandpa", &v.grandpa),
-        ("imOnline", &v.im_online),
         ("discovery", &v.discovery),
         ("liveness", &v.liveness),
     ]

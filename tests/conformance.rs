@@ -812,7 +812,6 @@ fn validator_accounts_and_every_session_key_refuse_development_keys() {
     for (field, key) in [
         ("babe", alice_sr),
         ("grandpa", alice_ed),
-        ("imOnline", alice_sr),
         ("discovery", alice_sr),
         ("liveness", alice_ed),
     ] {
@@ -820,6 +819,46 @@ fn validator_accounts_and_every_session_key_refuse_development_keys() {
         value["bootstrap"]["validators"][1][field] = json!(hex(key));
         let error = validate(&parse(&serde_json::to_vec(&value).unwrap()).unwrap()).unwrap_err();
         assert_eq!(error.code, "dev_key_authority", "{field}");
+        assert_eq!(error.path, format!("/bootstrap/validators/1/{field}"));
+    }
+}
+
+#[test]
+fn validators_carry_exactly_the_four_node_session_keys() {
+    // Node 1320fe8 runtime SessionKeys = {babe, grandpa, liveness, authority_discovery}.
+    let mut value = input_value();
+    value["bootstrap"]["validators"][0]["imOnline"] =
+        value["bootstrap"]["validators"][0]["babe"].clone();
+    assert!(parse(&serde_json::to_vec(&value).unwrap()).is_err());
+}
+
+#[test]
+fn sr25519_session_keys_must_be_ristretto_points_and_fixture_keys_are() {
+    use curve25519_dalek::ristretto::CompressedRistretto;
+    let value = input_value();
+    let decodes = |hex: &str| {
+        let mut key = [0u8; 32];
+        for (index, byte) in key.iter_mut().enumerate() {
+            *byte = u8::from_str_radix(&hex[2 * index..2 * index + 2], 16).unwrap();
+        }
+        CompressedRistretto(key).decompress().is_some()
+    };
+    for validator in value["bootstrap"]["validators"].as_array().unwrap() {
+        for field in ["babe", "liveness", "discovery"] {
+            assert!(
+                decodes(validator[field].as_str().unwrap()),
+                "fixture {field}"
+            );
+        }
+    }
+    // Neither a Ristretto nor an ed25519 small-order encoding, and not a development key.
+    let not_a_point = "00000000000000000000000000000000000000000000000000000000000001ff";
+    assert!(!decodes(not_a_point));
+    for field in ["babe", "liveness", "discovery"] {
+        let mut value = input_value();
+        value["bootstrap"]["validators"][1][field] = json!(not_a_point);
+        let error = validate(&parse(&serde_json::to_vec(&value).unwrap()).unwrap()).unwrap_err();
+        assert_eq!(error.code, "invalid_session_key", "{field}");
         assert_eq!(error.path, format!("/bootstrap/validators/1/{field}"));
     }
 }

@@ -18,7 +18,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [rules.json](rules.json) | 24 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
-| [fixtures/cases.json](fixtures/cases.json) | 195 mutations and expected failures |
+| [fixtures/cases.json](fixtures/cases.json) | 199 mutations and expected failures |
 | [fixture-manifest.json](fixture-manifest.json) | Exact hashes of the shared artifacts |
 | [evidence-amm-mainnet-23802000.json](evidence-amm-mainnet-23802000.json) | Read-only V1 mainnet AMM LP extraction receipt at block 23,802,000 |
 | [REVIEW.md](REVIEW.md) | Pending downstream compatibility acknowledgements |
@@ -184,10 +184,14 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
   across networks, roles or ceremonies. Custodians sign the raw message with an offline
   tool that displays the decoded fields; `signRaw`-wrapped proofs are not accepted.
 - Before any signature check the contract refuses forgeable public keys (the all-zero
-  sr25519 identity and every ed25519 small-order encoding) in every account position,
-  and requires every ed25519 signatory and grandpa key to be a canonical, torsion-free,
-  non-identity point (curve25519-dalek). Other keyless accounts fail only because
-  nobody can sign for them; a valid proof does not show whose key it is.
+  sr25519 identity and every ed25519 small-order encoding) in every account position
+  (`custody_pop_weak_key`, except a zero session key, `invalid_session_key`, and a rehome
+  destination, `rehome_destination_not_allowed`), and requires every ed25519 signatory
+  and grandpa key to be a canonical, torsion-free, non-identity point (curve25519-dalek).
+  This stops one secret appearing as several signatories through torsion twins; it
+  cannot show that signatories are held by different people, which is ceremony
+  evidence. Other keyless accounts fail only because nobody can sign for them; a valid
+  proof does not show whose key it is.
 - Enclave-attested evidence: at most `threshold - 1` per role, and `expectedPcr0` must be
   in `BLESSED_SIGNER_PCR0`, which is empty until the mainnet sudo-signer attest-mode EIF is
   blessed, so **enclave-attested custody cannot pass yet**. The contract checks structure
@@ -195,9 +199,11 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
   `pendingAttestationVerifications` for the producer's `attest_verify`.
 - Multisig custody applies to every purpose and ladder rung; there is no
   single-key rehearsal exception.
-- Validator accounts and all five session keys also refuse development and forgeable
-  keys; validator accounts refuse PalletId accounts and session keys; session keys are
-  unique across every slot. The deny list (183 keys) covers the sp-keyring URIs, the
+- Validators carry the node's four session keys (babe, grandpa, liveness, discovery;
+  no imOnline). Validator accounts and all four session keys refuse development and
+  forgeable keys; the sr25519 keys (babe, liveness, discovery) must be canonical
+  Ristretto points; validator accounts refuse PalletId accounts and session keys;
+  session keys are unique across every slot. The deny list (183 keys) covers the sp-keyring URIs, the
   DEV_PHRASE roots and d9's committed authority SURIs (`//LocalValidator1..6`,
   `//Mainnet0..5//*`, `//OCWTest//*`), each in sr25519, ed25519 and the ecdsa-derived account.
 - The new top-level `chain` declares `network`, `id`, `name` and `chainType`.

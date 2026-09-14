@@ -716,11 +716,10 @@
         "path": "/bootstrap/validators/1",
         "value": {
           "account": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j",
-          "babe": "00000000000000000000000000000000000000000000000000000000000001ff",
+          "babe": "5c9fbcdccd7880adfe71218d127ad6f66f2c6bdf3bcb971bf95348f95c208c41",
           "grandpa": "0000000000000000000000000000000000000000000000000000000000000200",
-          "imOnline": "0000000000000000000000000000000000000000000000000000000000000201",
-          "discovery": "0000000000000000000000000000000000000000000000000000000000000202",
-          "liveness": "0000000000000000000000000000000000000000000000000000000000000203"
+          "discovery": "b40013b47d881b9e4d5f5984534cc08378cf8b505bef89e29886275b62228734",
+          "liveness": "d88fa6a3f8352f86cb65537f710b936a509fd10014155ea5cad744072857a569"
         }
       }
     ],
@@ -737,7 +736,7 @@
       {
         "op": "replace",
         "path": "/bootstrap/validators/1/liveness",
-        "value": "0000000000000000000000000000000000000000000000000000000000000203"
+        "value": "d88fa6a3f8352f86cb65537f710b936a509fd10014155ea5cad744072857a569"
       }
     ],
     "refreshSource": [],
@@ -3501,7 +3500,7 @@
       {
         "op": "replace",
         "path": "/chain/name",
-        "value": "D9 T\u0435stnet"
+        "value": "D9 Tеstnet"
       }
     ],
     "refreshSource": [],
@@ -3532,7 +3531,7 @@
       {
         "op": "replace",
         "path": "/chain/name",
-        "value": "D9 Te\u200bst Mainnet"
+        "value": "D9 Te​st Mainnet"
       }
     ],
     "refreshSource": [],
@@ -3563,7 +3562,7 @@
       {
         "op": "replace",
         "path": "/chain/name",
-        "value": "D9 \uff54\uff45\uff53\uff54 Mainnet"
+        "value": "D9 ｔｅｓｔ Mainnet"
       }
     ],
     "refreshSource": [],
@@ -4017,15 +4016,6 @@
         "path": "/bootstrap/sudo/signatories",
         "value": [
           {
-            "address": "u5wKvsdTcsYQXeB9nvDQ7PppNHeVefghTzBY9niAhMSVenJ",
-            "evidence": {
-              "signature": {
-                "scheme": "sr25519",
-                "signature": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-              }
-            }
-          },
-          {
             "address": "u9akdKiFqwWc9CcB8UwEuwieixjqqJpkqJvui4YSB7MaXLK",
             "evidence": {
               "signature": {
@@ -4042,6 +4032,15 @@
                 "signature": "219cfd81a73ed877c18fb1e1a7d6a499cb47cdbd341f1ef92528765b2e8a66279aec397af82b7d48a24666867bc3a245491aa56be8624260625ce0de03ed7c08"
               }
             }
+          },
+          {
+            "address": "wBPBfDVLv7vywFSSNuf2PLxoksh6sPWFPG5WHjpGyf9KuYG",
+            "evidence": {
+              "signature": {
+                "scheme": "sr25519",
+                "signature": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+              }
+            }
           }
         ]
       }
@@ -4050,7 +4049,7 @@
     "expected": {
       "phase": "validation",
       "code": "authority_session_key",
-      "pathPrefix": "/bootstrap/sudo/signatories/0"
+      "pathPrefix": "/bootstrap/sudo/signatories/2"
     }
   },
   {
@@ -4102,8 +4101,8 @@
     "patches": [
       {
         "op": "replace",
-        "path": "/bootstrap/validators/0/babe",
-        "value": "3333333333333333333333333333333333333333333333333333333333333333"
+        "path": "/bootstrap/validators/0/account",
+        "value": "wBPBfDVLv7vywFSSNuf2PLxoksh6sPWFPG5WHjpGyf9KuYG"
       }
     ],
     "refreshSource": [],
@@ -4114,21 +4113,12 @@
     }
   },
   {
-    "id": "usdt-owner-signatory-validator-imonline-key",
+    "id": "usdt-owner-signatory-validator-discovery-key",
     "patches": [
       {
         "op": "replace",
         "path": "/bootstrap/usdtOwner/signatories",
         "value": [
-          {
-            "address": "u5wKvsdTcsYQXeB9nvDQ7PppNHeVefghTzBY9niAhMSWTZH",
-            "evidence": {
-              "signature": {
-                "scheme": "sr25519",
-                "signature": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-              }
-            }
-          },
           {
             "address": "uBQEZwiJq2o4hBPMNu6N1S71tmkX6CruifwjDM7UmVdMiz2",
             "evidence": {
@@ -4146,6 +4136,15 @@
                 "signature": "ba4df5805d05b6d2877484943f5abb83dc8d6651b0daaea4dc1e6990b8478e5c1e1d93913c63e88d3343ee28a97e6a8b0fb160ba230e927575b9944f43ae6409"
               }
             }
+          },
+          {
+            "address": "y9wyAwVJpoBF2dybDoDtd4FTwwNszZP3roeuiDXMkVft4TY",
+            "evidence": {
+              "signature": {
+                "scheme": "sr25519",
+                "signature": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+              }
+            }
           }
         ]
       }
@@ -4154,7 +4153,7 @@
     "expected": {
       "phase": "validation",
       "code": "authority_session_key",
-      "pathPrefix": "/bootstrap/usdtOwner/signatories/0"
+      "pathPrefix": "/bootstrap/usdtOwner/signatories/2"
     }
   },
   {
@@ -4163,7 +4162,7 @@
       {
         "op": "replace",
         "path": "/bootstrap/sudo/address",
-        "value": "u5wKvsdTcsYQXeB9nvDQ7PppNHeVefghTzBY9niAhMSaG1a"
+        "value": "zU5uZuJseU5X3kzkmk8THa5fWxcojQCMWJ2WPdTtYf3uzhA"
       }
     ],
     "refreshSource": [],
@@ -4178,15 +4177,15 @@
     "patches": [
       {
         "op": "replace",
-        "path": "/bootstrap/validators/0/imOnline",
-        "value": "00000000000000000000000000000000000000000000000000000000000001ff"
+        "path": "/bootstrap/validators/0/discovery",
+        "value": "5c9fbcdccd7880adfe71218d127ad6f66f2c6bdf3bcb971bf95348f95c208c41"
       }
     ],
     "refreshSource": [],
     "expected": {
       "phase": "validation",
       "code": "invalid_session_key",
-      "pathPrefix": "/bootstrap/validators/0/imOnline"
+      "pathPrefix": "/bootstrap/validators/0/discovery"
     }
   },
   {
@@ -4325,7 +4324,7 @@
       {
         "op": "replace",
         "path": "/changes/rehomes/0/to",
-        "value": "u5wKvsdTcsYQXeB9nvDQ7PppNHeVefghTzBY9niAhMSZ8nD"
+        "value": "vW6qHdoEvUJgL8eHQ37WHxXiXK8Jm4ceUz1bADJkpbcYJyC"
       }
     ],
     "refreshSource": [],
@@ -5437,6 +5436,70 @@
         "op": "replace",
         "path": "/bootstrap/sudo/signatories/0",
         "value": "u9akdKiFqwWc9CcB8UwEuwieixjqqJpkqJvui4YSB7MaXLK"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "validator-babe-not-a-ristretto-point",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/babe",
+        "value": "00000000000000000000000000000000000000000000000000000000000001ff"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_session_key",
+      "pathPrefix": "/bootstrap/validators/0/babe"
+    }
+  },
+  {
+    "id": "validator-liveness-not-a-ristretto-point",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/1/liveness",
+        "value": "00000000000000000000000000000000000000000000000000000000000001ff"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_session_key",
+      "pathPrefix": "/bootstrap/validators/1/liveness"
+    }
+  },
+  {
+    "id": "validator-discovery-not-a-ristretto-point",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/discovery",
+        "value": "00000000000000000000000000000000000000000000000000000000000001ff"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_session_key",
+      "pathPrefix": "/bootstrap/validators/0/discovery"
+    }
+  },
+  {
+    "id": "validator-imonline-field-refused-at-decode",
+    "patches": [
+      {
+        "op": "add",
+        "path": "/bootstrap/validators/0/imOnline",
+        "value": "5c9fbcdccd7880adfe71218d127ad6f66f2c6bdf3bcb971bf95348f95c208c41"
       }
     ],
     "refreshSource": [],
