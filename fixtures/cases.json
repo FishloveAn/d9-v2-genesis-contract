@@ -995,8 +995,8 @@
     ],
     "expected": {
       "phase": "validation",
-      "code": "unfunded_lock",
-      "pathPrefix": "/source/locks"
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/locks"
     }
   },
   {
@@ -1211,6 +1211,19 @@
     "patches": [
       {
         "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": [
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          }
+        ]
+      },
+      {
+        "op": "replace",
         "path": "/changes/excludedJudicialLocks/0/account",
         "value": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr"
       }
@@ -1225,6 +1238,19 @@
   {
     "id": "stale-lock-exclusion-pin",
     "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": [
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          }
+        ]
+      },
       {
         "op": "replace",
         "path": "/changes/excludedJudicialLocks/0/blockHash",
@@ -1243,6 +1269,19 @@
     "patches": [
       {
         "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": [
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          }
+        ]
+      },
+      {
+        "op": "replace",
         "path": "/changes/excludedJudicialLocks/0/systemAccountExists",
         "value": true
       }
@@ -1259,6 +1298,19 @@
     "patches": [
       {
         "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": [
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          }
+        ]
+      },
+      {
+        "op": "replace",
         "path": "/changes/excludedJudicialLocks/0/v1LockAmount",
         "value": "2"
       }
@@ -1273,6 +1325,19 @@
   {
     "id": "unknown-lock-exclusion-reason",
     "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": [
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          }
+        ]
+      },
       {
         "op": "replace",
         "path": "/changes/excludedJudicialLocks/0/reason",
@@ -1352,28 +1417,12 @@
     ],
     "expected": {
       "phase": "validation",
-      "code": "invalid_lock_exclusion",
-      "pathPrefix": "/changes/excludedJudicialLocks"
+      "code": "source_target_mismatch",
+      "pathPrefix": "/state/locks"
     }
   },
   {
-    "id": "missing-approved-lock-exclusion",
-    "patches": [
-      {
-        "op": "replace",
-        "path": "/changes/excludedJudicialLocks",
-        "value": []
-      }
-    ],
-    "refreshSource": [],
-    "expected": {
-      "phase": "validation",
-      "code": "unfunded_lock",
-      "pathPrefix": "/source/locks"
-    }
-  },
-  {
-    "id": "excluded-lock-still-seeded",
+    "id": "record-only-lock-omitted",
     "patches": [
       {
         "op": "replace",
@@ -1381,11 +1430,6 @@
         "value": [
           {
             "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
-            "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
-            "session": 912
-          },
-          {
-            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
             "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
             "session": 912
           }
@@ -1400,8 +1444,45 @@
     }
   },
   {
+    "id": "void-exclusion-even-with-record-retained",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": [
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_lock_exclusion",
+      "pathPrefix": "/changes/excludedJudicialLocks"
+    }
+  },
+  {
     "id": "excluded-account-in-source-balances",
     "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": [
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          }
+        ]
+      },
       {
         "op": "replace",
         "path": "/source/balances",
@@ -1601,6 +1682,19 @@
   {
     "id": "excluded-account-funded-in-target",
     "patches": [
+      {
+        "op": "replace",
+        "path": "/changes/excludedJudicialLocks",
+        "value": [
+          {
+            "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+            "reason": "missing_system_account",
+            "v1LockAmount": "1",
+            "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
+            "systemAccountExists": false
+          }
+        ]
+      },
       {
         "op": "replace",
         "path": "/changes/topUps",

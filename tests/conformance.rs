@@ -270,7 +270,6 @@ fn funded_approved_account_is_retained_without_an_exclusion() {
         .as_array_mut()
         .unwrap()
         .push(json!({"account": account, "amount": "1000000"}));
-    value["state"]["locks"].as_array_mut().unwrap().push(raw);
     refresh_evidence(&mut value, &["balances".to_owned()]);
     let input = parse(&serde_json::to_vec(&value).unwrap()).unwrap();
     assert!(!validate(&input).unwrap().release_gate_evaluated);
