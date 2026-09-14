@@ -3135,5 +3135,105 @@
       "code": "chain_identity_label",
       "pathPrefix": "/chain/name"
     }
+  },
+  {
+    "id": "sudo-address-not-derived-after-threshold-change",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/threshold",
+        "value": 3
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_address_not_derived",
+      "pathPrefix": "/bootstrap/sudo/address"
+    }
+  },
+  {
+    "id": "usdt-owner-address-not-derived-after-signatory-change",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtOwner/signatories",
+        "value": [
+          "xnVk4zjmHBQnEwSzA2DbcFiWUgEbYxCuvDSe8WyenDQnAbx",
+          "xop69KHUJqbQfkAiSX5R1CpX5b34dYU3U3ZVdLCuu1GFCbx",
+          "yfqEyU4MPrZGvMWRFRiU3JkuxBUodzNzKa3vWGtpM3g2HNX"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_address_not_derived",
+      "pathPrefix": "/bootstrap/usdtOwner/address"
+    }
+  },
+  {
+    "id": "admin-address-not-derived",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/9/multisig/address",
+        "value": "yh9b3nc4RWjuMAE9XvaHSFrvZ6HGiae7sQAn1685TqXVNRn"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_address_not_derived",
+      "pathPrefix": "/bootstrap/admins/9/multisig/address"
+    }
+  },
+  {
+    "id": "sudo-equals-admin-multisig",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/5/multisig",
+        "value": {
+          "address": "whNczFM8ky3eRnrbNsZk7TPruWJz4QDL6rn24D7Y2d5aTyk",
+          "threshold": 2,
+          "signatories": [
+            "xiYhr36eCCrtxXHoJXe9RQQUfwqCKBRXGj65e5HsRqrNokJ",
+            "xjs3vMeMDs3XPL1Xb2VxpMWVGrdfPmgepZCw8tX8YdhqqRv",
+            "xmBPzgC4FXE9p8jFsXMnDJcVsmS8UMwnNPKndhkPfRZK6MA"
+          ]
+        }
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_role_not_distinct",
+      "pathPrefix": "/bootstrap/sudo/address"
+    }
+  },
+  {
+    "id": "sudo-equals-usdt-owner",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtOwner",
+        "value": {
+          "address": "whNczFM8ky3eRnrbNsZk7TPruWJz4QDL6rn24D7Y2d5aTyk",
+          "threshold": 2,
+          "signatories": [
+            "xiYhr36eCCrtxXHoJXe9RQQUfwqCKBRXGj65e5HsRqrNokJ",
+            "xjs3vMeMDs3XPL1Xb2VxpMWVGrdfPmgepZCw8tX8YdhqqRv",
+            "xmBPzgC4FXE9p8jFsXMnDJcVsmS8UMwnNPKndhkPfRZK6MA"
+          ]
+        }
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_role_not_distinct",
+      "pathPrefix": "/bootstrap/sudo/address"
+    }
   }
 ]

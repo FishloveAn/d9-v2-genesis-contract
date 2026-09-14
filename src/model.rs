@@ -218,10 +218,9 @@ record!(AdminRole {
     multisig: MultisigAuthority,
 });
 record!(
-    /// DEC-21 k-of-n pallet_multisig authority. Structure checks alone do NOT bind
-    /// `address` to `signatories` and `threshold`: a well-formed value can name any
-    /// address. d9-v2-tools `derive_admins` is the single derivation, and the
-    /// producer must prove equality before any authority is trusted.
+    /// DEC-21 k-of-n pallet_multisig authority. Validation requires
+    /// `address == multisig_account(signatories, threshold)`; it does not prove the
+    /// signatories are the intended custodians, which remains ceremony evidence.
     MultisigAuthority {
     address: Address,
     threshold: u16,

@@ -4,24 +4,26 @@
 
 [D9-400](https://linear.app/d9-network/issue/D9-400) records Yvan's 02:28 UTC
 ruling: enforce DEC-21 k-of-n `pallet_multisig` custody through a new contract RC,
-with the contract validating structure and d9-v2-tools `derive_admins` remaining
-the only address derivation. S-6 (chain identity not bound to purpose) and R-4
+initially validating structure only; Yvan's 03:33 UTC rulings then bound each
+address to its signatories in the contract (CS-1 = A), required multisig custody on
+every purpose and ladder rung, and made sudo distinct from other roles (CS-4). S-6 (chain identity not bound to purpose) and R-4
 (extra asset IDs pass) are included.
 
-Contract digest: `a22a15d979d7d156c6223a9b7c75e34c45d698850ed1a4184d781caf5de4e88a`. Input digest: `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
-Rejection corpus: 129 cases. Exact SHA-256 pins:
+Contract digest: `4e611d12efaae24dd5bf4e1bcf87ececd081c07e2dd707a67b725a7c04e85f60`. Input digest: `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
+Rejection corpus: 134 cases. Exact SHA-256 pins:
 - complete fixture: `e7a2a7e7d88b0d2d9caddead7ac3e3d6e4c963e31d088d753f463270e368f7aa`
 - expected: `b6b951556f652191f8abaea43735a8963a9eb654b765ca7fc0929ca224a2ade3`
-- cases: `49a8a9f9244287f8ccf91d3d82eddc669435c963945ec865e159135642939820`
-- rules: `188211bd61813f335a71a84650eaf4af85a4a295b3579bde307adfe2364d9def`
-- schema: `ebb3cd04f5ec579c5302c9a87ae264926d06ada46556de0f0bfbbec84d597334`
+- cases: `ee129c5d596be84b31ac888d7bf0d464427f017ae158fc55d420c2b48e55121b`
+- rules: `7ffd689c9c6f6c6ccbf0a23966b230dc9821419a357c3d2673e4cd31c57541df`
+- schema: `c29a9f5e9c2865bf4d7f278822722992babc7ec79d2239de8c1413450ffb7968`
 - inventory: `20f1bfd0323ecd4c8209fc7ea029bea8e8dc4273721a48a63df46ba46f47da9a`
 
 Review points:
 - The synthetic fixture's 14 multisig addresses are true `pallet_multisig`
   derivations of deterministic 2-of-3 filled-byte signatories (0xa0..0xc9),
   computed with d9-v2-tools `d9-bootstrap derive-admins` at tools `a5938f7` and
-  independently recomputed in Python. The contract does not re-derive them.
+  independently recomputed in Python. The contract now re-derives and requires
+  them, and a test asserts all 14.
 - The development-key deny list applies to all purposes; its constants are
   re-derived from seed URIs with sp-core in a unit test.
 - Chain label checks are consistency checks, not proof of deployment network.
@@ -46,8 +48,18 @@ Revision after PR #10 code review and security audit (same day):
 - CR-4: `parse` reports an unsupported `contractVersion` before typed decoding;
   main's RC6 `complete.json` reproduces exactly as case
   `rc6-complete-document-reports-version`.
-- Held pending Yvan: address derivation inside the contract (CS-1) and
-  role-address distinctness between sudo and admins (CS-4).
+
+Rulings applied (Yvan 2026-09-14 03:33 UTC):
+- CS-1 = A: public `multisig_account(signatories, threshold)` (pallet-multisig
+  48.0.0 `multi_account_id`), enforced as `multisig_address_not_derived`. It is
+  intentionally the second implementation: d9-bootstrap keeps its own copy so the
+  key-generation binary does not depend on sp-core; both are pinned to the same
+  `@polkadot/util-crypto` vectors, and composition cross-checks them.
+- Multisig custody applies to every purpose and ladder rung (Keel, Χ, Genie, Ψ, Ω);
+  there is no single-key rehearsal exception.
+- CS-4: sudo differs from the USDT owner and every admin
+  (`authority_role_not_distinct`); admins may share one multisig, the USDT owner may
+  equal an admin, and signatories may repeat across multisigs (positive tests).
 
 No downstream acknowledgement exists for RC7. Tools, node and the pallets adapter
 must repin and adopt the new fields before integrated enforcement is claimed.

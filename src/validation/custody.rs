@@ -6,6 +6,33 @@ use std::collections::BTreeSet;
 /// `derive_admins::MAX_SIGNATORIES`. A larger set cannot exist on-chain.
 pub const MULTISIG_MAX_SIGNATORIES: usize = 20;
 
+/// The `pallet_multisig` account of `signatories` at `threshold`:
+/// `blake2_256(SCALE(b"modlpy/utilisuba", sorted Vec<AccountId32>, threshold as u16))`.
+/// Input order does not matter; the signatories are sorted by bytes first, as
+/// `pallet_multisig` requires of its callers. Uniqueness and bounds are not
+/// checked here; CUSTODY validation enforces them separately.
+///
+/// This is intentionally the second of two implementations. d9-v2-tools
+/// `d9-bootstrap derive-admins` keeps its own small copy because the key-generation
+/// binary must not depend on this crate (and through it on sp-core). Both are pinned
+/// to the same `@polkadot/util-crypto` golden vectors, and composition cross-checks
+/// the two.
+// VERIFIED: pallet-multisig 48.0.0 `src/lib.rs:645-649`, `multi_account_id`:
+// `(b"modlpy/utilisuba", who, threshold).using_encoded(blake2_256)` decoded through
+// `TrailingZeroInput` into a 32-byte AccountId, i.e. the hash bytes themselves.
+// `BlakeTwo256::hash_of` is `Encode::using_encoded(s, sp_io::hashing::blake2_256)`
+// (sp-runtime 48.0.0 `src/traits/mod.rs:1009-1011, 1073-1075`). `[u8; 32]` and
+// AccountId32 SCALE-encode identically (32 raw bytes, no length prefix).
+// CHOICE: one expression over sp-runtime's hasher and codec (already dependencies)
+// instead of depending on pallet-multisig, which is not in this crate's tree and would
+// pull a FRAME pallet into a host-side contract crate for a single hash.
+pub fn multisig_account(signatories: &[[u8; 32]], threshold: u16) -> [u8; 32] {
+    use sp_runtime::traits::{BlakeTwo256, Hash};
+    let mut sorted = signatories.to_vec();
+    sorted.sort_unstable();
+    BlakeTwo256::hash_of(&(b"modlpy/utilisuba", &sorted[..], threshold)).0
+}
+
 // VERIFIED: sr25519/ed25519 named keys copied from sp-keyring 48.0.0 (the release
 // depending on this crate's pinned sp-core =43.0.0), git 8ee7713ab4c1665ed777cfd52063c28b05a431ba,
 // ~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sp-keyring-48.0.0/src/sr25519.rs
@@ -330,8 +357,8 @@ impl Reserved {
     }
 }
 
-/// DEC-21 k-of-n structure, mirroring d9-v2-tools `derive_admins::derive_role`.
-/// The equality address == derive(signatories, threshold) is the producer's check.
+/// DEC-21 k-of-n structure, mirroring d9-v2-tools `derive_admins::derive_role`,
+/// plus the binding address == multisig_account(signatories, threshold).
 fn multisig(authority: &MultisigAuthority, path: &str, reserved: &Reserved) -> Check {
     let n = authority.signatories.len();
     if authority.threshold < 2 {
@@ -395,7 +422,16 @@ fn multisig(authority: &MultisigAuthority, path: &str, reserved: &Reserved) -> C
     }
     let address_path = format!("{path}/address");
     not_development(&address, address_path.clone())?;
-    reserved.identity(&address, address_path)
+    reserved.identity(&address, address_path.clone())?;
+    let signatories: Vec<[u8; 32]> = authority.signatories.iter().map(bytes).collect();
+    if multisig_account(&signatories, authority.threshold) != address {
+        return Err(fail(
+            "multisig_address_not_derived",
+            address_path,
+            "address must equal the pallet_multisig account of its signatories and threshold",
+        ));
+    }
+    Ok(())
 }
 
 pub(super) fn check(i: &ContractInput) -> Check {
@@ -421,6 +457,24 @@ pub(super) fn check(i: &ContractInput) -> Check {
     for (path, authority) in &authorities {
         multisig(authority, path, &reserved)?;
     }
+    // CS-4 (yvan 2026-09-14): sudo is distinct from the USDT owner and from every
+    // pallet admin. The 12 admins may share one multisig, the USDT owner may equal an
+    // admin multisig, and one signatory may sit in several multisigs.
+    // CHOICE: usdtOwner == admin stays allowed; the ruling restricts only sudo, and
+    // refusing it would add policy nobody approved.
+    let sudo = &reserved.roles[0].1;
+    if let Some((role, _)) = reserved.roles[1..]
+        .iter()
+        .find(|(_, address)| address == sudo)
+    {
+        let mut error = fail(
+            "authority_role_not_distinct",
+            "/bootstrap/sudo/address",
+            "sudo must be a different account from the USDT owner and every pallet admin",
+        );
+        error.related_path = Some(format!("{role}/address"));
+        return Err(error);
+    }
     Ok(())
 }
 
@@ -429,6 +483,59 @@ mod tests {
     use super::*;
     use sp_core::{crypto::DEV_PHRASE, ecdsa, ed25519, sr25519, Pair};
     use sp_runtime::traits::IdentifyAccount;
+
+    fn hex(value: &str) -> [u8; 32] {
+        hex32(value.strip_prefix("0x").unwrap())
+    }
+
+    // Golden vectors from an independent implementation: `@polkadot/util-crypto` v13
+    // `createKeyMulti` + `encodeAddress(_, 9)`, copied from d9-v2-tools `a5938f7`
+    // `network-bootstrap/d9-bootstrap/tests/derive_admins_test.rs` (generated
+    // 2026-09-13). The same vectors pin the tools copy of this derivation.
+    const ALICE: &str = "0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d";
+    const BOB: &str = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48";
+    const CHARLIE: &str = "0x90b5ab205c6974c9ea841be688864633dc9ca8a357843eeacf2314649965fe22";
+    const DAVE: &str = "0x306721211d5404bd9da88e0204360a1a9ab8b87c66c1bc2fcdd37f3c2222cc20";
+    const EVE: &str = "0xe659a7a1628cdd93febc04a4e0646ea20e9f5f0ce097d9a05290d4a9e054df4e";
+
+    fn ss58(account: [u8; 32]) -> String {
+        Address::from_account_id(account.into()).as_str().to_owned()
+    }
+
+    #[test]
+    fn multisig_account_matches_polkadot_js_golden_vectors() {
+        let abc = multisig_account(&[hex(ALICE), hex(BOB), hex(CHARLIE)], 2);
+        assert_eq!(
+            abc,
+            hex("0x49daa32c7287890f38b7e1a8cd2961723d36d20baa0bf3b82e0c4bdda93b1c0a")
+        );
+        assert_eq!(ss58(abc), "vkmmi2TwxAsTuBHdhVKzmM3ys8oHrUtk759Jnc5uamGY2hD");
+        let abcde = multisig_account(
+            &[hex(ALICE), hex(BOB), hex(CHARLIE), hex(DAVE), hex(EVE)],
+            3,
+        );
+        assert_eq!(
+            abcde,
+            hex("0x36e11b1f4873b27df0a93a0670ea03e56aa7d677a42f67309c33a0d4d9b5bdae")
+        );
+        assert_eq!(
+            ss58(abcde),
+            "vKtnPZEwUHuKtTgevmzrnCM392AnFE1TBY3fDvDJUZju9Qm"
+        );
+        assert_eq!(
+            ss58(multisig_account(&[hex(ALICE), hex(BOB)], 2)),
+            "x4dxrZoSyCbJbzQXbBLuJqyQpn6ZvhsoHiotykmZFj7QXXY"
+        );
+        // polkadot-js gave the same address for [B, A, C] as for [A, B, C].
+        assert_eq!(
+            multisig_account(&[hex(CHARLIE), hex(BOB), hex(ALICE)], 2),
+            abc
+        );
+        assert_ne!(
+            multisig_account(&[hex(ALICE), hex(BOB), hex(CHARLIE)], 3),
+            abc
+        );
+    }
 
     #[test]
     fn deny_list_matches_sp_core_derivation_of_each_seed_uri() {

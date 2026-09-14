@@ -171,8 +171,12 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
   are `{address, threshold, signatories}`. The contract validates structure only
   (2 <= threshold <= n <= 20, strictly ascending unique signatories, no self or
   nested-role signatory, no PalletId or validator account, no development key). It
-  does not bind an address to its signatories: the single derivation stays in
-  d9-v2-tools `derive_admins`, and the producer must require equality.
+  requires `address == multisig_account(signatories, threshold)`, the
+  pallet-multisig account, and keeps sudo distinct from the USDT owner and every
+  admin. d9-v2-tools `derive_admins` keeps a second, independent copy of the
+  derivation; both are pinned to the same polkadot-js golden vectors.
+- Multisig custody applies to every purpose and ladder rung; there is no
+  single-key rehearsal exception.
 - Validator accounts and all five session keys also refuse development keys. The
   deny list covers sr25519/ed25519 sp-keyring keys, the bare DEV_PHRASE roots and
   the ecdsa-derived accounts of the same URIs.
@@ -185,7 +189,7 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
 
 `parse` reports a different readable `contractVersion` before typed decoding, so an
 RC6 document fails with `contract_version` rather than an unknown-field error.
-`MULTISIG_MAX_SIGNATORIES`, `well_known_development_key` and `VERSION_ERROR_PREFIX`
+`multisig_account`, `MULTISIG_MAX_SIGNATORIES`, `well_known_development_key` and `VERSION_ERROR_PREFIX`
 are exported so
 producers do not retype the bound, the deny list or the version error marker. RC6 acknowledgements do not
 cover RC7 bytes.

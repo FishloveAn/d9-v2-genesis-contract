@@ -245,7 +245,7 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 | bootstrap.sudo | MultisigAuthority | 见下 |
 | bootstrap.usdtOwner | MultisigAuthority | asset 1 的 owner；与 d9-v2-tools derive_admins 的 usdt-owner 角色对应 |
 | bootstrap.admins[] | {pallet, multisig: MultisigAuthority} | 12 个 pallet 恰好各一次（admin_coverage 不变） |
-| MultisigAuthority | {address, threshold: u16, signatories: Address[]} | 2 ≤ threshold ≤ n ≤ 20；signatories 按 AccountId32 字节严格升序（不重复）；任何 signatory 不得等于自身 address 或其他角色 address；address 与 signatories 均不得是开发密钥、PalletId 账户（ammAccount、miningPoolAccount 或任何以 b"modl" 开头的账户）或 validator 账户。仅靠结构检查，address 并未与 signatories 绑定 |
+| MultisigAuthority | {address, threshold: u16, signatories: Address[]} | 2 ≤ threshold ≤ n ≤ 20；signatories 按 AccountId32 字节严格升序（不重复）；任何 signatory 不得等于自身 address 或其他角色 address；address 与 signatories 均不得是开发密钥、PalletId 账户（ammAccount、miningPoolAccount 或任何以 b"modl" 开头的账户）或 validator 账户；address 必须等于 multisig_account(signatories, threshold) |
 
 | 拒绝代码 | 条件 |
 |---|---|
@@ -258,16 +258,28 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 | multisig_nested_signatory | signatory 等于本文档中另一个角色的 multisig address |
 | authority_pallet_account | multisig address 或 signatory 等于 ammAccount、miningPoolAccount 或以 b"modl" 开头的 PalletId 账户 |
 | authority_validator_account | multisig address 或 signatory 等于任一 validators[].account |
+| multisig_address_not_derived | address 不等于 multisig_account(signatories, threshold) |
+| authority_role_not_distinct | sudo.address 等于 usdtOwner.address 或任一 admins[].multisig.address |
 
-本契约只校验结构，不推导地址。唯一推导实现是 d9-v2-tools
-`network-bootstrap/d9-bootstrap/src/derive_admins.rs`：
-blake2_256(SCALE(b"modlpy/utilisuba", 升序 Vec<AccountId32>, u16 threshold))。
-producer 必须对每个 authority 重新推导并要求相等，再把 sudo.key、各 `<pallet>.admin`
-与 asset 1 owner 投影为这些地址；其他已声明资产的 owner 等于 sudo.address
-（node MainnetAssetOwners）。开发密钥拒绝对所有 purpose 生效，合成 fixture 也不例外。
-结构通过不证明签名人身份、密钥保管或仪式记录，这些仍是外部证据。签名人若是本文档之外的
-multisig（外部嵌套），本契约无法发现，必须由仪式证据排除。角色之间 address 是否必须互不相同
-尚待裁定（CS-4），本 RC 未强制。
+契约绑定地址（Yvan 2026-09-14 裁定 CS-1 = A）：公开函数
+`multisig_account(signatories, threshold)` 计算 pallet_multisig `multi_account_id` 的规则
+blake2_256(SCALE(b"modlpy/utilisuba", 升序 Vec<AccountId32>, u16 threshold))，已对照
+pallet-multisig 48.0.0 `src/lib.rs:645-649`。validate 对 sudo、usdtOwner 与每个 admin 要求
+address 等于该推导。这是有意保留的第二份实现：d9-v2-tools `d9-bootstrap derive-admins`
+保留自己的小副本，因为密钥生成二进制不得依赖本 crate（会引入 sp-core）。两份实现固定于同一组
+`@polkadot/util-crypto` golden vectors，组合步骤交叉校验二者。producer 再把 sudo.key、
+各 `<pallet>.admin` 与 asset 1 owner 投影为这些地址；其他已声明资产的 owner 等于
+sudo.address（node MainnetAssetOwners）。
+
+multisig 托管适用于所有 purpose 与阶梯的每一级（Keel、Χ、Genie、Ψ、Ω）；没有单钥演练例外
+（Yvan 2026-09-14）。开发密钥拒绝同样对所有 purpose 生效，合成 fixture 也不例外。
+
+角色区分（CS-4，Yvan 2026-09-14）：sudo.address 必须不同于 usdtOwner.address 和每个
+admins[].multisig.address。允许：12 个 pallet admin 共用一个 multisig；usdtOwner 等于某个
+admin multisig；同一 signatory 出现在多个 multisig 中（包括同时在 sudo 与 admin 中）。
+
+地址推导相等不证明签名人就是预定的保管人，也不证明密钥保管或仪式记录，这些仍是外部证据。
+签名人若是本文档之外的 multisig（外部嵌套），本契约无法发现，必须由仪式证据排除。
 
 ### 9.2 链身份与 purpose 绑定（NETWORK）
 
@@ -303,7 +315,6 @@ d9-native-genesis/0.1.0-rc.7，返回以 `contract_version` 开头的错误。�
 
 ### 9.5 producer 独立证据
 
-报告的 independentEvidenceRequired 新增四项：multisig address 等于 derive_admins
-推导；签名人托管与仪式证据（含外部嵌套）；assets.assets 与 assets.metadata 的 ID
+报告的 independentEvidenceRequired 新增三项：签名人是预定保管人及仪式证据（含外部嵌套）；assets.assets 与 assets.metadata 的 ID
 集合等于 assetIds；chain spec id/name/chainType 与 manifest network 等于 chain，
 且无 bootNodes、telemetryEndpoints 为 null。输入检查通过不代表这些已被证明。

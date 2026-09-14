@@ -296,7 +296,7 @@ fn migration_input_conformance_is_not_archive_settlement_or_release_approval() {
         "legacy settlement",
         "clean V2 processing",
         "watermark readback",
-        "derive_admins derivation",
+        "intended custodians",
         "key-ceremony evidence",
         "assets.metadata ID sets",
         "no bootNodes",
@@ -383,6 +383,8 @@ fn rc7_rejection_codes_in_source_each_have_a_shared_case() {
     }
     for code in [
         "multisig_nested_signatory",
+        "multisig_address_not_derived",
+        "authority_role_not_distinct",
         "authority_pallet_account",
         "authority_validator_account",
         "dev_key_authority",
@@ -401,27 +403,108 @@ fn rc7_rejection_codes_in_source_each_have_a_shared_case() {
     }
 }
 
+fn account(address: &Address) -> [u8; 32] {
+    *AsRef::<[u8; 32]>::as_ref(&address.account_id())
+}
+
+/// Re-derive `authority.address` from its (possibly edited) signatories and threshold.
+fn rederive(authority: &mut MultisigAuthority) {
+    authority.signatories.sort_by_key(account);
+    let keys: Vec<[u8; 32]> = authority.signatories.iter().map(account).collect();
+    authority.address =
+        Address::from_account_id(multisig_account(&keys, authority.threshold).into());
+}
+
 #[test]
-fn multisig_bounds_are_inclusive_and_structure_only() {
-    let original = input_value();
-    // threshold == n is valid (n-of-n).
-    let mut value = original.clone();
-    value["bootstrap"]["sudo"]["threshold"] = json!(3);
-    validate(&parse(&serde_json::to_vec(&value).unwrap()).unwrap()).unwrap();
-    // Exactly MULTISIG_MAX_SIGNATORIES is valid. The address is not re-derived
-    // here: derivation equality belongs to the producer via d9-v2-tools.
-    let signatories: Vec<_> = (0..MULTISIG_MAX_SIGNATORIES as u8)
+fn multisig_bounds_are_inclusive() {
+    // threshold == n is valid (n-of-n) once the address is the 3-of-3 account.
+    let mut input = input();
+    input.bootstrap.sudo.threshold = 3;
+    rederive(&mut input.bootstrap.sudo);
+    validate(&input).unwrap();
+    // Exactly MULTISIG_MAX_SIGNATORIES is valid.
+    let mut input = self::input();
+    input.bootstrap.sudo.signatories = (0..MULTISIG_MAX_SIGNATORIES as u8)
         .map(|i| Address::from_account_id([0xd0 + i; 32].into()))
         .collect();
-    let mut value = original.clone();
-    value["bootstrap"]["sudo"]["signatories"] = json!(signatories);
-    validate(&parse(&serde_json::to_vec(&value).unwrap()).unwrap()).unwrap();
-    value["bootstrap"]["sudo"]["signatories"]
-        .as_array_mut()
-        .unwrap()
-        .push(json!(Address::from_account_id([0xf0; 32].into())));
-    let error = validate(&parse(&serde_json::to_vec(&value).unwrap()).unwrap()).unwrap_err();
-    assert_eq!(error.code, "multisig_signatory_limit");
+    rederive(&mut input.bootstrap.sudo);
+    validate(&input).unwrap();
+    input
+        .bootstrap
+        .sudo
+        .signatories
+        .push(Address::from_account_id([0xf0; 32].into()));
+    rederive(&mut input.bootstrap.sudo);
+    assert_eq!(
+        validate(&input).unwrap_err().code,
+        "multisig_signatory_limit"
+    );
+}
+
+#[test]
+fn every_fixture_authority_address_is_its_multisig_account() {
+    let input = input();
+    let mut authorities = vec![&input.bootstrap.sudo, &input.bootstrap.usdt_owner];
+    authorities.extend(input.bootstrap.admins.iter().map(|role| &role.multisig));
+    assert_eq!(authorities.len(), 14);
+    for authority in authorities {
+        let keys: Vec<[u8; 32]> = authority.signatories.iter().map(account).collect();
+        assert_eq!(
+            multisig_account(&keys, authority.threshold),
+            account(&authority.address),
+            "{}",
+            authority.address
+        );
+    }
+    // Any change to threshold or signatories without re-deriving is refused.
+    let mut changed = self::input();
+    changed.bootstrap.usdt_owner.threshold = 3;
+    let error = validate(&changed).unwrap_err();
+    assert_eq!(error.code, "multisig_address_not_derived");
+    assert_eq!(error.path, "/bootstrap/usdtOwner/address");
+}
+
+#[test]
+fn admins_may_share_one_multisig_and_usdt_owner_may_equal_an_admin() {
+    let mut input = input();
+    let shared = input.bootstrap.admins[0].multisig.clone();
+    for role in &mut input.bootstrap.admins {
+        role.multisig = shared.clone();
+    }
+    validate(&input).unwrap();
+    input.bootstrap.usdt_owner = shared;
+    validate(&input).unwrap();
+}
+
+#[test]
+fn one_signatory_may_sit_in_sudo_and_admin_multisigs() {
+    let mut input = input();
+    let common = input.bootstrap.admins[0].multisig.signatories[0].clone();
+    input.bootstrap.sudo.signatories[0] = common.clone();
+    rederive(&mut input.bootstrap.sudo);
+    input.bootstrap.usdt_owner.signatories[0] = common;
+    rederive(&mut input.bootstrap.usdt_owner);
+    validate(&input).unwrap();
+}
+
+#[test]
+fn sudo_must_differ_from_usdt_owner_and_every_admin() {
+    let mut input = input();
+    input.bootstrap.admins[7].multisig = input.bootstrap.sudo.clone();
+    let error = validate(&input).unwrap_err();
+    assert_eq!(error.code, "authority_role_not_distinct");
+    assert_eq!(
+        error.related_path.as_deref(),
+        Some("/bootstrap/admins/7/multisig/address")
+    );
+    let mut input = self::input();
+    input.bootstrap.usdt_owner = input.bootstrap.sudo.clone();
+    let error = validate(&input).unwrap_err();
+    assert_eq!(error.code, "authority_role_not_distinct");
+    assert_eq!(
+        error.related_path.as_deref(),
+        Some("/bootstrap/usdtOwner/address")
+    );
 }
 
 #[test]
