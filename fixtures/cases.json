@@ -756,47 +756,135 @@
         "value": [
           {
             "pallet": "d9-amm",
-            "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH"
+            "multisig": {
+              "address": "uSTa4gZD5b759c4bLSKQJkDEnn3cEpa1HUpCmpJSXBBFyEk",
+              "threshold": 2,
+              "signatories": [
+                "xrSnHxNtN9xfXMcB1Wo3o72YHQdznizJZhoCcxfS8ayBYFV",
+                "xsm8NGvbPp9HxAKuJ1esC48YtKSTsKFS7Xv47mthFNpekie",
+                "xu5USbUJRUKvNy3daWWgb1EZVEEvwuWZfN2ucb7xNAg7tQM"
+              ]
+            }
           },
           {
             "pallet": "d9-burn-mining",
-            "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX"
+            "multisig": {
+              "address": "w3DRQQHAtkrYAchTwGMchPAo23Pw4DtWiVBNtkFQDFc6dmo",
+              "threshold": 2,
+              "signatories": [
+                "xvPpWv21T8WYommMs1NVyxLa693Q2VmhDC9m7QMDUxXb6nm",
+                "xwiAbEZiUnhBEaV69WEKNuSah3qs762pm2GccDaUbkP3yCa",
+                "xy2WfZ7RWSsofPCpS168mrYbHxeLBgHxJrPU72ojiYEXBwL"
+              ]
+            }
           },
           {
             "pallet": "d9-cross-chain",
-            "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a"
+            "multisig": {
+              "address": "vdzxgAjVV8L8prwwix7nDEdbWuKUXX6EX54sCGae8pHDaWQ",
+              "threshold": 2,
+              "signatories": [
+                "xzLrjsf8Y74S6BvYiVwxAoebtsSoGGZ5rgWKbr2zqL5zULN",
+                "y1fCpCCqZmF4WzeGzzomZkkcVnFGLrpDQWdB6fGFx7wTYBo",
+                "y2yYtWkYbRRgwoN1HVfaxhrd6h3jRT5LxLk2bUVX4unvfDB"
+              ]
+            }
           },
           {
             "pallet": "d9-governance",
-            "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN"
+            "multisig": {
+              "address": "yZkrWfym6pjuQTjbHQXXwcSwMWRAxEM3mQTyZzBHXf8b6yd",
+              "threshold": 2,
+              "signatories": [
+                "y4HtxqJFd5cKNc5jZzXQMexdhbrCW3LUWArt6HinBhePnSy",
+                "y5cF39qxejnwoQoTrVPDkc4eJWefadbc3zyjb6x3JVVrx63",
+                "y6vb7UPfgPyaEDXC8zF39ZAeuRT8fDrjbq6b5vBJRHMKws7"
+              ]
+            }
           },
           {
             "pallet": "d9-judicial-penalty",
-            "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK"
+            "multisig": {
+              "address": "uSTwv9TEk8EUtSFqRpCDLNAVJBGQFg8c8RgLCRwZ2W9xW3u",
+              "threshold": 2,
+              "signatories": [
+                "y8EwBnwNi4ACf2EvRV6rYWGfWLFbjp7s9fDSajQZY5Co6Lg",
+                "y9ZHG7V5jiLq5pxehyxfwTNg7F44pQNzhVLJ5Ydpes4GD1Y",
+                "yAsdLS2nmNXTWdgNzUpVLQUgi9rXtze8FKT9aMs5meujJTj"
+              ]
+            }
           },
           {
             "pallet": "d9-merchant",
-            "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM"
+            "multisig": {
+              "address": "yYotEVtTAN5s1RXxp1dK4zLp7RVYVpLiaz1dqJtc8MhuGEd",
+              "threshold": 2,
+              "signatories": [
+                "yCByQkaVo2i5wSQ7GygJjMahK4ezyauFo9a15B6LtSmCQx4",
+                "yDWKV58CpgtiNF7qZUY88JghuyTU4BAPLygrZzKc1EcfYzz",
+                "yEpfZPfurM5Lo3qZqyPwXFniWtFw8mRWtooi4oYs82U8b3s"
+              ]
+            }
           },
           {
             "pallet": "d9-mining-pool",
-            "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k"
+            "multisig": {
+              "address": "vMiHKrP2VYTst4oPUzs4R33HGhPZS9A64HLRDAAuknBTL1p",
+              "threshold": 2,
+              "signatories": [
+                "yG91diDct1FyDrZJ8UFkvCtj7o4QDMgeSdvZZcn8EpKbvnz",
+                "yHTMi2mKufSbefH2Qy7aK9zjihrsHwwmzU3R4S1PMcB4sNh",
+                "yJmhnMK2wKdE5TzkhTyPi76kKcfLNYCuYJAGZFEeUQ2Y4XE"
+              ]
+            }
           },
           {
             "pallet": "d9-node-registry",
-            "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo"
+            "multisig": {
+              "address": "z3X3nxbZhZY8fB8QSPpCuzFDrror1zqsxiSagjXdkPej283",
+              "threshold": 2,
+              "signatories": [
+                "yL63rfrjxyorWGiUyxqD74CkvXToT8U368H844TubBt1HPh",
+                "yMQPvzQSzdzUw5SDGTh2W1JmXSGGXijAdxPyYshAhyjUR9G",
+                "yNik1JxA2JB7Mt9wYxYqtxQn8M4jcJzJBnWq3gvRpmawXRY"
+              ]
+            }
           },
           {
             "pallet": "d9-node-rewards",
-            "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt"
+            "multisig": {
+              "address": "zrWKqmdWWcg4zryLAKis5bFyrnir24ye1Q3WCMFPrvK9G4c",
+              "threshold": 2,
+              "signatories": [
+                "yQ365dVs3xMjngsfqTQfHuWnjFsCguFRjcdgYW9gwZSQX7d",
+                "yRMS9x3a5cYNDVbQ7xGUgrcoLAffmVWZHSkY3KNx4MHsoFE",
+                "ySfnEGbH7GizeJK8QT8J5oiow5U8r5mgqGsPY8cDB99M5Q8"
+              ]
+            }
           },
           {
             "pallet": "d9-referrals",
-            "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg"
+            "multisig": {
+              "address": "wnm8rYT24x4pZNKLjxwXk99shPnonz2UoLkwPuHKhZFTM6s",
+              "threshold": 2,
+              "signatories": [
+                "yTz8Jb8z8vud572rgwz7UkppXzGbvg2pP6zF2wqUHvzouUr",
+                "yVJUNughAb6FVukaySqvshvq8u551GHwvw76Xm4jQirH5YW",
+                "yWcpTEEQCFGsviUKFwhkGf2qjosY5rZ5UmDx2aHzXWhk9rQ"
+              ]
+            }
           },
           {
             "pallet": "d9-upgrade-coordinator",
-            "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg"
+            "multisig": {
+              "address": "xB5ENW3jbK7jU2v8ALdjRBawU2bTqDrasXMQqB1vcqYsod3",
+              "threshold": 2,
+              "signatories": [
+                "yXwAXYn7DuTWMXC3YSZZfc8rLig1ASpD2bLoXPXFeJZDXnp",
+                "yZFWbsKpFZe8nKumpwRP4ZErwdUUF35LaRTf2CkWm6QgQzK",
+                "yaZrgBsXHDpmD8dW7SHCTWLsYYGwKdLU8FaWX1ymstG9YKp"
+              ]
+            }
           }
         ]
       }
@@ -1100,7 +1188,7 @@
     "patches": [
       {
         "op": "replace",
-        "path": "/bootstrap/sudo",
+        "path": "/bootstrap/sudo/address",
         "value": "abc"
       }
     ],
@@ -1970,6 +2058,519 @@
       "phase": "validate",
       "code": "contract_version",
       "pathPrefix": "/contractVersion"
+    }
+  },
+  {
+    "id": "reject-rc6-version",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/contractVersion",
+        "value": "d9-native-genesis/0.1.0-rc.6"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "contract_version",
+      "pathPrefix": "/contractVersion"
+    }
+  },
+  {
+    "id": "rc6-flat-sudo-address-refused",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo",
+        "value": "whNczFM8ky3eRnrbNsZk7TPruWJz4QDL6rn24D7Y2d5aTyk"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "multisig-threshold-u16-overflow",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/threshold",
+        "value": 65536
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "sudo-single-key-threshold",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/threshold",
+        "value": 1
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_threshold_too_low",
+      "pathPrefix": "/bootstrap/sudo/threshold"
+    }
+  },
+  {
+    "id": "admin-threshold-zero",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/5/multisig/threshold",
+        "value": 0
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_threshold_too_low",
+      "pathPrefix": "/bootstrap/admins/5/multisig/threshold"
+    }
+  },
+  {
+    "id": "usdt-owner-threshold-exceeds-signatories",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtOwner/threshold",
+        "value": 4
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_threshold_exceeds_signatories",
+      "pathPrefix": "/bootstrap/usdtOwner/threshold"
+    }
+  },
+  {
+    "id": "sudo-signatories-above-runtime-max",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/signatories",
+        "value": [
+          "yojKRPLbZof3VBpnxQsNR1NyZeHc7XwmcYm3VAGP3nnpzjj",
+          "yq3fVhtJbTqfuzYXEujBoxUzAZ65C8CuANstyyVeAaeJAML",
+          "yrN1a2S1d82JLoGFXQb1CuazmTtYGiU2iCzkUniuHNVmMc1",
+          "ysgMeLyienCvmbyyouSpbrh1NNh1MJjAG37bybxAQAMEVsY",
+          "ytzhifXRgSPZCQhi6QJdzoo1yHVURtzHosETURBRWxCheYj",
+          "yvK3nz58i6aBdDRSNuATPku2aCHwWVFRMhMJyEQgdk4AbTs",
+          "ywdPsJcqjkkp429AfQ2Gni13B76Qb5WYuXUAU3dwkXudca1",
+          "yxwjwdAYmQwSUprtwtt6Bf73n1tsffmgTMb1xrsCsKm717g",
+          "yzG61wiFo584udadEPjuacD4NvhLkG2p1BhsTg6Tz7ca2ba",
+          "z1aS6GFxpjJhLSJMWtbiyZK4yqVoprHwZ1pixVKj6uU3D39",
+          "z2tnAaofrPVKmF25oPTYNWR5akJGuSZ56qwaTJYzDhKWJUZ",
+          "z4D8EuMNt3fxC3jp5tKMmTX6Bf6jz2pCeg4Rx7nFLVAyNXE",
+          "z5XUKDu5uhracrTYNPBBAQd6nZuD4d5LCWBHSw1WTH2Sh3h",
+          "z6qpPYSnwN3D3fBGet2zZMj7PUhg9DLTkLJ8wkEma4suqAv",
+          "z8AATrzVy2DqUTtzwNtoxJq7zPW9DobbJAQzSZU2grjNeqS",
+          "z9UWYBYCzgQTuGcjDskdMFw8bJJcJPriqzXqwNhHoeaqrSa",
+          "zAnrcW5v2Lb6L5LTWNcSkD39CD75Nz7rPpehSBvYvSSK9Ur",
+          "zC7Cgpdd3zmikt4BnsUG9A99o7uYTaNywemYw19p3EHnKkc",
+          "zDRYm9BL5exMBgmv5NL5Y7FAQ2i1YAe7VUtQRpP5A29FTXi",
+          "zEjtqTj37K8ycVVeMsBtw4MAzwWUckuF3K1FvdcLGoziXr7",
+          "zG4EunGk8yKc3JDNeN3iL1TBbrJwhMANb987RSqbPbrBb92"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_signatory_limit",
+      "pathPrefix": "/bootstrap/sudo/signatories"
+    }
+  },
+  {
+    "id": "admin-signatories-unsorted",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/0/multisig/signatories",
+        "value": [
+          "xu5USbUJRUKvNy3daWWgb1EZVEEvwuWZfN2ucb7xNAg7tQM",
+          "xsm8NGvbPp9HxAKuJ1esC48YtKSTsKFS7Xv47mthFNpekie",
+          "xrSnHxNtN9xfXMcB1Wo3o72YHQdznizJZhoCcxfS8ayBYFV"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_signatory_order",
+      "pathPrefix": "/bootstrap/admins/0/multisig/signatories/1"
+    }
+  },
+  {
+    "id": "admin-signatory-duplicate",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/0/multisig/signatories",
+        "value": [
+          "xrSnHxNtN9xfXMcB1Wo3o72YHQdznizJZhoCcxfS8ayBYFV",
+          "xrSnHxNtN9xfXMcB1Wo3o72YHQdznizJZhoCcxfS8ayBYFV",
+          "xu5USbUJRUKvNy3daWWgb1EZVEEvwuWZfN2ucb7xNAg7tQM"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_signatory_order",
+      "pathPrefix": "/bootstrap/admins/0/multisig/signatories/1"
+    }
+  },
+  {
+    "id": "sudo-multisig-is-own-signatory",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/signatories",
+        "value": [
+          "whNczFM8ky3eRnrbNsZk7TPruWJz4QDL6rn24D7Y2d5aTyk",
+          "xiYhr36eCCrtxXHoJXe9RQQUfwqCKBRXGj65e5HsRqrNokJ",
+          "xjs3vMeMDs3XPL1Xb2VxpMWVGrdfPmgepZCw8tX8YdhqqRv"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_self_signatory",
+      "pathPrefix": "/bootstrap/sudo/signatories/0"
+    }
+  },
+  {
+    "id": "sudo-signatory-dev-alice-sr25519",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/signatories",
+        "value": [
+          "xiYhr36eCCrtxXHoJXe9RQQUfwqCKBRXGj65e5HsRqrNokJ",
+          "xjs3vMeMDs3XPL1Xb2VxpMWVGrdfPmgepZCw8tX8YdhqqRv",
+          "ytBPqMwQPfbs9ugGHadMUjQk6VBRNWe9cRBtqPSX4eEdQR8"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dev_key_authority",
+      "pathPrefix": "/bootstrap/sudo/signatories/"
+    }
+  },
+  {
+    "id": "sudo-address-dev-alice-sr25519",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/address",
+        "value": "ytBPqMwQPfbs9ugGHadMUjQk6VBRNWe9cRBtqPSX4eEdQR8"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dev_key_authority",
+      "pathPrefix": "/bootstrap/sudo/address"
+    }
+  },
+  {
+    "id": "admin-address-dev-bob-ed25519",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/11/multisig/address",
+        "value": "ypcDvECx16D6r3KHDWkxERhqJfbsHbnJu7QduU9w441PunS"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dev_key_authority",
+      "pathPrefix": "/bootstrap/admins/11/multisig/address"
+    }
+  },
+  {
+    "id": "migration-input-development-chain",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/chainType",
+        "value": "Development"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_purpose_binding",
+      "pathPrefix": "/chain/chainType"
+    }
+  },
+  {
+    "id": "migration-input-local-chain",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/chainType",
+        "value": "Local"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_purpose_binding",
+      "pathPrefix": "/chain/chainType"
+    }
+  },
+  {
+    "id": "synthetic-fixture-labelled-mainnet",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Mainnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_purpose_binding",
+      "pathPrefix": "/chain/network"
+    }
+  },
+  {
+    "id": "mainnet-id-carries-testnet-token",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Mainnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/id"
+    }
+  },
+  {
+    "id": "mainnet-name-carries-dev-token",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Dev Mainnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
+    }
+  },
+  {
+    "id": "testnet-id-without-test-token",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_mainnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/id"
+    }
+  },
+  {
+    "id": "chain-id-not-canonical",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "D9_Testnet_Fixture"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/id"
+    }
+  },
+  {
+    "id": "chain-name-padded",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": " D9 Testnet Fixture"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
+    }
+  },
+  {
+    "id": "custom-chain-type-refused",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/chainType",
+        "value": {
+          "Custom": "Live"
+        }
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "unknown-network-label-refused",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "devnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_decode",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "asset-ids-unsorted",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/assetIds",
+        "value": [
+          2,
+          1,
+          3
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "asset_id_set",
+      "pathPrefix": "/bootstrap/assetIds"
+    }
+  },
+  {
+    "id": "asset-ids-duplicate",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/assetIds",
+        "value": [
+          1,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "asset_id_set",
+      "pathPrefix": "/bootstrap/assetIds"
+    }
+  },
+  {
+    "id": "migrated-asset-undeclared",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/assetIds",
+        "value": [
+          1,
+          3
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "asset_id_set",
+      "pathPrefix": "/bootstrap/assetIds"
     }
   }
 ]

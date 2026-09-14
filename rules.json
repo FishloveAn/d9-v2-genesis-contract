@@ -118,5 +118,23 @@
     "owner": "D9-190 + D9-370",
     "phase": "bootstrap/runtime",
     "rule": "Yvan 2026-09-12 approved minimum remaining reserves of 600k whole D9 (600000000000000000 raw,12 decimals) and 600k whole USDT (600000000000 raw,6 decimals). This V2 liquidity-depth policy supersedes both the V1 parity minima and the RC4 1M-token policy; source/target reserve equality and exact LP ownership are unchanged. Separate from LP-token minimum and the retired redemption price floor; not an oracle-security guarantee. Runtime swap/quote and withdrawal boundary enforcement requires independent tests."
+  },
+  {
+    "id": "CUSTODY",
+    "owner": "D9-400 + d9-v2-tools derive_admins + D9-370",
+    "phase": "bootstrap",
+    "rule": "DEC-21 k-of-n pallet_multisig custody for sudo, usdtOwner and all 12 pallet admins; each carries address, threshold and signatories. The contract validates structure only: 2 <= threshold <= n <= 20 (runtime MaxSignatories), signatories unique and strictly ascending by AccountId32 bytes, no signatory equal to its own multisig address, and no sp-keyring development public key (sr25519 or ed25519 //Alice, //Bob, //Charlie, //Dave, //Eve, //Ferdie, each //stash, //One, //Two) as address or signatory, for every purpose. The address is not derived here: the producer must recompute every address with d9-v2-tools derive_admins, blake2_256(SCALE(b\"modlpy/utilisuba\", sorted signatories, u16 threshold)), require equality, and project sudo.key, each <pallet>.admin and the asset 1 owner from these addresses; other declared asset owners equal sudo.address (node MainnetAssetOwners). Signatory custody and ceremony evidence remain external."
+  },
+  {
+    "id": "NETWORK",
+    "owner": "D9-400 + D9-370",
+    "phase": "chain",
+    "rule": "The contract declares chain network (mainnet|testnet), id, name and chainType (Development|Local|Live; Custom is refused). migration-input requires Live; only migration-input may be labelled mainnet; testnet-labelled migration-input stays valid for rehearsal. id is 1-64 of [a-z0-9_]; name is nonempty, trimmed and free of control characters. Mainnet id and name exclude test/dev/local/rehears/fixture/synthetic; testnet id and name contain test. The producer must require the bootstrap manifest network and the chain-spec id, name and chainType to equal this declaration, and must reject any bootNodes entry and any telemetryEndpoints value other than null. Label consistency is not proof of which network a spec is deployed to."
+  },
+  {
+    "id": "ASSET_SET",
+    "owner": "D9-400 + D9-370",
+    "phase": "bootstrap/assets",
+    "rule": "bootstrap.assetIds is the complete, strictly ascending V2 pallet-assets ID set and includes every migrated state asset; fresh assets without a migrated book are declared only here. The contract does not model asset definitions or metadata, so the producer must require the ID sets of assets.assets and assets.metadata each to equal assetIds exactly, with no extra or missing IDs, and migrated metadata decimals equal to the state book."
   }
 ]

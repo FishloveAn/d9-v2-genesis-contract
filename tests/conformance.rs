@@ -176,8 +176,9 @@ fn complete_fixture_matches_independently_authored_values_and_hashes() {
 #[test]
 fn prefix_alias_is_rejected_and_duplicate_reports_both_rows() {
     let mut value = input_value();
-    let id = input().bootstrap.sudo.account_id();
-    value["bootstrap"]["sudo"] = json!(id.to_ss58check_with_version(Ss58AddressFormat::custom(42)));
+    let id = input().bootstrap.sudo.address.account_id();
+    value["bootstrap"]["sudo"]["address"] =
+        json!(id.to_ss58check_with_version(Ss58AddressFormat::custom(42)));
     assert!(parse(&serde_json::to_vec(&value).unwrap())
         .unwrap_err()
         .contains("prefix 9"));
@@ -204,7 +205,7 @@ fn digests_commit_to_ownership_and_domain_but_not_dataset_order() {
     assert_ne!(digest, dataset_digest("lp", &reversed));
     assert_ne!(digest, dataset_digest("assets", rows));
     let mut changed = input.clone();
-    changed.bootstrap.sudo = changed.bootstrap.validators[0].account.clone();
+    changed.bootstrap.sudo.address = changed.bootstrap.validators[0].account.clone();
     assert_ne!(input_digest(&input), input_digest(&changed));
     changed = input.clone();
     changed.build.wasm_digest = Digest::try_from("f".repeat(64)).unwrap();
@@ -347,5 +348,93 @@ fn approved_reserve_depth_uses_whole_token_units() {
         serde_json::to_value(input.bootstrap.usdt_reserve_floor).unwrap(),
         expected["usdtReserveFloor"]
     );
+    validate(&input).unwrap();
+}
+
+#[test]
+fn rc7_custody_network_and_asset_rejections_each_have_a_shared_case() {
+    let cases: Vec<Value> = serde_json::from_str(include_str!("../fixtures/cases.json")).unwrap();
+    for code in [
+        "multisig_threshold_too_low",
+        "multisig_threshold_exceeds_signatories",
+        "multisig_signatory_limit",
+        "multisig_signatory_order",
+        "multisig_self_signatory",
+        "dev_key_authority",
+        "chain_purpose_binding",
+        "chain_identity_label",
+        "asset_id_set",
+    ] {
+        assert!(
+            cases.iter().any(|case| case["expected"]["code"] == code),
+            "{code} has no shared negative case"
+        );
+    }
+}
+
+#[test]
+fn multisig_bounds_are_inclusive_and_structure_only() {
+    let original = input_value();
+    // threshold == n is valid (n-of-n).
+    let mut value = original.clone();
+    value["bootstrap"]["sudo"]["threshold"] = json!(3);
+    validate(&parse(&serde_json::to_vec(&value).unwrap()).unwrap()).unwrap();
+    // Exactly MULTISIG_MAX_SIGNATORIES is valid. The address is not re-derived
+    // here: derivation equality belongs to the producer via d9-v2-tools.
+    let signatories: Vec<_> = (0..MULTISIG_MAX_SIGNATORIES as u8)
+        .map(|i| Address::from_account_id([0xd0 + i; 32].into()))
+        .collect();
+    let mut value = original.clone();
+    value["bootstrap"]["sudo"]["signatories"] = json!(signatories);
+    validate(&parse(&serde_json::to_vec(&value).unwrap()).unwrap()).unwrap();
+    value["bootstrap"]["sudo"]["signatories"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!(Address::from_account_id([0xf0; 32].into())));
+    let error = validate(&parse(&serde_json::to_vec(&value).unwrap()).unwrap()).unwrap_err();
+    assert_eq!(error.code, "multisig_signatory_limit");
+}
+
+#[test]
+fn every_well_known_development_key_is_refused_as_signatory() {
+    let alice = sp_core::sr25519::Pair::from_string("//Alice", None).unwrap();
+    let ferdie_stash = sp_core::ed25519::Pair::from_string("//Ferdie//stash", None).unwrap();
+    use sp_core::Pair;
+    for key in [alice.public().0, ferdie_stash.public().0] {
+        assert!(well_known_development_key(&key).is_some());
+        let mut input = input();
+        let signatories = &mut input.bootstrap.usdt_owner.signatories;
+        signatories[2] = Address::from_account_id(key.into());
+        signatories.sort_by_key(|a| AsRef::<[u8; 32]>::as_ref(&a.account_id()).to_owned());
+        assert_eq!(validate(&input).unwrap_err().code, "dev_key_authority");
+    }
+    assert!(well_known_development_key(&[0xa0; 32]).is_none());
+}
+
+#[test]
+fn chain_identity_binds_purpose_without_blocking_testnet_rehearsal() {
+    let mut input = input();
+    assert_eq!(input.chain.network, Network::Testnet);
+    // Χ rehearsal: real-data purpose on a testnet-labelled Live chain.
+    input.purpose = Purpose::MigrationInput;
+    validate(&input).unwrap();
+    input.chain = ChainIdentity {
+        network: Network::Mainnet,
+        id: "d9_mainnet".into(),
+        name: "D9 Mainnet".into(),
+        chain_type: ChainType::Live,
+    };
+    validate(&input).unwrap();
+    input.purpose = Purpose::SyntheticFixture;
+    assert_eq!(validate(&input).unwrap_err().code, "chain_purpose_binding");
+}
+
+#[test]
+fn declared_asset_set_may_include_fresh_assets_but_not_omit_migrated_ones() {
+    let input = input();
+    let migrated: BTreeSet<u32> = input.state.assets.iter().map(|a| a.asset_id).collect();
+    let declared: BTreeSet<u32> = input.bootstrap.asset_ids.iter().copied().collect();
+    assert!(migrated.is_subset(&declared));
+    assert!(declared.difference(&migrated).next().is_some());
     validate(&input).unwrap();
 }

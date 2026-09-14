@@ -1,4 +1,4 @@
-# 创世数据契约 — 0.1.0-rc.6
+# 创世数据契约 — 0.1.0-rc.7
 
 状态：待下游评审。关联：[D9-380](https://linear.app/d9-network/issue/D9-380)。
 这是导出器、native builder、独立验证器共同使用的输入边界。传输 DTO
@@ -33,13 +33,14 @@ typed adapter 完成，roundtrip 测试锁定其行为。
 
 | 字段 | 内容与责任 |
 |---|---|
-| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.6 |
+| contractVersion | 精确等于 d9-native-genesis/0.1.0-rc.7 |
 | purpose | synthetic-fixture 或 migration-input；前者只能用于合成对照 |
+| chain | RC7：network（mainnet/testnet）、id、name、chainType（Development/Local/Live），与 purpose 绑定；见第 9 节 |
 | source | 固定 finalized pin 的链 genesisHash、blockNumber/blockHash/stateRoot、timestampMs、runtimeSpecVersion/metadataDigest、规范化源投影及证据引用；由 D9-378 提供 |
 | build | nodeCommit、palletsCommit、cargoLockDigest、runtimeConfigDigest、wasmDigest、nativegenCommit |
 | state | 提交给 native builder 的迁移状态；字段不得静默省略 |
 | changes | 有名字和具体记录的 top-up、refund、D9/asset rehome、reward credit、expiry exclusion 与未决项 |
-| bootstrap | sudo、validator 五类 session key、12 个 admin role、SDK 派生 pallet 账户及已决 AMM 参数 |
+| bootstrap | sudo 与 usdtOwner 的 k-of-n multisig、validator 五类 session key、12 个 admin role 的 multisig、SDK 派生 pallet 账户、已决 AMM 参数及完整 assetIds 集合 |
 
 build 中的所有 digest 都是对对应原始文件 bytes 的 SHA-256。runtimeConfigDigest
 约束本 DTO 未展开的完整 V2 runtime 配置，例如 assets metadata/owner/minBalance、
@@ -227,3 +228,60 @@ d9-core 的声明校验桥接、读取 pallet 源码的覆盖测试迁回 d9-v2-
 d9-genesis-adapter。原有 Rust typed adapter 的责任与字段没有改变。
 消费者固定引用本仓 commit；不得依赖另一工作区的相对路径或保留规范副本。
 RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/binding digests；消费者必须重新固定 commit 并评审全部样本。
+
+## 9. RC7 托管、链身份与资产集合 — 2026-09-14
+
+依据 [D9-400](https://linear.app/d9-network/issue/D9-400) 中 Yvan 2026-09-14 02:28 UTC
+的裁定（S-2 执行 DEC-21 multisig 托管）以及审计 S-6、评审 R-4。RC6 输入不再兼容：
+`bootstrap.sudo` 与 `bootstrap.admins[].account` 由单一地址改为 multisig 结构。
+
+### 9.1 Multisig 托管（CUSTODY）
+
+| 字段 | 结构 | 校验 |
+|---|---|---|
+| bootstrap.sudo | MultisigAuthority | 见下 |
+| bootstrap.usdtOwner | MultisigAuthority | asset 1 的 owner；与 d9-v2-tools derive_admins 的 usdt-owner 角色对应 |
+| bootstrap.admins[] | {pallet, multisig: MultisigAuthority} | 12 个 pallet 恰好各一次（admin_coverage 不变） |
+| MultisigAuthority | {address, threshold: u16, signatories: Address[]} | 2 ≤ threshold ≤ n ≤ 20；signatories 按 AccountId32 字节严格升序（不重复）；任何 signatory 不得等于自身 address；address 与 signatories 均不得是开发密钥 |
+
+| 拒绝代码 | 条件 |
+|---|---|
+| multisig_threshold_too_low | threshold < 2（1-of-n 等于单钥权限） |
+| multisig_signatory_limit | n > 20（runtime MaxSignatories） |
+| multisig_threshold_exceeds_signatories | threshold > n |
+| multisig_signatory_order | signatories 未按字节严格升序或重复 |
+| multisig_self_signatory | signatory 等于其 multisig address |
+| dev_key_authority | address 或 signatory 等于 sp-keyring 48.0.0 的 sr25519/ed25519 公钥：//Alice、//Bob、//Charlie、//Dave、//Eve、//Ferdie 及各自 //stash、//One、//Two |
+
+本契约只校验结构，不推导地址。唯一推导实现是 d9-v2-tools
+`network-bootstrap/d9-bootstrap/src/derive_admins.rs`：
+blake2_256(SCALE(b"modlpy/utilisuba", 升序 Vec<AccountId32>, u16 threshold))。
+producer 必须对每个 authority 重新推导并要求相等，再把 sudo.key、各 `<pallet>.admin`
+与 asset 1 owner 投影为这些地址；其他已声明资产的 owner 等于 sudo.address
+（node MainnetAssetOwners）。开发密钥拒绝对所有 purpose 生效，合成 fixture 也不例外。
+结构通过不证明签名人身份、密钥保管或仪式记录，这些仍是外部证据。
+
+### 9.2 链身份与 purpose 绑定（NETWORK）
+
+| 规则 | 拒绝代码 |
+|---|---|
+| migration-input 必须 chainType=Live；Development、Local 拒绝 | chain_purpose_binding |
+| network=mainnet 只允许 purpose=migration-input | chain_purpose_binding |
+| id 为 1–64 个 [a-z0-9_]；name 非空、无首尾空白与控制字符 | chain_identity_label |
+| mainnet 的 id/name 不得包含 test、dev、local、rehears、fixture、synthetic；testnet 的 id/name 必须包含 test | chain_identity_label |
+
+Χ 演练使用真实数据但不是 mainnet：testnet 标签的 migration-input（Live）有效，
+本契约不设“migration-input ⇒ mainnet”。尚无已裁定的 mainnet chain id，因此只做
+标签一致性检查，不固定具体 id。chainType 的 Custom 变体在解码时拒绝。
+producer 必须要求 bootstrap manifest 的 network 与 chain spec 的 id、name、chainType
+等于本声明，并拒绝任何 bootNodes 条目及非 null 的 telemetryEndpoints。
+标签一致不证明 spec 实际部署到哪个网络。
+
+### 9.3 资产 ID 集合（ASSET_SET）
+
+`bootstrap.assetIds` 是完整的 V2 pallet-assets ID 集合，严格升序，并包含每个
+state.assets 的 assetId；没有迁移账本的新资产只在此声明。违反时代码为
+asset_id_set。本契约不建模 assets 定义与 metadata（owner、sufficient、minBalance、
+name、symbol），因此精确集合相等由 producer 执行：`assets.assets` 与
+`assets.metadata` 的 ID 集合都必须等于 assetIds，不得多也不得少，迁移资产的
+metadata decimals 等于 state 账本。

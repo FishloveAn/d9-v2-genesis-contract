@@ -1,5 +1,37 @@
 # D9-380 review handoff
 
+## RC7 multisig custody, chain identity and asset set — 2026-09-14
+
+[D9-400](https://linear.app/d9-network/issue/D9-400) records Yvan's 02:28 UTC
+ruling: enforce DEC-21 k-of-n `pallet_multisig` custody through a new contract RC,
+with the contract validating structure and d9-v2-tools `derive_admins` remaining
+the only address derivation. S-6 (chain identity not bound to purpose) and R-4
+(extra asset IDs pass) are included.
+
+Contract digest: `3a13b3d2820b80af0e753d391200609c70dbf7b1f796e58c02c66373785752a2`. Input digest: `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
+Rejection corpus: 106 cases. Exact SHA-256 pins:
+- complete fixture: `e7a2a7e7d88b0d2d9caddead7ac3e3d6e4c963e31d088d753f463270e368f7aa`
+- expected: `b6b951556f652191f8abaea43735a8963a9eb654b765ca7fc0929ca224a2ade3`
+- cases: `21cc764f2280f73605ff1fadb98cc3c7ec53520ff52a63b9512d62cd89f279e9`
+- rules: `70c030dc9edf0db344feee96aef0f960f510efe2ab6939765cd2e447d5df7ed5`
+- schema: `cdcb6d11e876f204b674878dfbe41187651f604a395b39e4847948fb30db2545`
+
+Review points:
+- The synthetic fixture's 14 multisig addresses are true `pallet_multisig`
+  derivations of deterministic 2-of-3 filled-byte signatories (0xa0..0xc9),
+  computed with d9-v2-tools `d9-bootstrap derive-admins` at tools `a5938f7` and
+  independently recomputed in Python. The contract does not re-derive them.
+- The development-key deny list applies to all purposes; its constants are
+  re-derived from seed URIs with sp-core in a unit test.
+- Chain label checks are consistency checks, not proof of deployment network.
+  No mainnet chain id is pinned because none has been ruled.
+- Asset definitions and metadata remain outside the DTO; exact ID-set equality is
+  a producer obligation (rule ASSET_SET).
+
+No downstream acknowledgement exists for RC7. Tools, node and the pallets adapter
+must repin and adopt the new fields before integrated enforcement is claimed.
+RC6 acknowledgements below do not cover RC7 bytes.
+
 ## D9-204 SessionRanking inventory extension — 2026-09-13
 
 Yvan's approved D9-204 behavior records the eligible operator ranking for each

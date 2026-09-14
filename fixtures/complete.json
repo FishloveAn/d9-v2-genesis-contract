@@ -1,6 +1,12 @@
 {
-  "contractVersion": "d9-native-genesis/0.1.0-rc.6",
+  "contractVersion": "d9-native-genesis/0.1.0-rc.7",
   "purpose": "synthetic-fixture",
+  "chain": {
+    "network": "testnet",
+    "id": "d9_testnet_fixture",
+    "name": "D9 Testnet Fixture",
+    "chainType": "Live"
+  },
   "source": {
     "genesisHash": "0000000000000000000000000000000000000000000000000000000000000001",
     "blockNumber": "23800000",
@@ -926,7 +932,24 @@
     ]
   },
   "bootstrap": {
-    "sudo": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+    "sudo": {
+      "address": "whNczFM8ky3eRnrbNsZk7TPruWJz4QDL6rn24D7Y2d5aTyk",
+      "threshold": 2,
+      "signatories": [
+        "xiYhr36eCCrtxXHoJXe9RQQUfwqCKBRXGj65e5HsRqrNokJ",
+        "xjs3vMeMDs3XPL1Xb2VxpMWVGrdfPmgepZCw8tX8YdhqqRv",
+        "xmBPzgC4FXE9p8jFsXMnDJcVsmS8UMwnNPKndhkPfRZK6MA"
+      ]
+    },
+    "usdtOwner": {
+      "address": "xpb3jed79adisdoM4RHehxRBnUCghygihsusneBpMRsjEiC",
+      "threshold": 2,
+      "signatories": [
+        "xnVk4zjmHBQnEwSzA2DbcFiWUgEbYxCuvDSe8WyenDQnAbx",
+        "xop69KHUJqbQfkAiSX5R1CpX5b34dYU3U3ZVdLCuu1GFCbx",
+        "xq8SDdqBLVn36YtSj1wEQ9vXgVqXi8jB1sgM89SB1o7iQkU"
+      ]
+    },
     "validators": [
       {
         "account": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j",
@@ -948,51 +971,147 @@
     "admins": [
       {
         "pallet": "d9-amm",
-        "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH"
+        "multisig": {
+          "address": "uSTa4gZD5b759c4bLSKQJkDEnn3cEpa1HUpCmpJSXBBFyEk",
+          "threshold": 2,
+          "signatories": [
+            "xrSnHxNtN9xfXMcB1Wo3o72YHQdznizJZhoCcxfS8ayBYFV",
+            "xsm8NGvbPp9HxAKuJ1esC48YtKSTsKFS7Xv47mthFNpekie",
+            "xu5USbUJRUKvNy3daWWgb1EZVEEvwuWZfN2ucb7xNAg7tQM"
+          ]
+        }
       },
       {
         "pallet": "d9-burn-mining",
-        "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX"
+        "multisig": {
+          "address": "w3DRQQHAtkrYAchTwGMchPAo23Pw4DtWiVBNtkFQDFc6dmo",
+          "threshold": 2,
+          "signatories": [
+            "xvPpWv21T8WYommMs1NVyxLa693Q2VmhDC9m7QMDUxXb6nm",
+            "xwiAbEZiUnhBEaV69WEKNuSah3qs762pm2GccDaUbkP3yCa",
+            "xy2WfZ7RWSsofPCpS168mrYbHxeLBgHxJrPU72ojiYEXBwL"
+          ]
+        }
       },
       {
         "pallet": "d9-cross-chain",
-        "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a"
+        "multisig": {
+          "address": "vdzxgAjVV8L8prwwix7nDEdbWuKUXX6EX54sCGae8pHDaWQ",
+          "threshold": 2,
+          "signatories": [
+            "xzLrjsf8Y74S6BvYiVwxAoebtsSoGGZ5rgWKbr2zqL5zULN",
+            "y1fCpCCqZmF4WzeGzzomZkkcVnFGLrpDQWdB6fGFx7wTYBo",
+            "y2yYtWkYbRRgwoN1HVfaxhrd6h3jRT5LxLk2bUVX4unvfDB"
+          ]
+        }
       },
       {
         "pallet": "d9-governance",
-        "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN"
+        "multisig": {
+          "address": "yZkrWfym6pjuQTjbHQXXwcSwMWRAxEM3mQTyZzBHXf8b6yd",
+          "threshold": 2,
+          "signatories": [
+            "y4HtxqJFd5cKNc5jZzXQMexdhbrCW3LUWArt6HinBhePnSy",
+            "y5cF39qxejnwoQoTrVPDkc4eJWefadbc3zyjb6x3JVVrx63",
+            "y6vb7UPfgPyaEDXC8zF39ZAeuRT8fDrjbq6b5vBJRHMKws7"
+          ]
+        }
       },
       {
         "pallet": "d9-judicial-penalty",
-        "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK"
+        "multisig": {
+          "address": "uSTwv9TEk8EUtSFqRpCDLNAVJBGQFg8c8RgLCRwZ2W9xW3u",
+          "threshold": 2,
+          "signatories": [
+            "y8EwBnwNi4ACf2EvRV6rYWGfWLFbjp7s9fDSajQZY5Co6Lg",
+            "y9ZHG7V5jiLq5pxehyxfwTNg7F44pQNzhVLJ5Ydpes4GD1Y",
+            "yAsdLS2nmNXTWdgNzUpVLQUgi9rXtze8FKT9aMs5meujJTj"
+          ]
+        }
       },
       {
         "pallet": "d9-merchant",
-        "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM"
+        "multisig": {
+          "address": "yYotEVtTAN5s1RXxp1dK4zLp7RVYVpLiaz1dqJtc8MhuGEd",
+          "threshold": 2,
+          "signatories": [
+            "yCByQkaVo2i5wSQ7GygJjMahK4ezyauFo9a15B6LtSmCQx4",
+            "yDWKV58CpgtiNF7qZUY88JghuyTU4BAPLygrZzKc1EcfYzz",
+            "yEpfZPfurM5Lo3qZqyPwXFniWtFw8mRWtooi4oYs82U8b3s"
+          ]
+        }
       },
       {
         "pallet": "d9-mining-pool",
-        "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k"
+        "multisig": {
+          "address": "vMiHKrP2VYTst4oPUzs4R33HGhPZS9A64HLRDAAuknBTL1p",
+          "threshold": 2,
+          "signatories": [
+            "yG91diDct1FyDrZJ8UFkvCtj7o4QDMgeSdvZZcn8EpKbvnz",
+            "yHTMi2mKufSbefH2Qy7aK9zjihrsHwwmzU3R4S1PMcB4sNh",
+            "yJmhnMK2wKdE5TzkhTyPi76kKcfLNYCuYJAGZFEeUQ2Y4XE"
+          ]
+        }
       },
       {
         "pallet": "d9-node-registry",
-        "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo"
+        "multisig": {
+          "address": "z3X3nxbZhZY8fB8QSPpCuzFDrror1zqsxiSagjXdkPej283",
+          "threshold": 2,
+          "signatories": [
+            "yL63rfrjxyorWGiUyxqD74CkvXToT8U368H844TubBt1HPh",
+            "yMQPvzQSzdzUw5SDGTh2W1JmXSGGXijAdxPyYshAhyjUR9G",
+            "yNik1JxA2JB7Mt9wYxYqtxQn8M4jcJzJBnWq3gvRpmawXRY"
+          ]
+        }
       },
       {
         "pallet": "d9-node-rewards",
-        "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt"
+        "multisig": {
+          "address": "zrWKqmdWWcg4zryLAKis5bFyrnir24ye1Q3WCMFPrvK9G4c",
+          "threshold": 2,
+          "signatories": [
+            "yQ365dVs3xMjngsfqTQfHuWnjFsCguFRjcdgYW9gwZSQX7d",
+            "yRMS9x3a5cYNDVbQ7xGUgrcoLAffmVWZHSkY3KNx4MHsoFE",
+            "ySfnEGbH7GizeJK8QT8J5oiow5U8r5mgqGsPY8cDB99M5Q8"
+          ]
+        }
       },
       {
         "pallet": "d9-referrals",
-        "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg"
+        "multisig": {
+          "address": "wnm8rYT24x4pZNKLjxwXk99shPnonz2UoLkwPuHKhZFTM6s",
+          "threshold": 2,
+          "signatories": [
+            "yTz8Jb8z8vud572rgwz7UkppXzGbvg2pP6zF2wqUHvzouUr",
+            "yVJUNughAb6FVukaySqvshvq8u551GHwvw76Xm4jQirH5YW",
+            "yWcpTEEQCFGsviUKFwhkGf2qjosY5rZ5UmDx2aHzXWhk9rQ"
+          ]
+        }
       },
       {
         "pallet": "d9-upgrade-coordinator",
-        "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg"
+        "multisig": {
+          "address": "xB5ENW3jbK7jU2v8ALdjRBawU2bTqDrasXMQqB1vcqYsod3",
+          "threshold": 2,
+          "signatories": [
+            "yXwAXYn7DuTWMXC3YSZZfc8rLig1ASpD2bLoXPXFeJZDXnp",
+            "yZFWbsKpFZe8nKumpwRP4ZErwdUUF35LaRTf2CkWm6QgQzK",
+            "yaZrgBsXHDpmD8dW7SHCTWLsYYGwKdLU8FaWX1ymstG9YKp"
+          ]
+        }
       },
       {
         "pallet": "d9-voting",
-        "account": "vhPuDaSgecYztqFuzFCRCrBZ6vXeGcCwRta8Rbwg1UwkNAc"
+        "multisig": {
+          "address": "xHiyszWWnAaP2kHPZqrNygMvBsajjf9MQWUfVPH5ed6bZjZ",
+          "threshold": 2,
+          "signatories": [
+            "ybtCkWREJt1PdwMEPw91rTSt9T5QQDbbg5hN1qD2zg7csEt",
+            "ydCYppxwLYC24k4xgRzqFQYtkMssUorjDupDWeSJ7Ty61AL",
+            "yeWtu9WeNCNeVYngxvreeMeuMGgLZQ7rmjw51TfZEFpYz2o"
+          ]
+        }
       }
     ],
     "ammAccount": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
@@ -1001,6 +1120,11 @@
     "liquidityToleranceBps": 500,
     "d9ReserveFloor": "600000000000000000",
     "usdtReserveFloor": "600000000000",
-    "redemptionPriceFloor": false
+    "redemptionPriceFloor": false,
+    "assetIds": [
+      1,
+      2,
+      3
+    ]
   }
 }

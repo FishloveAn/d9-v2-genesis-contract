@@ -39,7 +39,7 @@ fn final_spec_and_report_cannot_be_changed_after_binding() {
 fn changed_authority_wasm_and_contract_cannot_reuse_old_binding() {
     let (input, binding) = fixture();
     let mut changed = input.clone();
-    changed.bootstrap.sudo = changed.bootstrap.validators[0].account.clone();
+    changed.bootstrap.sudo.address = changed.bootstrap.validators[0].account.clone();
     assert_eq!(
         verify_binding(&changed, &binding, SPEC, REPORT),
         Err("input_binding_mismatch")

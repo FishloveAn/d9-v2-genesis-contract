@@ -92,5 +92,28 @@ pub(super) fn check(i: &ContractInput) -> Check {
             "explicit admin required for each admin-bearing D9 pallet",
         ));
     }
+    super::custody::check(i)?;
+    // R-4: the declared set is the complete V2 pallet-assets ID set. The contract
+    // does not model definitions/metadata (owner, sufficiency, minimum balance,
+    // name, symbol); the producer requires both of those ID sets to equal this.
+    if b.asset_ids.windows(2).any(|pair| pair[0] >= pair[1]) {
+        return Err(fail(
+            "asset_id_set",
+            "/bootstrap/assetIds",
+            "declared asset IDs must be unique and strictly ascending",
+        ));
+    }
+    if let Some(book) = i
+        .state
+        .assets
+        .iter()
+        .find(|book| b.asset_ids.binary_search(&book.asset_id).is_err())
+    {
+        return Err(fail(
+            "asset_id_set",
+            "/bootstrap/assetIds",
+            format!("migrated asset {} is not declared", book.asset_id),
+        ));
+    }
     Ok(())
 }

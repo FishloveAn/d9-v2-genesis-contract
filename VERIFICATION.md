@@ -1,5 +1,26 @@
 # Historical pallet-workspace verification — 2026-09-10
 
+## RC7 multisig custody, chain identity and asset set — 2026-09-14
+
+Standalone commands in a fresh worktree (macOS host, stable toolchain):
+`cargo fmt --all -- --check`, `cargo clippy --locked --all-targets -- -D warnings`,
+`cargo test --locked` and `cargo run --locked -- check fixtures/complete.json`
+all exit 0. 23 tests pass, including the 106-case rejection corpus,
+a test that every RC7 rejection code has a shared case, inclusive multisig bounds
+(n-of-n and exactly 20 signatories), rehearsal-on-testnet acceptance, and a unit
+test re-deriving all 28 development public keys from their seed URIs with sp-core.
+The checker returns contract digest `3a13b3d2820b80af0e753d391200609c70dbf7b1f796e58c02c66373785752a2`
+and input digest `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
+
+Fixture multisig addresses were derived by `d9-bootstrap derive-admins` built
+from d9-v2-tools `a5938f7` (its 14 `derive_admins_test` golden-vector tests passed
+first), then recomputed independently with Python `hashlib.blake2b`; all 14 match.
+Manifest input SHA-256 `927443e51e5d206a0d7816e545ad96e30d26ac737c0080df4e87c79add86ada0`,
+derived output SHA-256 `27ff0ca6b4937339e2830ad633c9792cf2c62866d3a4544d334c067bca7a3d34`.
+
+No producer, runtime composition, real custody ceremony, remote CI result or
+downstream acknowledgement is claimed by this record.
+
 ## D9-204 SessionRanking inventory extension — 2026-09-13
 
 The inventory now contains 137 unique pallet-storage rows. The added

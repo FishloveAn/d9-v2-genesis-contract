@@ -4,8 +4,12 @@ use std::collections::BTreeMap;
 
 mod balances;
 mod composition;
+mod custody;
+mod network;
 mod people;
 mod source;
+
+pub use custody::{well_known_development_key, MULTISIG_MAX_SIGNATORIES};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -140,6 +144,7 @@ pub fn validate(input: &ContractInput) -> Result<ContractReport, Violation> {
             "unsupported contract version",
         ));
     }
+    network::check(input)?;
     if !input.changes.unresolved.is_empty() {
         return Err(fail(
             "unresolved_disposition",

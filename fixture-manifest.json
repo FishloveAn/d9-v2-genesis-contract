@@ -1,13 +1,13 @@
 {
-  "contractVersion": "d9-native-genesis/0.1.0-rc.6",
-  "contractDigest": "710f5670d22276fd65c1e6e012b174dd0790e356e4a2e08eac1d1efb107bf297",
+  "contractVersion": "d9-native-genesis/0.1.0-rc.7",
+  "contractDigest": "3a13b3d2820b80af0e753d391200609c70dbf7b1f796e58c02c66373785752a2",
   "purpose": "synthetic-conformance-only",
-  "negativeCases": 80,
+  "negativeCases": 106,
   "files": [
     {
       "path": "schema.json",
-      "size": 24880,
-      "sha256": "5448d799a90479a9fdce1e1aee0ac20d644d897400b0062207060e108887dfff"
+      "size": 27617,
+      "sha256": "cdcb6d11e876f204b674878dfbe41187651f604a395b39e4847948fb30db2545"
     },
     {
       "path": "binding.schema.json",
@@ -21,28 +21,28 @@
     },
     {
       "path": "rules.json",
-      "size": 6422,
-      "sha256": "6f5f4856f796543afa0f431c437d7257b36fc24fee246f626cb5a6edbf431723"
+      "size": 8867,
+      "sha256": "70c030dc9edf0db344feee96aef0f960f510efe2ab6939765cd2e447d5df7ed5"
     },
     {
       "path": "fixtures/complete.json",
-      "size": 32194,
-      "sha256": "3c2f7c667956c5b326a66594532c2fedcab7eab2b70652c0cbd04401ae19043d"
+      "size": 36413,
+      "sha256": "e7a2a7e7d88b0d2d9caddead7ac3e3d6e4c963e31d088d753f463270e368f7aa"
     },
     {
       "path": "fixtures/expected.json",
       "size": 2966,
-      "sha256": "7c9f87e78f253dc5b8262ff9f71ec90e5dfe8d24569266f728d83965163a218d"
+      "sha256": "b6b951556f652191f8abaea43735a8963a9eb654b765ca7fc0929ca224a2ade3"
     },
     {
       "path": "fixtures/cases.json",
-      "size": 49865,
-      "sha256": "14fb546e21f4af6e8758910d22719dfb3307127d7b1124eb0d53f360994d4fa9"
+      "size": 65492,
+      "sha256": "21cc764f2280f73605ff1fadb98cc3c7ec53520ff52a63b9512d62cd89f279e9"
     },
     {
       "path": "fixtures/binding.json",
       "size": 892,
-      "sha256": "16397bfc86e3ee8c076c19c2cbca1334e1c43c5add33215cdd48ba5d99959472"
+      "sha256": "c7f6a1764f009a50543e1aa09e561d6a346a89344aa0075a43b3e4683d33e46e"
     },
     {
       "path": "fixtures/mock-spec.bytes",

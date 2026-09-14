@@ -9,15 +9,15 @@
     "AdminRole": {
       "additionalProperties": false,
       "properties": {
-        "account": {
-          "$ref": "#/definitions/Address"
+        "multisig": {
+          "$ref": "#/definitions/MultisigAuthority"
         },
         "pallet": {
           "type": "string"
         }
       },
       "required": [
-        "account",
+        "multisig",
         "pallet"
       ],
       "type": "object"
@@ -144,6 +144,15 @@
           ],
           "description": "These accounts are derived from runtime PalletIds, never chosen by a producer."
         },
+        "assetIds": {
+          "description": "Complete V2 pallet-assets ID set, strictly ascending. Includes fresh assets with no migrated book; the producer's definitions and metadata must carry exactly these IDs.",
+          "items": {
+            "format": "uint32",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "type": "array"
+        },
         "d9ReserveFloor": {
           "$ref": "#/definitions/Amount"
         },
@@ -165,7 +174,20 @@
           "type": "boolean"
         },
         "sudo": {
-          "$ref": "#/definitions/Address"
+          "allOf": [
+            {
+              "$ref": "#/definitions/MultisigAuthority"
+            }
+          ],
+          "description": "DEC-21 k-of-n pallet_multisig sudo account."
+        },
+        "usdtOwner": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/MultisigAuthority"
+            }
+          ],
+          "description": "DEC-21 k-of-n pallet_multisig owner of USDT asset 1."
         },
         "usdtReserveFloor": {
           "$ref": "#/definitions/Amount"
@@ -180,12 +202,14 @@
       "required": [
         "admins",
         "ammAccount",
+        "assetIds",
         "d9ReserveFloor",
         "feeBps",
         "liquidityToleranceBps",
         "miningPoolAccount",
         "redemptionPriceFloor",
         "sudo",
+        "usdtOwner",
         "usdtReserveFloor",
         "validators"
       ],
@@ -326,6 +350,41 @@
         "remainingDue"
       ],
       "type": "object"
+    },
+    "ChainIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "chainType": {
+          "$ref": "#/definitions/ChainType"
+        },
+        "id": {
+          "description": "Chain-spec `id`.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Chain-spec `name`.",
+          "type": "string"
+        },
+        "network": {
+          "$ref": "#/definitions/Network"
+        }
+      },
+      "required": [
+        "chainType",
+        "id",
+        "name",
+        "network"
+      ],
+      "type": "object"
+    },
+    "ChainType": {
+      "description": "Mirrors `sc_chain_spec::ChainType`'s unit variants and their serde names. `Custom(String)` is deliberately not representable.",
+      "enum": [
+        "Development",
+        "Local",
+        "Live"
+      ],
+      "type": "string"
     },
     "Changes": {
       "additionalProperties": false,
@@ -763,6 +822,40 @@
       "pattern": "^(0|[1-9][0-9]*)$",
       "type": "string"
     },
+    "MultisigAuthority": {
+      "additionalProperties": false,
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "signatories": {
+          "description": "Strictly ascending by AccountId32 bytes, as pallet_multisig requires.",
+          "items": {
+            "$ref": "#/definitions/Address"
+          },
+          "type": "array"
+        },
+        "threshold": {
+          "format": "uint16",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "address",
+        "signatories",
+        "threshold"
+      ],
+      "type": "object"
+    },
+    "Network": {
+      "description": "Network label shared with the d9-v2-tools bootstrap manifest `network`.",
+      "enum": [
+        "mainnet",
+        "testnet"
+      ],
+      "type": "string"
+    },
     "PendingDecision": {
       "additionalProperties": false,
       "properties": {
@@ -1069,6 +1162,14 @@
     "build": {
       "$ref": "#/definitions/BuildIdentity"
     },
+    "chain": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ChainIdentity"
+        }
+      ],
+      "description": "RC7 (S-6): the chain identity the producer's chain metadata must equal."
+    },
     "changes": {
       "$ref": "#/definitions/Changes"
     },
@@ -1088,6 +1189,7 @@
   "required": [
     "bootstrap",
     "build",
+    "chain",
     "changes",
     "contractVersion",
     "purpose",

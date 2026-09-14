@@ -13,6 +13,8 @@ macro_rules! record {
 record!(ContractInput {
     contract_version: String,
     purpose: Purpose,
+    /// RC7 (S-6): the chain identity the producer's chain metadata must equal.
+    chain: ChainIdentity,
     source: SourceSnapshot,
     build: BuildIdentity,
     state: MigratedState,
@@ -26,6 +28,35 @@ pub enum Purpose {
     SyntheticFixture,
     MigrationInput,
 }
+
+/// Network label shared with the d9-v2-tools bootstrap manifest `network`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "kebab-case")]
+pub enum Network {
+    Mainnet,
+    Testnet,
+}
+
+/// Mirrors `sc_chain_spec::ChainType`'s unit variants and their serde names.
+/// `Custom(String)` is deliberately not representable.
+// VERIFIED: ~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sc-chain-spec-51.0.0/src/lib.rs
+// (`pub enum ChainType { Development, Local, Live, Custom(String) }`, default serde derive),
+// the version pinned by d9-v2-node nativegen/Cargo.lock at af1621b.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+pub enum ChainType {
+    Development,
+    Local,
+    Live,
+}
+
+record!(ChainIdentity {
+    network: Network,
+    /// Chain-spec `id`.
+    id: String,
+    /// Chain-spec `name`.
+    name: String,
+    chain_type: ChainType,
+});
 
 record!(BuildIdentity {
     node_commit: Commit,
@@ -165,17 +196,33 @@ record!(PendingDecision {
 });
 
 record!(Bootstrap {
-    sudo: Address, validators: Vec<Validator>, admins: Vec<AdminRole>,
+    /// DEC-21 k-of-n pallet_multisig sudo account.
+    sudo: MultisigAuthority,
+    /// DEC-21 k-of-n pallet_multisig owner of USDT asset 1.
+    usdt_owner: MultisigAuthority,
+    validators: Vec<Validator>, admins: Vec<AdminRole>,
     /// These accounts are derived from runtime PalletIds, never chosen by a producer.
     amm_account: Address, mining_pool_account: Address,
     /// Fresh balances require a declared funding transfer in changes, no implicit mint.
     fee_bps: u32, liquidity_tolerance_bps: u32,
     d9_reserve_floor: Amount, usdt_reserve_floor: Amount,
     redemption_price_floor: bool,
+    /// Complete V2 pallet-assets ID set, strictly ascending. Includes fresh
+    /// assets with no migrated book; the producer's definitions and metadata
+    /// must carry exactly these IDs.
+    asset_ids: Vec<u32>,
 });
 record!(AdminRole {
     pallet: String,
-    account: Address
+    multisig: MultisigAuthority,
+});
+// Structure only. The address is NOT derived here: d9-v2-tools
+// `derive_admins` is the single derivation, and the producer requires equality.
+record!(MultisigAuthority {
+    address: Address,
+    threshold: u16,
+    /// Strictly ascending by AccountId32 bytes, as pallet_multisig requires.
+    signatories: Vec<Address>,
 });
 record!(Validator {
     account: Address,

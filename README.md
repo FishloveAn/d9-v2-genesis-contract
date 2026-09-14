@@ -1,7 +1,7 @@
 # D9 native-genesis contract
 
 The shared contract for D9 V2 exporters, pallet genesis builders and independent
-verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.6**.
+verifiers. Candidate wire version: **d9-native-genesis/0.1.0-rc.7**.
 
 This repository is the authoritative home for the contract, schemas, provenance
 inventory, rules and shared conformance fixtures extracted from D9-380 at pallets
@@ -15,10 +15,10 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [schema.json](schema.json) | Input schema generated from the Rust DTOs |
 | [binding.schema.json](binding.schema.json) | Detached final-artifact binding |
 | [inventory.json](inventory.json) | 137 provenance entries with explicit disposition references |
-| [rules.json](rules.json) | 19 rules and their implementation owners |
+| [rules.json](rules.json) | 23 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
-| [fixtures/cases.json](fixtures/cases.json) | 80 mutations and expected failures |
+| [fixtures/cases.json](fixtures/cases.json) | 106 mutations and expected failures |
 | [fixture-manifest.json](fixture-manifest.json) | Exact hashes of the shared artifacts |
 | [evidence-amm-mainnet-23802000.json](evidence-amm-mainnet-23802000.json) | Read-only V1 mainnet AMM LP extraction receipt at block 23,802,000 |
 | [REVIEW.md](REVIEW.md) | Pending downstream compatibility acknowledgements |
@@ -160,3 +160,25 @@ change is merged.
 This classification changes the reviewed inventory and contract digest without
 changing the RC6 wire schema, complete fixture or input digest. Prior RC6 bundle
 acknowledgements do not automatically cover the extended inventory.
+
+## RC7 multisig custody, chain identity and asset set
+
+[D9-400](https://linear.app/d9-network/issue/D9-400) applies Yvan's 2026-09-14
+ruling to enforce DEC-21 k-of-n `pallet_multisig` custody, with audit finding S-6
+and review finding R-4. RC7 is not wire-compatible with RC6:
+
+- `bootstrap.sudo`, the new `bootstrap.usdtOwner` and every `bootstrap.admins[].multisig`
+  are `{address, threshold, signatories}`. The contract validates structure only
+  (2 <= threshold <= n <= 20, strictly ascending unique signatories, no self
+  signatory, no sp-keyring development key). The single address derivation stays in
+  d9-v2-tools `derive_admins`; the producer must require equality.
+- The new top-level `chain` declares `network`, `id`, `name` and `chainType`.
+  `migration-input` requires `Live`; only `migration-input` may be labelled
+  `mainnet`; a testnet-labelled rehearsal with real data remains valid. The producer
+  must match its manifest and chain-spec metadata and reject boot nodes and telemetry.
+- `bootstrap.assetIds` declares the complete V2 asset ID set. The producer must
+  require the asset definition and metadata ID sets to equal it exactly.
+
+`MULTISIG_MAX_SIGNATORIES` and `well_known_development_key` are exported so
+producers do not retype the bound or the deny list. RC6 acknowledgements do not
+cover RC7 bytes.
