@@ -10,9 +10,9 @@ digest is
 the fixture binding and manifest hashes were regenerated from the changed
 inventory bytes.
 
-`cargo test --locked --workspace` passed all 17 tests, including the 80-case
-rejection corpus, inventory validation, exact artifact hashes and detached
-binding checks. `cargo run --locked -q -- check fixtures/complete.json` returned
+`cargo test --locked --workspace` passed all 17 tests in this standalone
+contract workspace, including the 80-case rejection corpus, inventory validation,
+exact artifact hashes and detached binding checks. `cargo run --locked -q -- check fixtures/complete.json` returned
 the same contract digest and retained input digest
 `5eb35bf564b4982e5e4243ab95f300315b9590c2fc795221d2799ec72b328a55`.
 Formatting passed. No schema, rule, source fixture, source acceptance, runtime
