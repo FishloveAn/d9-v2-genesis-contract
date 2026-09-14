@@ -4,19 +4,22 @@
 
 Yvan's approved D9-204 behavior records the eligible operator ranking for each
 planned V2 session so election and reward settlement use the same session-bound
-ordering. `d9-node-rewards::SessionRanking` is therefore classified as
+ordering. `d9-node-registry::SessionRanking` is therefore classified as
 `NotMigrated`, with no V1 import or genesis field; the runtime derives it from
 eligible operators during session planning. The inventory marks the item
 `proposed` until the corresponding pallets change is merged.
 
 Contract digest:
-`9b41f0cda8ad25b2b07db60dd0053078d88ab44cc5d4c717a87fcada7602ab72`.
+`710f5670d22276fd65c1e6e012b174dd0790e356e4a2e08eac1d1efb107bf297`.
 The 137-entry inventory and detached binding were regenerated coherently. All
 17 shared tests passed, including the 80-case rejection corpus and exact
 manifest/binding digest checks. The RC6 wire schema, complete fixture and input
 digest are unchanged.
 
-The previous RC6 contract digest
+The previously merged D9-204 digest
+`9b41f0cda8ad25b2b07db60dd0053078d88ab44cc5d4c717a87fcada7602ab72`
+misclassified `SessionRanking` under `d9-node-rewards` and is superseded by
+this corrected pallet ownership. The earlier RC6 contract digest
 `94b42ed2efd9915b6f476ffb7da1c3ffb2d0e57e63183e6d360f4b3540841981`
 does not cover this inventory extension. This record establishes the proposed
 fresh-state classification; it does not merge the pallet, verify final runtime
@@ -30,7 +33,8 @@ RC6 requires Some(lastConversion) >= createdAt, retaining the existing nonzero
 source-time bounds. Equality and None remain valid. No clamp, dropped account or
 legacy exception is permitted. Expiry policy is unchanged.
 
-Contract digest: `94b42ed2efd9915b6f476ffb7da1c3ffb2d0e57e63183e6d360f4b3540841981`.
+Chronology-only RC6 bundle digest, historical after the D9-204 inventory
+extension: `94b42ed2efd9915b6f476ffb7da1c3ffb2d0e57e63183e6d360f4b3540841981`.
 Shared tests: 17 passed, including 80 rejection cases. The chronology regression
 failed before the fix. The paired local merchant genesis correction passed all
 103 merchant tests, including refusal before storage writes and equality/None

@@ -1070,6 +1070,16 @@
     "implementation": "existing"
   },
   {
+    "pallet": "d9-node-registry",
+    "storage": "SessionRanking",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-204",
+    "decision": "Yvan 2026-09-12 / D9-204: fresh V2 session-planning state derived from eligible operators; never import V1 values. https://linear.app/d9-network/issue/D9-204/align-v2-validator-election-and-reward-eligibility-zero-vote-operators",
+    "implementation": "proposed"
+  },
+  {
     "pallet": "d9-node-rewards",
     "storage": "Admin",
     "provenance": "NotMigrated",
@@ -1098,16 +1108,6 @@
     "owner": "D9-370",
     "decision": "DEC-20: fresh V2 operational state; never import V1 values",
     "implementation": "existing"
-  },
-  {
-    "pallet": "d9-node-rewards",
-    "storage": "SessionRanking",
-    "provenance": "NotMigrated",
-    "genesisField": null,
-    "inputPath": "external-runtime-config",
-    "owner": "D9-204",
-    "decision": "Yvan 2026-09-12 / D9-204: fresh V2 session-planning state derived from eligible operators; never import V1 values. https://linear.app/d9-network/issue/D9-204/align-v2-validator-election-and-reward-eligibility-zero-vote-operators",
-    "implementation": "proposed"
   },
   {
     "pallet": "d9-node-rewards",
