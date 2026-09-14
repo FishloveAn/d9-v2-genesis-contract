@@ -1,5 +1,22 @@
 # Historical pallet-workspace verification — 2026-09-10
 
+## D9-265 bounded operator-sweep cursor inventory extension — 2026-09-14
+
+The inventory now contains 142 unique pallet-storage rows. The four added
+cursor rows are `NotMigrated`, have no genesis field, and are marked `proposed`
+pending the pallets implementation merge. The contract digest is
+`ca005fee014f1c84d89562e7936b527398714164af884ae075fae90ef3e35aa8`;
+the fixture binding and manifest hashes were regenerated from the changed
+inventory bytes.
+
+`cargo test --locked --workspace` passed all 17 tests, including the 80-case
+rejection corpus, inventory validation, exact artifact hashes and detached
+binding checks. `cargo run --locked -q -- check fixtures/complete.json` returned
+the same contract digest and retained input digest
+`5eb35bf564b4982e5e4243ab95f300315b9590c2fc795221d2799ec72b328a55`.
+No schema, rule, source fixture, source acceptance, runtime composition or
+release gate changed.
+
 ## D9-204 SessionRanking inventory extension — 2026-09-13
 
 The inventory now contains 137 unique pallet-storage rows. The added
