@@ -14,7 +14,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [CONTRACT.md](CONTRACT.md) | Field semantics, units, invariant ownership and encoding |
 | [schema.json](schema.json) | Input schema generated from the Rust DTOs |
 | [binding.schema.json](binding.schema.json) | Detached final-artifact binding |
-| [inventory.json](inventory.json) | 137 provenance entries with explicit disposition references |
+| [inventory.json](inventory.json) | 140 provenance entries with explicit disposition references |
 | [rules.json](rules.json) | 19 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
@@ -160,3 +160,19 @@ change is merged.
 This classification changes the reviewed inventory and contract digest without
 changing the RC6 wire schema, complete fixture or input digest. Prior RC6 bundle
 acknowledgements do not automatically cover the extended inventory.
+
+## D9-383 governance voter-snapshot inventory extension
+
+[D9-383](https://linear.app/d9-network/issue/D9-383/governance-cast-vote-has-no-voter-set-snapshot-a-proposal-spanning-a-session-rotation-mixes-validator-generations-and-re-bases-its-own-threshold)
+adds `d9-governance::{VotingBodies, SnapshotVotes, LegacyProposals}`. All three
+are `NotMigrated`: a V2 genesis has no V1 proposal history, no reconstructable
+V1 voter body, and no V1 ballot data that can be safely reused as V2 votes.
+`LegacyProposals` is populated only by the pallet's lazy post-upgrade handling;
+V1 ballots remain audit-only. The entries remain `proposed` until the
+corresponding pallets change is merged.
+
+This changes the reviewed inventory and contract digest without changing the
+RC6 wire schema, fixture payloads (`complete`, `expected`, and `cases`), or
+input digest. `fixtures/binding.json` and its manifest hash are regenerated to
+bind the new contract digest. Prior RC6 bundle acknowledgements do not
+automatically cover the extended inventory.
