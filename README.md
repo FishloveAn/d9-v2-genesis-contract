@@ -151,7 +151,7 @@ published historical artifact; its acknowledgements do not imply RC5 approval.
 ## D9-204 session-ranking inventory extension
 
 [D9-204](https://linear.app/d9-network/issue/D9-204/align-v2-validator-election-and-reward-eligibility-zero-vote-operators)
-adds `d9-node-rewards::SessionRanking` as fresh V2 session-planning state. The
+adds `d9-node-registry::SessionRanking` as fresh V2 session-planning state. The
 inventory classifies it as `NotMigrated`: it has no V1 value or genesis field to
 import, and the runtime derives it from eligible operators when planning a
 session. The item remains marked `proposed` until the corresponding pallets

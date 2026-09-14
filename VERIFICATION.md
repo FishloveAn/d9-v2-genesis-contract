@@ -3,12 +3,18 @@
 ## D9-204 SessionRanking inventory extension — 2026-09-13
 
 The inventory now contains 137 unique pallet-storage rows. The added
-`d9-node-rewards::SessionRanking` row is `NotMigrated`, has no genesis field,
+`d9-node-registry::SessionRanking` row is `NotMigrated`, has no genesis field,
 and is marked `proposed` pending the pallets implementation merge. The contract
 digest is
-`9b41f0cda8ad25b2b07db60dd0053078d88ab44cc5d4c717a87fcada7602ab72`;
+`710f5670d22276fd65c1e6e012b174dd0790e356e4a2e08eac1d1efb107bf297`;
 the fixture binding and manifest hashes were regenerated from the changed
 inventory bytes.
+
+The superseded digest
+`9b41f0cda8ad25b2b07db60dd0053078d88ab44cc5d4c717a87fcada7602ab72`
+placed the same row under `d9-node-rewards`. The pallets adapter's source-name
+coverage test detected that ownership mismatch before the pallets pin was
+committed or pushed.
 
 `cargo test --locked --workspace` passed all 17 tests in this standalone
 contract workspace, including the 80-case rejection corpus, inventory validation,
