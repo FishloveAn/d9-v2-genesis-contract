@@ -3500,7 +3500,7 @@
       {
         "op": "replace",
         "path": "/chain/name",
-        "value": "D9 Tеstnet"
+        "value": "D9 T\u0435stnet"
       }
     ],
     "refreshSource": [],
@@ -3531,7 +3531,7 @@
       {
         "op": "replace",
         "path": "/chain/name",
-        "value": "D9 Te​st Mainnet"
+        "value": "D9 Te\u200bst Mainnet"
       }
     ],
     "refreshSource": [],
@@ -3562,7 +3562,7 @@
       {
         "op": "replace",
         "path": "/chain/name",
-        "value": "D9 ｔｅｓｔ Mainnet"
+        "value": "D9 \uff54\uff45\uff53\uff54 Mainnet"
       }
     ],
     "refreshSource": [],

@@ -36,8 +36,8 @@
     },
     {
       "path": "fixtures/cases.json",
-      "size": 160431,
-      "sha256": "f6f9ab48b1f29f7ab8626fc7a67fddf3ce8f577e07218a08b4e024c7b9d30440"
+      "size": 160450,
+      "sha256": "319bab6fb142b6d4e3fea0b8ca4613ff71da167b906db4791bdef05244c327c9"
     },
     {
       "path": "fixtures/binding.json",
