@@ -172,5 +172,7 @@ V1 ballots remain audit-only. The entries remain `proposed` until the
 corresponding pallets change is merged.
 
 This changes the reviewed inventory and contract digest without changing the
-RC6 wire schema, fixtures, or input digest. Prior RC6 bundle acknowledgements
-do not automatically cover the extended inventory.
+RC6 wire schema, fixture payloads (`complete`, `expected`, and `cases`), or
+input digest. `fixtures/binding.json` and its manifest hash are regenerated to
+bind the new contract digest. Prior RC6 bundle acknowledgements do not
+automatically cover the extended inventory.
