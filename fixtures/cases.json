@@ -1393,7 +1393,7 @@
     "refreshSource": [],
     "expected": {
       "phase": "validation",
-      "code": "duplicate_key",
+      "code": "invalid_lock_exclusion",
       "pathPrefix": "/changes/excludedJudicialLocks"
     }
   },

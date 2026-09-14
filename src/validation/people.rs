@@ -175,12 +175,7 @@ pub(super) fn check(i: &ContractInput) -> Check {
 pub(super) fn check_locks(i: &ContractInput) -> Check {
     let s = &i.source;
     let locks = keyed(&s.locks, |r| r.account.clone(), "/source/locks")?;
-    let exclusions = keyed(
-        &i.changes.excluded_judicial_locks,
-        |r| r.account.clone(),
-        "/changes/excludedJudicialLocks",
-    )?;
-    if !exclusions.is_empty() {
+    if !i.changes.excluded_judicial_locks.is_empty() {
         return Err(fail("invalid_lock_exclusion", "/changes/excludedJudicialLocks",
             "D9-195 2026-09-14: all source locks must be retained; Funded/RecordOnly is determined from final composition"));
     }

@@ -174,6 +174,25 @@ fn complete_fixture_matches_independently_authored_values_and_hashes() {
 }
 
 #[test]
+fn any_judicial_exclusion_keeps_the_stable_error_code() {
+    let mut input = input();
+    let exclusion = JudicialLockExclusion {
+        account: input.source.locks[0].account.clone(),
+        reason: JudicialLockExclusionReason::MissingSystemAccount,
+        v1_lock_amount: Amount(1),
+        block_hash: bytes_digest(b"synthetic exclusion"),
+        system_account_exists: false,
+    };
+    for count in [1, 2] {
+        input.changes.excluded_judicial_locks = vec![exclusion.clone(); count];
+        let error = validate(&input).unwrap_err();
+        assert_eq!(error.code, "invalid_lock_exclusion");
+        assert_eq!(error.path, "/changes/excludedJudicialLocks");
+        assert_eq!(error.related_path, None);
+    }
+}
+
+#[test]
 fn prefix_alias_is_rejected_and_duplicate_reports_both_rows() {
     let mut value = input_value();
     let id = input().bootstrap.sudo.account_id();
