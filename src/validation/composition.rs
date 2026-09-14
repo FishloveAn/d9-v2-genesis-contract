@@ -1,4 +1,6 @@
-use super::custody::{hex32, not_development};
+use super::custody::{
+    bytes, hex32, not_development, not_pallet_account, not_session_key, session_key_slots,
+};
 use super::*;
 use sp_runtime::traits::AccountIdConversion;
 use std::collections::BTreeSet;
@@ -52,34 +54,42 @@ pub(super) fn check(i: &ContractInput) -> Check {
         |r| r.account.clone(),
         "/bootstrap/validators",
     )?;
-    let mut keys = BTreeSet::new();
+    // CHOICE: session-key bytes are unique across every slot of every validator,
+    // not only within one role. A key reused in two slots of one validator, or in
+    // any slot of two validators, is refused with the existing invalid_session_key.
+    let mut keys = BTreeMap::<[u8; 32], String>::new();
     for (index, v) in b.validators.iter().enumerate() {
-        not_development(
-            v.account.account_id().as_ref(),
-            format!("/bootstrap/validators/{index}/account"),
-        )?;
-        for (role, key) in [
-            ("babe", &v.babe),
-            ("grandpa", &v.grandpa),
-            ("imOnline", &v.im_online),
-            ("discovery", &v.discovery),
-            ("liveness", &v.liveness),
-        ] {
-            if key.0.bytes().all(|c| c == b'0') || !keys.insert((role, &key.0)) {
-                return Err(fail(
-                    "invalid_session_key",
-                    format!("/bootstrap/validators/{index}/{role}"),
-                    "zero/duplicate key in role",
-                ));
-            }
+        let account = bytes(&v.account);
+        let account_path = format!("/bootstrap/validators/{index}/account");
+        not_development(&account, account_path.clone())?;
+        not_pallet_account(&account, b, account_path)?;
+        for (role, key) in session_key_slots(v) {
+            let path = format!("/bootstrap/validators/{index}/{role}");
             // Digest decoding guarantees 64 lowercase hex characters, so hex32
             // cannot panic. babe/imOnline/discovery/liveness are sr25519 and
             // grandpa is ed25519; every scheme's deny list is checked for each.
-            not_development(
-                &hex32(key.as_str()),
-                format!("/bootstrap/validators/{index}/{role}"),
-            )?;
+            let key = hex32(key.as_str());
+            if key == [0; 32] {
+                return Err(fail("invalid_session_key", path, "zero session key"));
+            }
+            if let Some(first) = keys.insert(key, path.clone()) {
+                let mut error = fail(
+                    "invalid_session_key",
+                    path,
+                    "session key reused in another slot of this or another validator",
+                );
+                error.related_path = Some(first);
+                return Err(error);
+            }
+            not_development(&key, path)?;
         }
+    }
+    for (index, v) in b.validators.iter().enumerate() {
+        not_session_key(
+            &bytes(&v.account),
+            &keys,
+            format!("/bootstrap/validators/{index}/account"),
+        )?;
     }
     keyed(&b.admins, |r| r.pallet.clone(), "/bootstrap/admins")?;
     let required = [

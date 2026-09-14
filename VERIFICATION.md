@@ -5,17 +5,17 @@
 Standalone commands in a fresh worktree (macOS host, stable toolchain):
 `cargo fmt --all -- --check`, `cargo clippy --locked --all-targets -- -D warnings`,
 `cargo test --locked` and `cargo run --locked -- check fixtures/complete.json`
-all exit 0. After the PR #10 review/audit revision and the CS-1/CS-4 rulings, 30
-tests pass, including the 134-case rejection corpus; a source scan requiring a shared
-case for every literal rejection code in the custody, network and composition
-modules; `multisig_account` against the d9-v2-tools `a5938f7` `@polkadot/util-crypto`
-golden vectors (2-of-3, 3-of-5, 2-of-2, order independence, threshold sensitivity);
-all 14 fixture addresses equal to `multisig_account`; positive CS-4 allowances
-(shared admin multisig, USDT owner equal to an admin, repeated signatory); inclusive
-multisig bounds with re-derived addresses; rehearsal-on-testnet acceptance;
-development-key refusal for every validator session-key role; version reporting
-before typed decode; and a unit test re-deriving all 45 development keys.
-The checker returns contract digest `4e611d12efaae24dd5bf4e1bcf87ececd081c07e2dd707a67b725a7c04e85f60`
+all exit 0. After revision 3 (round-2 review and audit), 30 tests pass, including the
+146-case rejection corpus with typed decode/validation phases and typed `ParseError`
+variants; a source scan requiring a shared case for every literal rejection code in
+the custody, network and composition modules; `multisig_account` against the
+d9-v2-tools `a5938f7` `@polkadot/util-crypto` golden vectors; all 14 fixture
+addresses equal to `multisig_account`; positive CS-4 allowances; inclusive multisig
+bounds with re-derived addresses; rehearsal-on-testnet acceptance; development-key
+refusal for every validator session-key role; version reporting before typed decode;
+and a unit test re-deriving all 183 development keys with sp-core and sp-runtime,
+asserting `//LocalValidator1..6` equal the d9-v2-node `e13a19d` preset constants.
+The checker returns contract digest `becc34d02db24844f53eb354be72e1d187900b908797da989e69ee4a22f2afce`
 and input digest `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`. `check` on main's RC6
 `fixtures/complete.json` exits 1 with `contract_version: unsupported contract version`.
 

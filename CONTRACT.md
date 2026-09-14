@@ -254,9 +254,11 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 | multisig_threshold_exceeds_signatories | threshold > n |
 | multisig_signatory_order | signatories 未按字节严格升序或重复 |
 | multisig_self_signatory | signatory 等于其 multisig address |
-| dev_key_authority | multisig address/signatory、validators[].account 或任一 session key（babe、grandpa、imOnline、discovery、liveness）等于开发密钥：sr25519 与 ed25519 公钥（sp-keyring 48.0.0 的 //Alice、//Bob、//Charlie、//Dave、//Eve、//Ferdie 及各自 //stash、//One、//Two，以及 sp-core DEV_PHRASE 根密钥），以及上述 15 个 URI 的 ecdsa 账户 blake2_256(压缩公钥) |
+| dev_key_authority | multisig address/signatory、validators[].account 或任一 session key（babe、grandpa、imOnline、discovery、liveness）等于开发密钥。以下每个 URI 均含 sr25519 与 ed25519 公钥及 ecdsa 账户 blake2_256(压缩公钥)，共 183 个：sp-keyring 48.0.0 的 //Alice、//Bob、//Charlie、//Dave、//Eve、//Ferdie 及各自 //stash、//One、//Two，sp-core DEV_PHRASE 根密钥；d9 自身提交的 authority SURI：//LocalValidator1..6（d9-v2-node e13a19d `runtime/src/genesis_config_presets.rs` 的 LOCAL_DEV_*_PUBS 与 `local-keys/README.md`）、//Mainnet0..5//{stash,babe,imon,audi,live,grandpa}、//OCWTest//{Babe,Grandpa,Liveness,Discovery} |
 | multisig_nested_signatory | signatory 等于本文档中另一个角色的 multisig address |
-| authority_pallet_account | multisig address 或 signatory 等于 ammAccount、miningPoolAccount 或以 b"modl" 开头的 PalletId 账户 |
+| authority_pallet_account | multisig address、signatory 或 validators[].account 等于 ammAccount、miningPoolAccount 或以 b"modl" 开头的 PalletId 账户 |
+| authority_session_key | multisig address、signatory 或任一 validators[].account（含该 validator 自身）等于任一 validator 的 session key |
+| invalid_session_key | session key 为零，或同一 key 出现在任一 validator 的两个 slot 中（同一 validator 内或跨 validator） |
 | authority_validator_account | multisig address 或 signatory 等于任一 validators[].account |
 | multisig_address_not_derived | address 不等于 multisig_account(signatories, threshold) |
 | authority_role_not_distinct | sudo.address 等于 usdtOwner.address 或任一 admins[].multisig.address |
@@ -264,10 +266,11 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 契约绑定地址（Yvan 2026-09-14 裁定 CS-1 = A）：公开函数
 `multisig_account(signatories, threshold)` 计算 pallet_multisig `multi_account_id` 的规则
 blake2_256(SCALE(b"modlpy/utilisuba", 升序 Vec<AccountId32>, u16 threshold))，已对照
-pallet-multisig 48.0.0 `src/lib.rs:645-649`。validate 对 sudo、usdtOwner 与每个 admin 要求
+pallet-multisig 45.0.0 `src/lib.rs:634-638`（d9-v2-node 锁定的版本；48.0.0 `src/lib.rs:645-649` 逐字节相同）。validate 对 sudo、usdtOwner 与每个 admin 要求
 address 等于该推导。这是有意保留的第二份实现：d9-v2-tools `d9-bootstrap derive-admins`
 保留自己的小副本，因为密钥生成二进制不得依赖本 crate（会引入 sp-core）。两份实现固定于同一组
-`@polkadot/util-crypto` golden vectors，组合步骤交叉校验二者。producer 再把 sudo.key、
+`@polkadot/util-crypto` golden vectors，并由 d9-v2-tools `d9-genesis-composition`
+`custody::cross_check_derivations`（tools PR #72，尚未合并）交叉校验二者。producer 再把 sudo.key、
 各 `<pallet>.admin` 与 asset 1 owner 投影为这些地址；其他已声明资产的 owner 等于
 sudo.address（node MainnetAssetOwners）。
 
@@ -278,8 +281,9 @@ multisig 托管适用于所有 purpose 与阶梯的每一级（Keel、Χ、Genie
 admins[].multisig.address。允许：12 个 pallet admin 共用一个 multisig；usdtOwner 等于某个
 admin multisig；同一 signatory 出现在多个 multisig 中（包括同时在 sudo 与 admin 中）。
 
-地址推导相等不证明签名人就是预定的保管人，也不证明密钥保管或仪式记录，这些仍是外部证据。
-签名人若是本文档之外的 multisig（外部嵌套），本契约无法发现，必须由仪式证据排除。
+地址推导相等不证明签名人就是预定的保管人。仪式证据必须证明每个声明的 signatory 密钥可由其保管人
+控制（proof-of-possession），这同时排除无私钥账户（pure proxy、派生账户、本文档之外的 multisig；
+后者本契约无法发现）。
 
 ### 9.2 链身份与 purpose 绑定（NETWORK）
 
@@ -308,13 +312,16 @@ metadata decimals 等于 state 账本。
 
 ### 9.4 解码前的版本检查
 
-`parse` 在严格类型解码之前读取顶层 `contractVersion` 字符串；若可读且不等于
-d9-native-genesis/0.1.0-rc.7，返回以 `contract_version` 开头的错误。真实 RC6 文档因此报告
+`parse` 返回 `Result<ContractInput, ParseError>`。它在严格类型解码之前读取顶层 `contractVersion`
+字符串；若可读且不等于 d9-native-genesis/0.1.0-rc.7，返回 `ParseError::UnsupportedVersion { found }`，
+严格解码失败则返回 `ParseError::Decode(message)`。调用方按变体匹配，不解析字符串。真实 RC6 文档因此报告
 版本不符，而不是 `chain` 未知字段等类型错误。无法读取版本（非法 JSON、缺失、非字符串、
 重复字段）时仍交由严格解码拒绝。validate 对已构造的输入继续检查版本。
 
 ### 9.5 producer 独立证据
 
-报告的 independentEvidenceRequired 新增三项：签名人是预定保管人及仪式证据（含外部嵌套）；assets.assets 与 assets.metadata 的 ID
+报告的 independentEvidenceRequired 新增四项：producer 从这些契约地址投影 sudo.key、每个 `<pallet>.admin`
+与资产 owner；每个声明的 signatory 密钥由其保管人证明可控（proof-of-possession，同时排除 pure proxy、
+派生账户与外部 multisig 等无私钥账户）；assets.assets 与 assets.metadata 的 ID
 集合等于 assetIds；chain spec id/name/chainType 与 manifest network 等于 chain，
 且无 bootNodes、telemetryEndpoints 为 null。输入检查通过不代表这些已被证明。

@@ -168,18 +168,22 @@ ruling to enforce DEC-21 k-of-n `pallet_multisig` custody, with audit finding S-
 and review finding R-4. RC7 is not wire-compatible with RC6:
 
 - `bootstrap.sudo`, the new `bootstrap.usdtOwner` and every `bootstrap.admins[].multisig`
-  are `{address, threshold, signatories}`. The contract validates structure only
+  are `{address, threshold, signatories}`. The contract checks structure
   (2 <= threshold <= n <= 20, strictly ascending unique signatories, no self or
-  nested-role signatory, no PalletId or validator account, no development key). It
-  requires `address == multisig_account(signatories, threshold)`, the
-  pallet-multisig account, and keeps sudo distinct from the USDT owner and every
+  nested-role signatory, no PalletId, validator-account, session-key or development
+  key) and binds each address: `address == multisig_account(signatories, threshold)`,
+  the pallet-multisig account. Sudo stays distinct from the USDT owner and every
   admin. d9-v2-tools `derive_admins` keeps a second, independent copy of the
-  derivation; both are pinned to the same polkadot-js golden vectors.
+  derivation; both are pinned to the same polkadot-js golden vectors, and tools
+  `d9-genesis-composition` `custody::cross_check_derivations` (tools PR #72, not yet
+  merged) cross-checks them.
 - Multisig custody applies to every purpose and ladder rung; there is no
   single-key rehearsal exception.
-- Validator accounts and all five session keys also refuse development keys. The
-  deny list covers sr25519/ed25519 sp-keyring keys, the bare DEV_PHRASE roots and
-  the ecdsa-derived accounts of the same URIs.
+- Validator accounts and all five session keys also refuse development keys; validator
+  accounts refuse PalletId accounts and session keys; session keys are unique across
+  every slot. The deny list (183 keys) covers the sp-keyring URIs, the DEV_PHRASE
+  roots and d9's committed authority SURIs (`//LocalValidator1..6`, `//Mainnet0..5//*`,
+  `//OCWTest//*`), each in sr25519, ed25519 and the ecdsa-derived account.
 - The new top-level `chain` declares `network`, `id`, `name` and `chainType`.
   `migration-input` requires `Live`; only `migration-input` may be labelled
   `mainnet`; a testnet-labelled rehearsal with real data remains valid. The producer
@@ -187,9 +191,10 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
 - `bootstrap.assetIds` declares the complete V2 asset ID set. The producer must
   require the asset definition and metadata ID sets to equal it exactly.
 
-`parse` reports a different readable `contractVersion` before typed decoding, so an
-RC6 document fails with `contract_version` rather than an unknown-field error.
-`multisig_account`, `MULTISIG_MAX_SIGNATORIES`, `well_known_development_key` and `VERSION_ERROR_PREFIX`
-are exported so
-producers do not retype the bound, the deny list or the version error marker. RC6 acknowledgements do not
+`parse` returns `Result<ContractInput, ParseError>`: a readable but different
+`contractVersion` is `ParseError::UnsupportedVersion { found }` before typed decoding,
+so an RC6 document reports its version rather than an unknown-field error; anything
+else is `ParseError::Decode(message)`. `multisig_account`, `MULTISIG_MAX_SIGNATORIES`
+and `well_known_development_key` are exported so producers do not retype the
+derivation, the bound or the deny list. RC6 acknowledgements do not
 cover RC7 bytes.

@@ -32,9 +32,15 @@ struct Patch {
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct Expected {
-    phase: String,
+    phase: Phase,
     code: String,
     path_prefix: String,
+}
+#[derive(Deserialize, Clone, Copy, PartialEq, Eq, Debug)]
+#[serde(rename_all = "lowercase")]
+enum Phase {
+    Decode,
+    Validation,
 }
 
 fn apply(root: &mut Value, patch: Patch) {
@@ -108,15 +114,16 @@ fn shared_negative_cases_refuse_at_the_declared_boundary() {
         }
         refresh_evidence(&mut value, &case.refresh_source);
         let parsed = parse(&serde_json::to_vec(&value).unwrap());
-        if case.expected.phase == "decode" {
+        if case.expected.phase == Phase::Decode {
             let error = parsed
                 .err()
                 .unwrap_or_else(|| panic!("{} unexpectedly decoded", case.id));
-            let version = error.starts_with(VERSION_ERROR_PREFIX);
-            match case.expected.code.as_str() {
-                "contract_version" => assert!(version, "{}: {error}", case.id),
-                "contract_decode" => assert!(!version, "{}: {error}", case.id),
-                other => panic!("{}: decode phase cannot expect {other}", case.id),
+            match (case.expected.code.as_str(), &error) {
+                ("contract_version", ParseError::UnsupportedVersion { .. })
+                | ("contract_decode", ParseError::Decode(_)) => {}
+                (expected, actual) => {
+                    panic!("{}: expected {expected}, got {actual:?}", case.id)
+                }
             }
         } else {
             let parsed = parsed.unwrap_or_else(|e| panic!("{} failed decoding: {e}", case.id));
@@ -186,9 +193,10 @@ fn prefix_alias_is_rejected_and_duplicate_reports_both_rows() {
     let id = input().bootstrap.sudo.address.account_id();
     value["bootstrap"]["sudo"]["address"] =
         json!(id.to_ss58check_with_version(Ss58AddressFormat::custom(42)));
-    assert!(parse(&serde_json::to_vec(&value).unwrap())
-        .unwrap_err()
-        .contains("prefix 9"));
+    assert!(matches!(
+        parse(&serde_json::to_vec(&value).unwrap()),
+        Err(ParseError::Decode(message)) if message.contains("prefix 9")
+    ));
     let mut input = input();
     input
         .state
@@ -296,8 +304,9 @@ fn migration_input_conformance_is_not_archive_settlement_or_release_approval() {
         "legacy settlement",
         "clean V2 processing",
         "watermark readback",
-        "intended custodians",
-        "key-ceremony evidence",
+        "proof-of-possession",
+        "projects sudo.key",
+        "excludes keyless accounts",
         "assets.metadata ID sets",
         "no bootNodes",
     ] {
@@ -385,6 +394,7 @@ fn rc7_rejection_codes_in_source_each_have_a_shared_case() {
         "multisig_nested_signatory",
         "multisig_address_not_derived",
         "authority_role_not_distinct",
+        "authority_session_key",
         "authority_pallet_account",
         "authority_validator_account",
         "dev_key_authority",
@@ -557,7 +567,16 @@ fn version_is_reported_before_typed_decode_and_still_checked_by_validate() {
     value["contractVersion"] = json!("d9-native-genesis/0.1.0-rc.6");
     value.as_object_mut().unwrap().remove("chain");
     let error = parse(&serde_json::to_vec(&value).unwrap()).unwrap_err();
-    assert!(error.starts_with(VERSION_ERROR_PREFIX), "{error}");
+    assert_eq!(
+        error,
+        ParseError::UnsupportedVersion {
+            found: "d9-native-genesis/0.1.0-rc.6".into()
+        }
+    );
+    assert!(
+        error.to_string().starts_with("contract_version: "),
+        "{error}"
+    );
     let mut input = input();
     input.contract_version = "d9-native-genesis/0.1.0-rc.6".into();
     assert_eq!(validate(&input).unwrap_err().code, "contract_version");

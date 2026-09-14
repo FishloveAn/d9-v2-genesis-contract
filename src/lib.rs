@@ -46,16 +46,39 @@ pub fn schema() -> schemars::schema::RootSchema {
     schema
 }
 
-/// Prefix of `parse` errors caused by a readable but different `contractVersion`.
-pub const VERSION_ERROR_PREFIX: &str = "contract_version";
+/// Why [`parse`] refused a document. Consumers match on the variant; the
+/// `Display` text is for humans only.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ParseError {
+    /// The top-level `contractVersion` string was readable and differs from
+    /// [`CONTRACT_VERSION`]. Reported before typed decoding.
+    UnsupportedVersion { found: String },
+    /// Strict typed decoding failed (JSON syntax, unknown, duplicate or missing
+    /// fields, non-canonical scalars). The string is the decoder's path and message.
+    Decode(String),
+}
+
+impl std::fmt::Display for ParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::UnsupportedVersion { found } => write!(
+                f,
+                "contract_version: unsupported contract version {found:?}; expected {CONTRACT_VERSION}"
+            ),
+            Self::Decode(message) => f.write_str(message),
+        }
+    }
+}
+
+impl std::error::Error for ParseError {}
 
 /// Strictly decode the transport contract. Integers are decimal strings,
 /// AccountIds are checksum-verified canonical SS58 prefix 9.
 ///
 /// A document whose top-level `contractVersion` string differs from
-/// [`CONTRACT_VERSION`] is refused with a [`VERSION_ERROR_PREFIX`] error before
+/// [`CONTRACT_VERSION`] is refused with [`ParseError::UnsupportedVersion`] before
 /// typed decoding, so an older RC reports its version instead of a field error.
-pub fn parse(bytes: &[u8]) -> Result<ContractInput, String> {
+pub fn parse(bytes: &[u8]) -> Result<ContractInput, ParseError> {
     // CHOICE: peek with a one-field struct rather than serde_json::Value. It
     // skips the rest of the document without allocating a second copy of
     // million-row ledgers. Anything it cannot read (invalid JSON, a missing or
@@ -67,14 +90,14 @@ pub fn parse(bytes: &[u8]) -> Result<ContractInput, String> {
     }
     if let Ok(peek) = serde_json::from_slice::<VersionPeek>(bytes) {
         if peek.contract_version != CONTRACT_VERSION {
-            return Err(format!(
-                "{VERSION_ERROR_PREFIX}: unsupported contract version {:?}; expected {CONTRACT_VERSION}",
-                peek.contract_version
-            ));
+            return Err(ParseError::UnsupportedVersion {
+                found: peek.contract_version,
+            });
         }
     }
+    let decode = |error: String| ParseError::Decode(error);
     let mut de = serde_json::Deserializer::from_slice(bytes);
-    let value = serde_path_to_error::deserialize(&mut de).map_err(|e| e.to_string())?;
-    de.end().map_err(|e| e.to_string())?;
+    let value = serde_path_to_error::deserialize(&mut de).map_err(|e| decode(e.to_string()))?;
+    de.end().map_err(|e| decode(e.to_string()))?;
     Ok(value)
 }

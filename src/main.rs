@@ -1,5 +1,5 @@
 use d9_genesis_contract::{
-    inventory, parse, schema, validate, validate_inventory, ArtifactBinding,
+    inventory, parse, schema, validate, validate_inventory, ArtifactBinding, ParseError,
 };
 
 fn run() -> Result<(), String> {
@@ -15,12 +15,9 @@ fn run() -> Result<(), String> {
         }
         [command, path] if command == "check" => {
             let bytes = std::fs::read(path).map_err(|e| format!("{path}: {e}"))?;
-            let input = parse(&bytes).map_err(|e| {
-                if e.starts_with(d9_genesis_contract::VERSION_ERROR_PREFIX) {
-                    e
-                } else {
-                    format!("contract_decode: {e}")
-                }
+            let input = parse(&bytes).map_err(|error| match error {
+                ParseError::UnsupportedVersion { .. } => error.to_string(),
+                ParseError::Decode(_) => format!("contract_decode: {error}"),
             })?;
             match validate(&input) {
                 Ok(report) => serde_json::to_value(report),

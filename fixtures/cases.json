@@ -2039,7 +2039,7 @@
       "merchant"
     ],
     "expected": {
-      "phase": "validate",
+      "phase": "validation",
       "code": "merchant_timestamp_order",
       "pathPrefix": "/state/merchantAccounts/"
     }
@@ -3234,6 +3234,214 @@
       "phase": "validation",
       "code": "authority_role_not_distinct",
       "pathPrefix": "/bootstrap/sudo/address"
+    }
+  },
+  {
+    "id": "validator-babe-localvalidator1",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/babe",
+        "value": "8e5052a337be646ae18ef81eee5d820403671cbf79090ae80641c40a47698d3a"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dev_key_authority",
+      "pathPrefix": "/bootstrap/validators/0/babe"
+    }
+  },
+  {
+    "id": "usdt-owner-signatory-localvalidator2",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtOwner/signatories",
+        "value": [
+          "vSnQpafYXWLoqqBeQnt6dHhRnM87Boo2r7s9ckENmFFTZwN",
+          "xnVk4zjmHBQnEwSzA2DbcFiWUgEbYxCuvDSe8WyenDQnAbx",
+          "xop69KHUJqbQfkAiSX5R1CpX5b34dYU3U3ZVdLCuu1GFCbx"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dev_key_authority",
+      "pathPrefix": "/bootstrap/usdtOwner/signatories/0"
+    }
+  },
+  {
+    "id": "sudo-signatory-validator-babe-key",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/signatories",
+        "value": [
+          "u5wKvsdTcsYQXeB9nvDQ7PppNHeVefghTzBY9niAhMSVenJ",
+          "xiYhr36eCCrtxXHoJXe9RQQUfwqCKBRXGj65e5HsRqrNokJ",
+          "xjs3vMeMDs3XPL1Xb2VxpMWVGrdfPmgepZCw8tX8YdhqqRv"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_session_key",
+      "pathPrefix": "/bootstrap/sudo/signatories/0"
+    }
+  },
+  {
+    "id": "admin-signatory-validator-grandpa-key",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/2/multisig/signatories",
+        "value": [
+          "u5wKvsdTcsYQXeB9nvDQ7PppNHeVefghTzBY9niAhMSZNrz",
+          "xzLrjsf8Y74S6BvYiVwxAoebtsSoGGZ5rgWKbr2zqL5zULN",
+          "y1fCpCCqZmF4WzeGzzomZkkcVnFGLrpDQWdB6fGFx7wTYBo"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_session_key",
+      "pathPrefix": "/bootstrap/admins/2/multisig/signatories/0"
+    }
+  },
+  {
+    "id": "validator-account-is-own-babe-key",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/babe",
+        "value": "3333333333333333333333333333333333333333333333333333333333333333"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_session_key",
+      "pathPrefix": "/bootstrap/validators/0/account"
+    }
+  },
+  {
+    "id": "usdt-owner-signatory-validator-imonline-key",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtOwner/signatories",
+        "value": [
+          "u5wKvsdTcsYQXeB9nvDQ7PppNHeVefghTzBY9niAhMSWTZH",
+          "xnVk4zjmHBQnEwSzA2DbcFiWUgEbYxCuvDSe8WyenDQnAbx",
+          "xop69KHUJqbQfkAiSX5R1CpX5b34dYU3U3ZVdLCuu1GFCbx"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_session_key",
+      "pathPrefix": "/bootstrap/usdtOwner/signatories/0"
+    }
+  },
+  {
+    "id": "sudo-address-validator-liveness-key",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/address",
+        "value": "u5wKvsdTcsYQXeB9nvDQ7PppNHeVefghTzBY9niAhMSaG1a"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_session_key",
+      "pathPrefix": "/bootstrap/sudo/address"
+    }
+  },
+  {
+    "id": "validator-session-key-reused-across-slots",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/imOnline",
+        "value": "00000000000000000000000000000000000000000000000000000000000001ff"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_session_key",
+      "pathPrefix": "/bootstrap/validators/0/imOnline"
+    }
+  },
+  {
+    "id": "validator-session-key-reused-across-validators",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/1/discovery",
+        "value": "0000000000000000000000000000000000000000000000000000000000000200"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "invalid_session_key",
+      "pathPrefix": "/bootstrap/validators/1/discovery"
+    }
+  },
+  {
+    "id": "validator-account-amm-account",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/account",
+        "value": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_pallet_account",
+      "pathPrefix": "/bootstrap/validators/0/account"
+    }
+  },
+  {
+    "id": "validator-account-mining-pool-account",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/1/account",
+        "value": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_pallet_account",
+      "pathPrefix": "/bootstrap/validators/1/account"
+    }
+  },
+  {
+    "id": "validator-account-other-palletid-account",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/account",
+        "value": "wZRduDR47ggpiCiQjAVNLKKSPFfc7YpbDn5TFBpUBk5nuWm"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_pallet_account",
+      "pathPrefix": "/bootstrap/validators/0/account"
     }
   }
 ]

@@ -9,12 +9,12 @@ address to its signatories in the contract (CS-1 = A), required multisig custody
 every purpose and ladder rung, and made sudo distinct from other roles (CS-4). S-6 (chain identity not bound to purpose) and R-4
 (extra asset IDs pass) are included.
 
-Contract digest: `4e611d12efaae24dd5bf4e1bcf87ececd081c07e2dd707a67b725a7c04e85f60`. Input digest: `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
-Rejection corpus: 134 cases. Exact SHA-256 pins:
+Contract digest: `becc34d02db24844f53eb354be72e1d187900b908797da989e69ee4a22f2afce`. Input digest: `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
+Rejection corpus: 146 cases. Exact SHA-256 pins:
 - complete fixture: `e7a2a7e7d88b0d2d9caddead7ac3e3d6e4c963e31d088d753f463270e368f7aa`
 - expected: `b6b951556f652191f8abaea43735a8963a9eb654b765ca7fc0929ca224a2ade3`
-- cases: `ee129c5d596be84b31ac888d7bf0d464427f017ae158fc55d420c2b48e55121b`
-- rules: `7ffd689c9c6f6c6ccbf0a23966b230dc9821419a357c3d2673e4cd31c57541df`
+- cases: `758fd4190e15d1c293b790fc3bfb058b87310d345fee96cd85f70fdc95bbf7c4`
+- rules: `a960efd8df45c82a28d8ba035023a509ee2d0159f82fa613e53fd44657824297`
 - schema: `c29a9f5e9c2865bf4d7f278822722992babc7ec79d2239de8c1413450ffb7968`
 - inventory: `20f1bfd0323ecd4c8209fc7ea029bea8e8dc4273721a48a63df46ba46f47da9a`
 
@@ -36,8 +36,10 @@ Revision after PR #10 code review and security audit (same day):
 - CS-3: no signatory may be another role's address; no address or signatory may be
   ammAccount, miningPoolAccount, any `b"modl"` PalletId account or a validator
   account. Multisigs nested outside the document are ceremony evidence.
-- CS-5/CR-1: four producer obligations added to `independentEvidenceRequired`;
-  `MultisigAuthority` documents that structure checks do not bind its address.
+- CS-5/CR-1 (superseded by the CS-1 ruling and revision 3 below): producer
+  obligations were added to `independentEvidenceRequired`. The derivation entry was
+  later dropped because the contract now binds each address, and `MultisigAuthority`
+  now documents that binding.
 - CS-6: chain names are printable ASCII; tokens stay substring matches.
 - CS-7: the deny list adds the bare DEV_PHRASE roots and the ecdsa-derived accounts
   (45 keys, each re-derived with sp-core/sp-runtime in a unit test).
@@ -50,16 +52,34 @@ Revision after PR #10 code review and security audit (same day):
   `rc6-complete-document-reports-version`.
 
 Rulings applied (Yvan 2026-09-14 03:33 UTC):
-- CS-1 = A: public `multisig_account(signatories, threshold)` (pallet-multisig
-  48.0.0 `multi_account_id`), enforced as `multisig_address_not_derived`. It is
-  intentionally the second implementation: d9-bootstrap keeps its own copy so the
-  key-generation binary does not depend on sp-core; both are pinned to the same
-  `@polkadot/util-crypto` vectors, and composition cross-checks them.
+- CS-1 = A: public `multisig_account(signatories, threshold)`, verified against
+  pallet-multisig 45.0.0 `multi_account_id` (the version d9-v2-node pins; 48.0.0 is
+  byte-identical), enforced as `multisig_address_not_derived`. It is intentionally the
+  second implementation: d9-bootstrap keeps its own copy so the key-generation binary
+  does not depend on sp-core; both are pinned to the same `@polkadot/util-crypto`
+  vectors, and d9-v2-tools `d9-genesis-composition` `custody::cross_check_derivations`
+  (tools PR #72, not yet merged) cross-checks them.
 - Multisig custody applies to every purpose and ladder rung (Keel, Χ, Genie, Ψ, Ω);
   there is no single-key rehearsal exception.
 - CS-4: sudo differs from the USDT owner and every admin
   (`authority_role_not_distinct`); admins may share one multisig, the USDT owner may
   equal an admin, and signatories may repeat across multisigs (positive tests).
+
+Revision 3 after the round-2 review and audit of `6971f5a..537855b`:
+- CR2-1: the deny list adds d9's committed authority SURIs, `//LocalValidator1..6`
+  (asserted equal to the d9-v2-node `LOCAL_DEV_*_PUBS` preset constants),
+  `//Mainnet0..5//*` and `//OCWTest//*`, in all three schemes (183 keys).
+- CR2-2: `parse` returns a typed `ParseError { UnsupportedVersion { found }, Decode }`;
+  `VERSION_ERROR_PREFIX` is removed. Case phases are a typed `Decode | Validation`.
+- CS2-2: validator session keys are reserved identities (`authority_session_key`) for
+  role addresses, signatories and validator accounts; session keys are unique across
+  every slot of every validator (`invalid_session_key`).
+- CS2-4: validator accounts refuse ammAccount, miningPoolAccount and `b"modl"`
+  PalletId accounts (`authority_pallet_account`).
+- Evidence: the producer projection of sudo.key, admins and asset owners, and the
+  proof-of-possession ceremony wording, are listed in `independentEvidenceRequired`.
+- Held pending Yvan: quorum containment (CS2-3) and the rehome destination allowlist
+  (CS2-1).
 
 No downstream acknowledgement exists for RC7. Tools, node and the pallets adapter
 must repin and adopt the new fields before integrated enforcement is claimed.
