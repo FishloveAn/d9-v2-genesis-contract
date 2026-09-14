@@ -5,12 +5,16 @@
 Standalone commands in a fresh worktree (macOS host, stable toolchain):
 `cargo fmt --all -- --check`, `cargo clippy --locked --all-targets -- -D warnings`,
 `cargo test --locked` and `cargo run --locked -- check fixtures/complete.json`
-all exit 0. 23 tests pass, including the 106-case rejection corpus,
-a test that every RC7 rejection code has a shared case, inclusive multisig bounds
-(n-of-n and exactly 20 signatories), rehearsal-on-testnet acceptance, and a unit
-test re-deriving all 28 development public keys from their seed URIs with sp-core.
-The checker returns contract digest `3a13b3d2820b80af0e753d391200609c70dbf7b1f796e58c02c66373785752a2`
-and input digest `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
+all exit 0. After the PR #10 review/audit revision, 25 tests pass, including the
+129-case rejection corpus; a source scan requiring a shared case for every literal
+rejection code in the custody, network and composition modules; inclusive multisig
+bounds (n-of-n and exactly 20 signatories); rehearsal-on-testnet acceptance;
+development-key refusal for every validator session-key role; version reporting
+before typed decode; and a unit test re-deriving all 45 development keys (sr25519,
+ed25519 and ecdsa accounts, including DEV_PHRASE roots) with sp-core and sp-runtime.
+The checker returns contract digest `a22a15d979d7d156c6223a9b7c75e34c45d698850ed1a4184d781caf5de4e88a`
+and input digest `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`. `check` on main's RC6
+`fixtures/complete.json` exits 1 with `contract_version: unsupported contract version`.
 
 Fixture multisig addresses were derived by `d9-bootstrap derive-admins` built
 from d9-v2-tools `a5938f7` (its 14 `derive_admins_test` golden-vector tests passed

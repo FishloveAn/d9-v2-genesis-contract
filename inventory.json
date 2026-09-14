@@ -16,7 +16,7 @@
     "genesisField": null,
     "inputPath": "/state/assets",
     "owner": "D9-307",
-    "decision": "supply/accounts derived from holders; asset metadata and authorities are V2 config",
+    "decision": "supply/accounts derived from holders; RC7 owners are contract-bound multisigs: asset 1 owner = /bootstrap/usdtOwner/address, every other declared asset owner = /bootstrap/sudo/address; the ID set is /bootstrap/assetIds; name/symbol/decimals of fresh assets, sufficiency and minBalance remain V2 config",
     "implementation": "existing"
   },
   {

@@ -19,6 +19,7 @@
 | Digest | 64 个小写十六进制字符，无 0x | 32 bytes；具体算法由字段定义，不混用链 hash 与 SHA-256 |
 | Commit | 40 个小写十六进制字符 | Git source revision；不能只写分支名 |
 | assetId/session/decimals/bps | JSON 非负整数 | Rust u32/u8 的范围；这些字段不承载大额金额 |
+| threshold | JSON 非负整数 | Rust u16（0..65535）；multisig 阈值，校验另要求 2 ≤ threshold ≤ n |
 
 JSON Schema 描述结构和文本模式；SS58 checksum、整数精确上界和跨字段
 不变量还必须通过 Rust decode + validate。仅通过通用 JSON Schema 不等于
@@ -43,8 +44,10 @@ typed adapter 完成，roundtrip 测试锁定其行为。
 | bootstrap | sudo 与 usdtOwner 的 k-of-n multisig、validator 五类 session key、12 个 admin role 的 multisig、SDK 派生 pallet 账户、已决 AMM 参数及完整 assetIds 集合 |
 
 build 中的所有 digest 都是对对应原始文件 bytes 的 SHA-256。runtimeConfigDigest
-约束本 DTO 未展开的完整 V2 runtime 配置，例如 assets metadata/owner/minBalance、
-pause、backup validators 和其余治理参数。D9-370 必须在组合前检查实际文件
+约束本 DTO 未展开的完整 V2 runtime 配置，例如 assets metadata/sufficient/minBalance、
+pause、backup validators 和其余治理参数。RC7 起资产 owner 不再只由该 digest 约束：
+asset 1 owner 必须等于 bootstrap.usdtOwner.address，其余已声明资产 owner 必须等于
+bootstrap.sudo.address（CUSTODY，第 9 节），资产 ID 集合由 bootstrap.assetIds 声明。D9-370 必须在组合前检查实际文件
 bytes；本 crate 不读取这些外部文件，也不认证 revisions/ABI。
 
 authority 数据与迁移金额必须形成一份确定的完整输入，再做检查和 native
@@ -242,7 +245,7 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 | bootstrap.sudo | MultisigAuthority | 见下 |
 | bootstrap.usdtOwner | MultisigAuthority | asset 1 的 owner；与 d9-v2-tools derive_admins 的 usdt-owner 角色对应 |
 | bootstrap.admins[] | {pallet, multisig: MultisigAuthority} | 12 个 pallet 恰好各一次（admin_coverage 不变） |
-| MultisigAuthority | {address, threshold: u16, signatories: Address[]} | 2 ≤ threshold ≤ n ≤ 20；signatories 按 AccountId32 字节严格升序（不重复）；任何 signatory 不得等于自身 address；address 与 signatories 均不得是开发密钥 |
+| MultisigAuthority | {address, threshold: u16, signatories: Address[]} | 2 ≤ threshold ≤ n ≤ 20；signatories 按 AccountId32 字节严格升序（不重复）；任何 signatory 不得等于自身 address 或其他角色 address；address 与 signatories 均不得是开发密钥、PalletId 账户（ammAccount、miningPoolAccount 或任何以 b"modl" 开头的账户）或 validator 账户。仅靠结构检查，address 并未与 signatories 绑定 |
 
 | 拒绝代码 | 条件 |
 |---|---|
@@ -251,7 +254,10 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 | multisig_threshold_exceeds_signatories | threshold > n |
 | multisig_signatory_order | signatories 未按字节严格升序或重复 |
 | multisig_self_signatory | signatory 等于其 multisig address |
-| dev_key_authority | address 或 signatory 等于 sp-keyring 48.0.0 的 sr25519/ed25519 公钥：//Alice、//Bob、//Charlie、//Dave、//Eve、//Ferdie 及各自 //stash、//One、//Two |
+| dev_key_authority | multisig address/signatory、validators[].account 或任一 session key（babe、grandpa、imOnline、discovery、liveness）等于开发密钥：sr25519 与 ed25519 公钥（sp-keyring 48.0.0 的 //Alice、//Bob、//Charlie、//Dave、//Eve、//Ferdie 及各自 //stash、//One、//Two，以及 sp-core DEV_PHRASE 根密钥），以及上述 15 个 URI 的 ecdsa 账户 blake2_256(压缩公钥) |
+| multisig_nested_signatory | signatory 等于本文档中另一个角色的 multisig address |
+| authority_pallet_account | multisig address 或 signatory 等于 ammAccount、miningPoolAccount 或以 b"modl" 开头的 PalletId 账户 |
+| authority_validator_account | multisig address 或 signatory 等于任一 validators[].account |
 
 本契约只校验结构，不推导地址。唯一推导实现是 d9-v2-tools
 `network-bootstrap/d9-bootstrap/src/derive_admins.rs`：
@@ -259,7 +265,9 @@ blake2_256(SCALE(b"modlpy/utilisuba", 升序 Vec<AccountId32>, u16 threshold))�
 producer 必须对每个 authority 重新推导并要求相等，再把 sudo.key、各 `<pallet>.admin`
 与 asset 1 owner 投影为这些地址；其他已声明资产的 owner 等于 sudo.address
 （node MainnetAssetOwners）。开发密钥拒绝对所有 purpose 生效，合成 fixture 也不例外。
-结构通过不证明签名人身份、密钥保管或仪式记录，这些仍是外部证据。
+结构通过不证明签名人身份、密钥保管或仪式记录，这些仍是外部证据。签名人若是本文档之外的
+multisig（外部嵌套），本契约无法发现，必须由仪式证据排除。角色之间 address 是否必须互不相同
+尚待裁定（CS-4），本 RC 未强制。
 
 ### 9.2 链身份与 purpose 绑定（NETWORK）
 
@@ -267,8 +275,8 @@ producer 必须对每个 authority 重新推导并要求相等，再把 sudo.key
 |---|---|
 | migration-input 必须 chainType=Live；Development、Local 拒绝 | chain_purpose_binding |
 | network=mainnet 只允许 purpose=migration-input | chain_purpose_binding |
-| id 为 1–64 个 [a-z0-9_]；name 非空、无首尾空白与控制字符 | chain_identity_label |
-| mainnet 的 id/name 不得包含 test、dev、local、rehears、fixture、synthetic；testnet 的 id/name 必须包含 test | chain_identity_label |
+| id 为 1–64 个 [a-z0-9_]；name 非空、仅可打印 ASCII（0x20–0x7E）、无首尾空白 | chain_identity_label |
+| mainnet 的 id/name 不得包含 test、dev、local、rehears、fixture、synthetic（子串匹配，不区分大小写）；testnet 的 id/name 必须包含 test | chain_identity_label |
 
 Χ 演练使用真实数据但不是 mainnet：testnet 标签的 migration-input（Live）有效，
 本契约不设“migration-input ⇒ mainnet”。尚无已裁定的 mainnet chain id，因此只做
@@ -281,7 +289,21 @@ producer 必须要求 bootstrap manifest 的 network 与 chain spec 的 id、nam
 
 `bootstrap.assetIds` 是完整的 V2 pallet-assets ID 集合，严格升序，并包含每个
 state.assets 的 assetId；没有迁移账本的新资产只在此声明。违反时代码为
-asset_id_set。本契约不建模 assets 定义与 metadata（owner、sufficient、minBalance、
-name、symbol），因此精确集合相等由 producer 执行：`assets.assets` 与
+asset_id_set。本契约不建模 assets 定义与 metadata（sufficient、minBalance、name、symbol；
+owner 由 9.1 约束），因此精确集合相等由 producer 执行：`assets.assets` 与
 `assets.metadata` 的 ID 集合都必须等于 assetIds，不得多也不得少，迁移资产的
 metadata decimals 等于 state 账本。
+
+### 9.4 解码前的版本检查
+
+`parse` 在严格类型解码之前读取顶层 `contractVersion` 字符串；若可读且不等于
+d9-native-genesis/0.1.0-rc.7，返回以 `contract_version` 开头的错误。真实 RC6 文档因此报告
+版本不符，而不是 `chain` 未知字段等类型错误。无法读取版本（非法 JSON、缺失、非字符串、
+重复字段）时仍交由严格解码拒绝。validate 对已构造的输入继续检查版本。
+
+### 9.5 producer 独立证据
+
+报告的 independentEvidenceRequired 新增四项：multisig address 等于 derive_admins
+推导；签名人托管与仪式证据（含外部嵌套）；assets.assets 与 assets.metadata 的 ID
+集合等于 assetIds；chain spec id/name/chainType 与 manifest network 等于 chain，
+且无 bootNodes、telemetryEndpoints 为 null。输入检查通过不代表这些已被证明。

@@ -824,6 +824,7 @@
     },
     "MultisigAuthority": {
       "additionalProperties": false,
+      "description": "DEC-21 k-of-n pallet_multisig authority. Structure checks alone do NOT bind `address` to `signatories` and `threshold`: a well-formed value can name any address. d9-v2-tools `derive_admins` is the single derivation, and the producer must prove equality before any authority is trusted.",
       "properties": {
         "address": {
           "$ref": "#/definitions/Address"

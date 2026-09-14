@@ -18,7 +18,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [rules.json](rules.json) | 23 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
-| [fixtures/cases.json](fixtures/cases.json) | 106 mutations and expected failures |
+| [fixtures/cases.json](fixtures/cases.json) | 129 mutations and expected failures |
 | [fixture-manifest.json](fixture-manifest.json) | Exact hashes of the shared artifacts |
 | [evidence-amm-mainnet-23802000.json](evidence-amm-mainnet-23802000.json) | Read-only V1 mainnet AMM LP extraction receipt at block 23,802,000 |
 | [REVIEW.md](REVIEW.md) | Pending downstream compatibility acknowledgements |
@@ -169,9 +169,13 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
 
 - `bootstrap.sudo`, the new `bootstrap.usdtOwner` and every `bootstrap.admins[].multisig`
   are `{address, threshold, signatories}`. The contract validates structure only
-  (2 <= threshold <= n <= 20, strictly ascending unique signatories, no self
-  signatory, no sp-keyring development key). The single address derivation stays in
-  d9-v2-tools `derive_admins`; the producer must require equality.
+  (2 <= threshold <= n <= 20, strictly ascending unique signatories, no self or
+  nested-role signatory, no PalletId or validator account, no development key). It
+  does not bind an address to its signatories: the single derivation stays in
+  d9-v2-tools `derive_admins`, and the producer must require equality.
+- Validator accounts and all five session keys also refuse development keys. The
+  deny list covers sr25519/ed25519 sp-keyring keys, the bare DEV_PHRASE roots and
+  the ecdsa-derived accounts of the same URIs.
 - The new top-level `chain` declares `network`, `id`, `name` and `chainType`.
   `migration-input` requires `Live`; only `migration-input` may be labelled
   `mainnet`; a testnet-labelled rehearsal with real data remains valid. The producer
@@ -179,6 +183,9 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
 - `bootstrap.assetIds` declares the complete V2 asset ID set. The producer must
   require the asset definition and metadata ID sets to equal it exactly.
 
-`MULTISIG_MAX_SIGNATORIES` and `well_known_development_key` are exported so
-producers do not retype the bound or the deny list. RC6 acknowledgements do not
+`parse` reports a different readable `contractVersion` before typed decoding, so an
+RC6 document fails with `contract_version` rather than an unknown-field error.
+`MULTISIG_MAX_SIGNATORIES`, `well_known_development_key` and `VERSION_ERROR_PREFIX`
+are exported so
+producers do not retype the bound, the deny list or the version error marker. RC6 acknowledgements do not
 cover RC7 bytes.

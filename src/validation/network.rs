@@ -36,13 +36,21 @@ pub(super) fn check(i: &ContractInput) -> Check {
             "chain id must be 1-64 characters of [a-z0-9_]",
         ));
     }
-    if c.name.is_empty() || c.name.trim() != c.name || c.name.chars().any(char::is_control) {
+    // CS-6: printable ASCII only. Homoglyphs (Cyrillic, fullwidth) and invisible
+    // characters would otherwise defeat the token checks below.
+    if c.name.is_empty()
+        || c.name.trim() != c.name
+        || !c.name.bytes().all(|b| (b' '..=b'~').contains(&b))
+    {
         return Err(fail(
             "chain_identity_label",
             "/chain/name",
-            "chain name must be nonempty without surrounding whitespace or control characters",
+            "chain name must be nonempty printable ASCII without surrounding whitespace",
         ));
     }
+    // CHOICE: tokens match as substrings, not whole words. Substrings are stricter
+    // ("d9testnet", "DevNet" and "rehearsal" all match); a false positive only
+    // forces a clearer mainnet name, while a whole-word miss would pass a mislabel.
     // CHOICE: label consistency by token, not an exact id pin. No mainnet chain id
     // has been ruled yet; this refuses the mislabels S-6 describes (a testnet id
     // shipped as mainnet, or a rehearsal chain named like mainnet) without inventing one.

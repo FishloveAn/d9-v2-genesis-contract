@@ -183,6 +183,10 @@ pub fn validate(input: &ContractInput) -> Result<ContractReport, Violation> {
             "D9-211 legacy settlement completion/refund or approved funded arrangement before irreversible cutover",
             "D9-250 clean V2 processing boundary before bridge activation",
             "D9-370/173 fresh zero/empty dispositions and opening reward watermark readback",
+            "D9-400 CUSTODY: producer proves each sudo/usdtOwner/admin multisig address equals the d9-v2-tools derive_admins derivation of its signatories and threshold",
+            "D9-400 CUSTODY: signatory custody, identity and key-ceremony evidence, including multisigs nested outside this document",
+            "D9-400 ASSET_SET: producer proves assets.assets and assets.metadata ID sets each equal bootstrap.assetIds",
+            "D9-400 NETWORK: producer proves chain-spec id/name/chainType and manifest network equal chain, with no bootNodes and null telemetryEndpoints",
         ],
     })
 }

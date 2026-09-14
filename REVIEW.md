@@ -8,13 +8,14 @@ with the contract validating structure and d9-v2-tools `derive_admins` remaining
 the only address derivation. S-6 (chain identity not bound to purpose) and R-4
 (extra asset IDs pass) are included.
 
-Contract digest: `3a13b3d2820b80af0e753d391200609c70dbf7b1f796e58c02c66373785752a2`. Input digest: `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
-Rejection corpus: 106 cases. Exact SHA-256 pins:
+Contract digest: `a22a15d979d7d156c6223a9b7c75e34c45d698850ed1a4184d781caf5de4e88a`. Input digest: `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
+Rejection corpus: 129 cases. Exact SHA-256 pins:
 - complete fixture: `e7a2a7e7d88b0d2d9caddead7ac3e3d6e4c963e31d088d753f463270e368f7aa`
 - expected: `b6b951556f652191f8abaea43735a8963a9eb654b765ca7fc0929ca224a2ade3`
-- cases: `21cc764f2280f73605ff1fadb98cc3c7ec53520ff52a63b9512d62cd89f279e9`
-- rules: `70c030dc9edf0db344feee96aef0f960f510efe2ab6939765cd2e447d5df7ed5`
-- schema: `cdcb6d11e876f204b674878dfbe41187651f604a395b39e4847948fb30db2545`
+- cases: `49a8a9f9244287f8ccf91d3d82eddc669435c963945ec865e159135642939820`
+- rules: `188211bd61813f335a71a84650eaf4af85a4a295b3579bde307adfe2364d9def`
+- schema: `ebb3cd04f5ec579c5302c9a87ae264926d06ada46556de0f0bfbbec84d597334`
+- inventory: `20f1bfd0323ecd4c8209fc7ea029bea8e8dc4273721a48a63df46ba46f47da9a`
 
 Review points:
 - The synthetic fixture's 14 multisig addresses are true `pallet_multisig`
@@ -27,6 +28,26 @@ Review points:
   No mainnet chain id is pinned because none has been ruled.
 - Asset definitions and metadata remain outside the DTO; exact ID-set equality is
   a producer obligation (rule ASSET_SET).
+
+Revision after PR #10 code review and security audit (same day):
+- CS-2: validator accounts and all five session keys refuse development keys.
+- CS-3: no signatory may be another role's address; no address or signatory may be
+  ammAccount, miningPoolAccount, any `b"modl"` PalletId account or a validator
+  account. Multisigs nested outside the document are ceremony evidence.
+- CS-5/CR-1: four producer obligations added to `independentEvidenceRequired`;
+  `MultisigAuthority` documents that structure checks do not bind its address.
+- CS-6: chain names are printable ASCII; tokens stay substring matches.
+- CS-7: the deny list adds the bare DEV_PHRASE roots and the ecdsa-derived accounts
+  (45 keys, each re-derived with sp-core/sp-runtime in a unit test).
+- CR-2: every `chain_identity_label` branch has a case.
+- CR-3: the `Assets.Asset` inventory decision now names the contract-bound owners,
+  which changes the contract digest; CONTRACT.md corrects the owner binding and
+  documents `threshold` as u16.
+- CR-4: `parse` reports an unsupported `contractVersion` before typed decoding;
+  main's RC6 `complete.json` reproduces exactly as case
+  `rc6-complete-document-reports-version`.
+- Held pending Yvan: address derivation inside the contract (CS-1) and
+  role-address distinctness between sudo and admins (CS-4).
 
 No downstream acknowledgement exists for RC7. Tools, node and the pallets adapter
 must repin and adopt the new fields before integrated enforcement is claimed.

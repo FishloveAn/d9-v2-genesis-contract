@@ -3,7 +3,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 macro_rules! record {
-    ($name:ident { $($(#[$meta:meta])* $field:ident : $ty:ty),* $(,)? }) => {
+    ($(#[$outer:meta])* $name:ident { $($(#[$meta:meta])* $field:ident : $ty:ty),* $(,)? }) => {
+        $(#[$outer])*
         #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
         #[serde(rename_all = "camelCase", deny_unknown_fields)]
         pub struct $name { $($(#[$meta])* pub $field: $ty),* }
@@ -216,9 +217,12 @@ record!(AdminRole {
     pallet: String,
     multisig: MultisigAuthority,
 });
-// Structure only. The address is NOT derived here: d9-v2-tools
-// `derive_admins` is the single derivation, and the producer requires equality.
-record!(MultisigAuthority {
+record!(
+    /// DEC-21 k-of-n pallet_multisig authority. Structure checks alone do NOT bind
+    /// `address` to `signatories` and `threshold`: a well-formed value can name any
+    /// address. d9-v2-tools `derive_admins` is the single derivation, and the
+    /// producer must prove equality before any authority is trusted.
+    MultisigAuthority {
     address: Address,
     threshold: u16,
     /// Strictly ascending by AccountId32 bytes, as pallet_multisig requires.

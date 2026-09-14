@@ -10,7 +10,7 @@
     ],
     "refreshSource": [],
     "expected": {
-      "phase": "validation",
+      "phase": "decode",
       "code": "contract_version",
       "pathPrefix": "/contractVersion"
     }
@@ -1273,7 +1273,7 @@
     ],
     "refreshSource": [],
     "expected": {
-      "phase": "validation",
+      "phase": "decode",
       "code": "contract_version",
       "pathPrefix": "/contractVersion"
     }
@@ -1872,7 +1872,7 @@
     ],
     "refreshSource": [],
     "expected": {
-      "phase": "validation",
+      "phase": "decode",
       "code": "contract_version",
       "pathPrefix": "/contractVersion"
     }
@@ -1984,7 +1984,7 @@
     ],
     "refreshSource": [],
     "expected": {
-      "phase": "validation",
+      "phase": "decode",
       "code": "contract_version",
       "pathPrefix": "/contractVersion"
     }
@@ -2055,7 +2055,7 @@
     ],
     "refreshSource": [],
     "expected": {
-      "phase": "validate",
+      "phase": "decode",
       "code": "contract_version",
       "pathPrefix": "/contractVersion"
     }
@@ -2071,7 +2071,7 @@
     ],
     "refreshSource": [],
     "expected": {
-      "phase": "validation",
+      "phase": "decode",
       "code": "contract_version",
       "pathPrefix": "/contractVersion"
     }
@@ -2571,6 +2571,569 @@
       "phase": "validation",
       "code": "asset_id_set",
       "pathPrefix": "/bootstrap/assetIds"
+    }
+  },
+  {
+    "id": "rc6-complete-document-reports-version",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/contractVersion",
+        "value": "d9-native-genesis/0.1.0-rc.6"
+      },
+      {
+        "op": "remove",
+        "path": "/chain",
+        "value": null
+      },
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo",
+        "value": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv"
+      },
+      {
+        "op": "remove",
+        "path": "/bootstrap/usdtOwner",
+        "value": null
+      },
+      {
+        "op": "remove",
+        "path": "/bootstrap/assetIds",
+        "value": null
+      },
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins",
+        "value": [
+          {
+            "pallet": "d9-amm",
+            "account": "vSv6Q4RuLNY6ByLtrmkRrQ3SUuiWQ7LWPmGjxeRoinZbmbH"
+          },
+          {
+            "pallet": "d9-burn-mining",
+            "account": "vUESUNycN2iicn4d9GcFFM9T5pWyUhbdwbPbTTf4qaR55uX"
+          },
+          {
+            "pallet": "d9-cross-chain",
+            "account": "vVYnYhXKPguM3anMRmU4eJFTgjKSZHrmVRWSxGtKxNGXy8a"
+          },
+          {
+            "pallet": "d9-governance",
+            "account": "vWs8d252RM5yUPW5iGKt3FMUHe7udt7u3FdJT67b5A814QN"
+          },
+          {
+            "pallet": "d9-judicial-penalty",
+            "account": "vYBUhLcjT1GbuCDozmBhSCTUtYvNiUP2b5k9wuLrBwyUEyK"
+          },
+          {
+            "pallet": "d9-merchant",
+            "account": "vZVpmfASUfTEKzwYHG3Wq9ZVVTiqo4eA8us1Sia7JjpwSAM"
+          },
+          {
+            "pallet": "d9-mining-pool",
+            "account": "vapAqyi9WKdrkofGZkuLE6fW6NXJseuHgjyrwXoNRXgQk1k"
+          },
+          {
+            "pallet": "d9-node-registry",
+            "account": "vc8WvJFrXypVBcNzrFm9d3mWhHKmxFAREa6iSM2dYKXsrQo"
+          },
+          {
+            "pallet": "d9-node-rewards",
+            "account": "vdSrzcoZZe17cR6j8kcy1zsXJC8F2qRYnQDZwAFtf7PLtJt"
+          },
+          {
+            "pallet": "d9-referrals",
+            "account": "vemD4wMGbJBk3DpTRFUnQwyXu6vi7RggLELRRyV9muEozXg"
+          },
+          {
+            "pallet": "d9-upgrade-coordinator",
+            "account": "vg5Z9FtycxNNU2YBhkLbou5YW1jBC1wot4TGvniQth6HJBg"
+          },
+          {
+            "pallet": "d9-voting",
+            "account": "vhPuDaSgecYztqFuzFCRCrBZ6vXeGcCwRta8Rbwg1UwkNAc"
+          }
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "decode",
+      "code": "contract_version",
+      "pathPrefix": ""
+    }
+  },
+  {
+    "id": "validator-account-dev-alice-sr25519",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/account",
+        "value": "ytBPqMwQPfbs9ugGHadMUjQk6VBRNWe9cRBtqPSX4eEdQR8"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dev_key_authority",
+      "pathPrefix": "/bootstrap/validators/0/account"
+    }
+  },
+  {
+    "id": "validator-babe-dev-alice-sr25519",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/babe",
+        "value": "d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dev_key_authority",
+      "pathPrefix": "/bootstrap/validators/0/babe"
+    }
+  },
+  {
+    "id": "validator-grandpa-dev-alice-ed25519",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/validators/0/grandpa",
+        "value": "88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "dev_key_authority",
+      "pathPrefix": "/bootstrap/validators/0/grandpa"
+    }
+  },
+  {
+    "id": "sudo-signatory-is-admin-multisig",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/signatories",
+        "value": [
+          "uSTa4gZD5b759c4bLSKQJkDEnn3cEpa1HUpCmpJSXBBFyEk",
+          "xiYhr36eCCrtxXHoJXe9RQQUfwqCKBRXGj65e5HsRqrNokJ",
+          "xjs3vMeMDs3XPL1Xb2VxpMWVGrdfPmgepZCw8tX8YdhqqRv"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "multisig_nested_signatory",
+      "pathPrefix": "/bootstrap/sudo/signatories/0"
+    }
+  },
+  {
+    "id": "usdt-owner-signatory-amm-account",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtOwner/signatories",
+        "value": [
+          "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
+          "xnVk4zjmHBQnEwSzA2DbcFiWUgEbYxCuvDSe8WyenDQnAbx",
+          "xop69KHUJqbQfkAiSX5R1CpX5b34dYU3U3ZVdLCuu1GFCbx"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_pallet_account",
+      "pathPrefix": "/bootstrap/usdtOwner/signatories/0"
+    }
+  },
+  {
+    "id": "sudo-address-mining-pool-account",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/sudo/address",
+        "value": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_pallet_account",
+      "pathPrefix": "/bootstrap/sudo/address"
+    }
+  },
+  {
+    "id": "admin-signatory-other-palletid-account",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/3/multisig/signatories",
+        "value": [
+          "wZRduDR47ggpiCiQjAVNLKKSPFfc7YpbDn5TFBpUBk5nuWm",
+          "y4HtxqJFd5cKNc5jZzXQMexdhbrCW3LUWArt6HinBhePnSy",
+          "y5cF39qxejnwoQoTrVPDkc4eJWefadbc3zyjb6x3JVVrx63"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_pallet_account",
+      "pathPrefix": "/bootstrap/admins/3/multisig/signatories/0"
+    }
+  },
+  {
+    "id": "admin-address-other-palletid-account",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/4/multisig/address",
+        "value": "wZRduDR47ggpiCiQjAVNLKKSPFfc7YpbDn5TFBpUBk5nuWm"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_pallet_account",
+      "pathPrefix": "/bootstrap/admins/4/multisig/address"
+    }
+  },
+  {
+    "id": "admin-signatory-validator-account",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/admins/6/multisig/signatories",
+        "value": [
+          "vGPKoW4F7754mXb4anstgoDMfdJmmPFU18Kuz8binTjrkqY",
+          "yG91diDct1FyDrZJ8UFkvCtj7o4QDMgeSdvZZcn8EpKbvnz",
+          "yHTMi2mKufSbefH2Qy7aK9zjihrsHwwmzU3R4S1PMcB4sNh"
+        ]
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_validator_account",
+      "pathPrefix": "/bootstrap/admins/6/multisig/signatories/0"
+    }
+  },
+  {
+    "id": "usdt-owner-address-validator-account",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/bootstrap/usdtOwner/address",
+        "value": "vF4yjBWY5StSLisLJJ25Hr7M4iWJgnzLTJD4VKNTfftPa5j"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "authority_validator_account",
+      "pathPrefix": "/bootstrap/usdtOwner/address"
+    }
+  },
+  {
+    "id": "mainnet-name-cyrillic-homoglyph",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 T\u0435stnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
+    }
+  },
+  {
+    "id": "mainnet-name-zero-width-space",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Te\u200bst Mainnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
+    }
+  },
+  {
+    "id": "mainnet-name-fullwidth-test",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 \uff54\uff45\uff53\uff54 Mainnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
+    }
+  },
+  {
+    "id": "chain-id-empty",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": ""
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/id"
+    }
+  },
+  {
+    "id": "chain-id-65-chars",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_testnet_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/id"
+    }
+  },
+  {
+    "id": "chain-name-empty",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": ""
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
+    }
+  },
+  {
+    "id": "chain-name-inner-control-char",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Testnet\u0007Fixture"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
+    }
+  },
+  {
+    "id": "testnet-name-without-test-token",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Fixture"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
+    }
+  },
+  {
+    "id": "mainnet-id-local-token",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_local_mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Mainnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/id"
+    }
+  },
+  {
+    "id": "mainnet-name-rehearsal-token",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Mainnet Rehearsal"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
+    }
+  },
+  {
+    "id": "mainnet-id-fixture-token",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_mainnet_fixture"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Mainnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/id"
+    }
+  },
+  {
+    "id": "mainnet-name-synthetic-token",
+    "patches": [
+      {
+        "op": "replace",
+        "path": "/purpose",
+        "value": "migration-input"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/network",
+        "value": "mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/id",
+        "value": "d9_mainnet"
+      },
+      {
+        "op": "replace",
+        "path": "/chain/name",
+        "value": "D9 Synthetic Mainnet"
+      }
+    ],
+    "refreshSource": [],
+    "expected": {
+      "phase": "validation",
+      "code": "chain_identity_label",
+      "pathPrefix": "/chain/name"
     }
   }
 ]

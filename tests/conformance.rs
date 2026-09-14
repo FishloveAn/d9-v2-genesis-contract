@@ -109,8 +109,15 @@ fn shared_negative_cases_refuse_at_the_declared_boundary() {
         refresh_evidence(&mut value, &case.refresh_source);
         let parsed = parse(&serde_json::to_vec(&value).unwrap());
         if case.expected.phase == "decode" {
-            assert!(parsed.is_err(), "{} unexpectedly decoded", case.id);
-            assert_eq!(case.expected.code, "contract_decode");
+            let error = parsed
+                .err()
+                .unwrap_or_else(|| panic!("{} unexpectedly decoded", case.id));
+            let version = error.starts_with(VERSION_ERROR_PREFIX);
+            match case.expected.code.as_str() {
+                "contract_version" => assert!(version, "{}: {error}", case.id),
+                "contract_decode" => assert!(!version, "{}: {error}", case.id),
+                other => panic!("{}: decode phase cannot expect {other}", case.id),
+            }
         } else {
             let parsed = parsed.unwrap_or_else(|e| panic!("{} failed decoding: {e}", case.id));
             let error = validate(&parsed).unwrap_err();
@@ -289,6 +296,10 @@ fn migration_input_conformance_is_not_archive_settlement_or_release_approval() {
         "legacy settlement",
         "clean V2 processing",
         "watermark readback",
+        "derive_admins derivation",
+        "key-ceremony evidence",
+        "assets.metadata ID sets",
+        "no bootNodes",
     ] {
         assert!(report
             .independent_evidence_required
@@ -351,22 +362,40 @@ fn approved_reserve_depth_uses_whole_token_units() {
     validate(&input).unwrap();
 }
 
+/// Every literal `fail("code", ...)` in the RC7 validation modules must have a
+/// shared negative case. Scans source text so a new rejection cannot be added
+/// without a corpus entry.
 #[test]
-fn rc7_custody_network_and_asset_rejections_each_have_a_shared_case() {
+fn rc7_rejection_codes_in_source_each_have_a_shared_case() {
     let cases: Vec<Value> = serde_json::from_str(include_str!("../fixtures/cases.json")).unwrap();
+    let mut codes = BTreeSet::new();
+    for source in [
+        include_str!("../src/validation/custody.rs"),
+        include_str!("../src/validation/network.rs"),
+        include_str!("../src/validation/composition.rs"),
+    ] {
+        for (offset, _) in source.match_indices("fail(") {
+            let rest = source[offset + "fail(".len()..].trim_start();
+            if let Some(literal) = rest.strip_prefix('"') {
+                codes.insert(literal.split('"').next().unwrap().to_owned());
+            }
+        }
+    }
     for code in [
-        "multisig_threshold_too_low",
-        "multisig_threshold_exceeds_signatories",
-        "multisig_signatory_limit",
-        "multisig_signatory_order",
-        "multisig_self_signatory",
+        "multisig_nested_signatory",
+        "authority_pallet_account",
+        "authority_validator_account",
         "dev_key_authority",
-        "chain_purpose_binding",
         "chain_identity_label",
         "asset_id_set",
     ] {
+        assert!(codes.contains(code), "scanner missed {code}");
+    }
+    for code in &codes {
         assert!(
-            cases.iter().any(|case| case["expected"]["code"] == code),
+            cases
+                .iter()
+                .any(|case| case["expected"]["code"] == code.as_str()),
             "{code} has no shared negative case"
         );
     }
@@ -437,4 +466,43 @@ fn declared_asset_set_may_include_fresh_assets_but_not_omit_migrated_ones() {
     assert!(migrated.is_subset(&declared));
     assert!(declared.difference(&migrated).next().is_some());
     validate(&input).unwrap();
+}
+
+#[test]
+fn version_is_reported_before_typed_decode_and_still_checked_by_validate() {
+    let mut value = input_value();
+    value["contractVersion"] = json!("d9-native-genesis/0.1.0-rc.6");
+    value.as_object_mut().unwrap().remove("chain");
+    let error = parse(&serde_json::to_vec(&value).unwrap()).unwrap_err();
+    assert!(error.starts_with(VERSION_ERROR_PREFIX), "{error}");
+    let mut input = input();
+    input.contract_version = "d9-native-genesis/0.1.0-rc.6".into();
+    assert_eq!(validate(&input).unwrap_err().code, "contract_version");
+}
+
+#[test]
+fn validator_accounts_and_every_session_key_refuse_development_keys() {
+    use sp_core::Pair;
+    let alice_sr = sp_core::sr25519::Pair::from_string("//Alice", None)
+        .unwrap()
+        .public()
+        .0;
+    let alice_ed = sp_core::ed25519::Pair::from_string("//Alice", None)
+        .unwrap()
+        .public()
+        .0;
+    let hex = |key: [u8; 32]| key.iter().map(|b| format!("{b:02x}")).collect::<String>();
+    for (field, key) in [
+        ("babe", alice_sr),
+        ("grandpa", alice_ed),
+        ("imOnline", alice_sr),
+        ("discovery", alice_sr),
+        ("liveness", alice_ed),
+    ] {
+        let mut value = input_value();
+        value["bootstrap"]["validators"][1][field] = json!(hex(key));
+        let error = validate(&parse(&serde_json::to_vec(&value).unwrap()).unwrap()).unwrap_err();
+        assert_eq!(error.code, "dev_key_authority", "{field}");
+        assert_eq!(error.path, format!("/bootstrap/validators/1/{field}"));
+    }
 }

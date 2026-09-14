@@ -45,9 +45,33 @@ pub fn schema() -> schemars::schema::RootSchema {
     schema
 }
 
+/// Prefix of `parse` errors caused by a readable but different `contractVersion`.
+pub const VERSION_ERROR_PREFIX: &str = "contract_version";
+
 /// Strictly decode the transport contract. Integers are decimal strings,
 /// AccountIds are checksum-verified canonical SS58 prefix 9.
+///
+/// A document whose top-level `contractVersion` string differs from
+/// [`CONTRACT_VERSION`] is refused with a [`VERSION_ERROR_PREFIX`] error before
+/// typed decoding, so an older RC reports its version instead of a field error.
 pub fn parse(bytes: &[u8]) -> Result<ContractInput, String> {
+    // CHOICE: peek with a one-field struct rather than serde_json::Value. It
+    // skips the rest of the document without allocating a second copy of
+    // million-row ledgers. Anything it cannot read (invalid JSON, a missing or
+    // non-string or duplicated version) falls through to the strict decoder.
+    #[derive(serde::Deserialize)]
+    struct VersionPeek {
+        #[serde(rename = "contractVersion")]
+        contract_version: String,
+    }
+    if let Ok(peek) = serde_json::from_slice::<VersionPeek>(bytes) {
+        if peek.contract_version != CONTRACT_VERSION {
+            return Err(format!(
+                "{VERSION_ERROR_PREFIX}: unsupported contract version {:?}; expected {CONTRACT_VERSION}",
+                peek.contract_version
+            ));
+        }
+    }
     let mut de = serde_json::Deserializer::from_slice(bytes);
     let value = serde_path_to_error::deserialize(&mut de).map_err(|e| e.to_string())?;
     de.end().map_err(|e| e.to_string())?;

@@ -1,3 +1,4 @@
+use super::custody::{hex32, not_development};
 use super::*;
 use sp_runtime::traits::AccountIdConversion;
 use std::collections::BTreeSet;
@@ -53,6 +54,10 @@ pub(super) fn check(i: &ContractInput) -> Check {
     )?;
     let mut keys = BTreeSet::new();
     for (index, v) in b.validators.iter().enumerate() {
+        not_development(
+            v.account.account_id().as_ref(),
+            format!("/bootstrap/validators/{index}/account"),
+        )?;
         for (role, key) in [
             ("babe", &v.babe),
             ("grandpa", &v.grandpa),
@@ -67,6 +72,13 @@ pub(super) fn check(i: &ContractInput) -> Check {
                     "zero/duplicate key in role",
                 ));
             }
+            // Digest decoding guarantees 64 lowercase hex characters, so hex32
+            // cannot panic. babe/imOnline/discovery/liveness are sr25519 and
+            // grandpa is ed25519; every scheme's deny list is checked for each.
+            not_development(
+                &hex32(key.as_str()),
+                format!("/bootstrap/validators/{index}/{role}"),
+            )?;
         }
     }
     keyed(&b.admins, |r| r.pallet.clone(), "/bootstrap/admins")?;
