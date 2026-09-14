@@ -10,9 +10,12 @@ conformance, 1 manifest and 1 mainnet evidence, including the 199-case rejection
 New: an `imOnline` validator field fails decoding; every fixture sr25519 session key
 decompresses as Ristretto; a non-Ristretto babe, liveness or discovery key is refused
 (`invalid_session_key`); every torsion-twin signature built through ed25519-dalek 2.2.0
-`hazmat::raw_sign` still verifies under sp-core and is refused. Contract digest
-`94d89e1e6272ff9cd8aae75d9e0e13a69bba498ffcf99c8c2f98c4ca72abdf40`, input digest
-`92fcf87d35f8fa435ff44cebdb1ad7a9c70247a02d2a97372d0a5730ce0bb989`.
+`hazmat::raw_sign` still verifies under sp-core and is refused. After merging main
+`3d082e2` (three D9-383 governance inventory entries; 140 entries) the contract digest is
+`407df08245956f0cd4bc4aa667399ae903c0a8ee5002f8b6055b005ff4afa700` (before the merge,
+`94d89e1e6272ff9cd8aae75d9e0e13a69bba498ffcf99c8c2f98c4ca72abdf40`); the input digest
+`92fcf87d35f8fa435ff44cebdb1ad7a9c70247a02d2a97372d0a5730ce0bb989` is unchanged. The same
+gates pass on the merged tree.
 
 Dependency delta: dev-dependency `ed25519-dalek = { version = "=2.2.0", default-features =
 false, features = ["hazmat", "zeroize"] }`; `Cargo.lock` gains only that name in the crate's

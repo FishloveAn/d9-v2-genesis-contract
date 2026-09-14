@@ -9,14 +9,15 @@ address to its signatories in the contract (CS-1 = A), required multisig custody
 every purpose and ladder rung, and made sudo distinct from other roles (CS-4). S-6 (chain identity not bound to purpose) and R-4
 (extra asset IDs pass) are included.
 
-Contract digest: `94d89e1e6272ff9cd8aae75d9e0e13a69bba498ffcf99c8c2f98c4ca72abdf40`. Input digest: `92fcf87d35f8fa435ff44cebdb1ad7a9c70247a02d2a97372d0a5730ce0bb989`.
-Rejection corpus: 199 cases. Exact SHA-256 pins:
+Contract digest: `407df08245956f0cd4bc4aa667399ae903c0a8ee5002f8b6055b005ff4afa700`. Input digest: `92fcf87d35f8fa435ff44cebdb1ad7a9c70247a02d2a97372d0a5730ce0bb989`.
+Rejection corpus: 199 cases. Exact SHA-256 pins (revision 6 merged with main `3d082e2`,
+which adds the three D9-383 governance inventory entries):
 - complete fixture: `fa25335ef558a0ff49ac5cd096ec0ce23ae20c591956620d610d944c42f5e2d8`
 - expected: `c969547fee19b02d42642c230fd7bdb045c3d20ed68fb1652697cc989709b79d`
-- cases: `f6f9ab48b1f29f7ab8626fc7a67fddf3ce8f577e07218a08b4e024c7b9d30440`
+- cases: `319bab6fb142b6d4e3fea0b8ca4613ff71da167b906db4791bdef05244c327c9`
 - rules: `28188c7b95335c668123984489aa110a51b0a9e8a267ead07d853bd4fd1979a0`
 - schema: `ca9deea8a1504411ea48f7f08daf045727f0ae024e2fdca5d258ba5e6c7b5228`
-- inventory: `f4d7e21fad8f7ec78cb7131f90927b5bd7d75a25b71596c02b0588c5bcc93c22`
+- inventory: `918cd9856dea6f230e14463c773b5dcc07f99b620007f4f2fea1205386101286`
 
 Review points:
 - The synthetic fixture's 14 multisig addresses are true `pallet_multisig`
