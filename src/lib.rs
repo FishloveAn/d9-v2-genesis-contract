@@ -23,8 +23,9 @@ pub use inventory::{inventory, validate_inventory, Item as InventoryItem};
 pub use model::*;
 pub use scalar::*;
 pub use validation::{
-    multisig_account, validate, well_known_development_key, ContractReport, Violation,
-    MULTISIG_MAX_SIGNATORIES,
+    custody_pop_message, custody_pop_message_sha256, custody_pop_payload, multisig_account,
+    validate, well_known_development_key, ContractReport, Violation, CUSTODY_POP_DOMAIN,
+    MAX_ATTESTATION_DOCUMENT_BYTES, MULTISIG_MAX_SIGNATORIES,
 };
 
 pub const CONTRACT_VERSION: &str = "d9-native-genesis/0.1.0-rc.7";

@@ -7,9 +7,14 @@ mod composition;
 mod custody;
 mod network;
 mod people;
+mod pop;
 mod source;
 
 pub use custody::{multisig_account, well_known_development_key, MULTISIG_MAX_SIGNATORIES};
+pub use pop::{
+    custody_pop_message, custody_pop_message_sha256, custody_pop_payload, CUSTODY_POP_DOMAIN,
+    MAX_ATTESTATION_DOCUMENT_BYTES,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -185,6 +190,7 @@ pub fn validate(input: &ContractInput) -> Result<ContractReport, Violation> {
             "D9-370/173 fresh zero/empty dispositions and opening reward watermark readback",
             "D9-400 CUSTODY: producer projects sudo.key, every <pallet>.admin and the asset owners (asset 1 = usdtOwner, others = sudo) from these contract addresses",
             "D9-400 CUSTODY ceremony: each declared signatory key demonstrated controllable by its custodian (proof-of-possession), which also excludes keyless accounts (pure proxies, derivatives, external multisigs)",
+            "D9-400 CUSTODY: enclave-attested custody signatories: the producer verifies the attestation document with d9-enclave-common attest_verify (COSE signature, certificate chain to the pinned AWS Nitro root validated at the document's own timestamp, PCR0 == expectedPcr0, user_data == popMessageSha256), and expectedPcr0 equals the blessed signer measurement recorded in the PCR0 ledger (d9-v2-docs pcr0-ledger)",
             "D9-400 ASSET_SET: producer proves assets.assets and assets.metadata ID sets each equal bootstrap.assetIds",
             "D9-400 NETWORK: producer proves chain-spec id/name/chainType and manifest network equal chain, with no bootNodes and null telemetryEndpoints",
         ],

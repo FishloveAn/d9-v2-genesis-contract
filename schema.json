@@ -351,6 +351,10 @@
       ],
       "type": "object"
     },
+    "CeremonyNonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
     "ChainIdentity": {
       "additionalProperties": false,
       "properties": {
@@ -485,6 +489,23 @@
       ],
       "type": "object"
     },
+    "CustodyCeremony": {
+      "additionalProperties": false,
+      "properties": {
+        "ceremonyNonce": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/CeremonyNonce"
+            }
+          ],
+          "description": "32 bytes chosen for this ceremony; every PoP message includes it."
+        }
+      },
+      "required": [
+        "ceremonyNonce"
+      ],
+      "type": "object"
+    },
     "DatasetEvidence": {
       "additionalProperties": false,
       "properties": {
@@ -557,6 +578,37 @@
     "Digest": {
       "pattern": "^[0-9a-f]{64}$",
       "type": "string"
+    },
+    "EnclaveAttestation": {
+      "additionalProperties": false,
+      "properties": {
+        "attestationDocument": {
+          "description": "Standard base64 (with padding) of the COSE_Sign1 attestation document bytes, at most 16 KiB decoded. Not verified by this contract.",
+          "type": "string"
+        },
+        "expectedPcr0": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Pcr0Hex"
+            }
+          ],
+          "description": "The signer enclave measurement the producer must require, 48-byte SHA-384 hex."
+        },
+        "popMessageSha256": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Digest"
+            }
+          ],
+          "description": "SHA-256 of `custody_pop_message` for this signatory, role and ceremony; the attestation's `user_data` must equal it."
+        }
+      },
+      "required": [
+        "attestationDocument",
+        "expectedPcr0",
+        "popMessageSha256"
+      ],
+      "type": "object"
     },
     "Expiry": {
       "additionalProperties": false,
@@ -824,7 +876,7 @@
     },
     "MultisigAuthority": {
       "additionalProperties": false,
-      "description": "DEC-21 k-of-n pallet_multisig authority. Validation requires `address == multisig_account(signatories, threshold)`; it does not prove the signatories are the intended custodians, which remains ceremony evidence.",
+      "description": "DEC-21 k-of-n pallet_multisig authority. Validation requires `address == multisig_account(signatories, threshold)` and a valid proof-of-possession from every signatory; it does not prove the signatories are the intended custodians, which remains ceremony evidence.",
       "properties": {
         "address": {
           "$ref": "#/definitions/Address"
@@ -832,7 +884,7 @@
         "signatories": {
           "description": "Strictly ascending by AccountId32 bytes, as pallet_multisig requires.",
           "items": {
-            "$ref": "#/definitions/Address"
+            "$ref": "#/definitions/Signatory"
           },
           "type": "array"
         },
@@ -857,6 +909,10 @@
       ],
       "type": "string"
     },
+    "Pcr0Hex": {
+      "pattern": "^[0-9a-f]{96}$",
+      "type": "string"
+    },
     "PendingDecision": {
       "additionalProperties": false,
       "properties": {
@@ -872,6 +928,45 @@
         "item"
       ],
       "type": "object"
+    },
+    "PopMessageForm": {
+      "description": "What the signature covers: the canonical message itself, or the polkadot-js `signRaw` wrapping `b\"<Bytes>\" ++ message ++ b\"</Bytes>\"`.",
+      "enum": [
+        "raw",
+        "bytes-wrapped"
+      ],
+      "type": "string"
+    },
+    "PossessionEvidence": {
+      "description": "How a custody signatory proves possession of its key. Externally tagged: `{\"signature\": {..}}` or `{\"enclaveAttested\": {..}}`, exactly one key.",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "description": "A signature by the signatory key, verified by this contract.",
+          "properties": {
+            "signature": {
+              "$ref": "#/definitions/SignatureEvidence"
+            }
+          },
+          "required": [
+            "signature"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "description": "A Nitro attestation from an enclave that holds the key. This contract checks structure and the message binding only; the producer must verify the document itself (see `independentEvidenceRequired`).",
+          "properties": {
+            "enclaveAttested": {
+              "$ref": "#/definitions/EnclaveAttestation"
+            }
+          },
+          "required": [
+            "enclaveAttested"
+          ],
+          "type": "object"
+        }
+      ]
     },
     "Purpose": {
       "enum": [
@@ -935,6 +1030,76 @@
         "to"
       ],
       "type": "object"
+    },
+    "Signatory": {
+      "additionalProperties": false,
+      "description": "One custody signatory and its proof-of-possession over `custody_pop_message` for this role, multisig and ceremony.",
+      "properties": {
+        "address": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Address"
+            }
+          ],
+          "description": "The signatory's AccountId32, which is its sr25519 or ed25519 public key."
+        },
+        "evidence": {
+          "$ref": "#/definitions/PossessionEvidence"
+        }
+      },
+      "required": [
+        "address",
+        "evidence"
+      ],
+      "type": "object"
+    },
+    "SignatureEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "message": {
+          "$ref": "#/definitions/PopMessageForm"
+        },
+        "scheme": {
+          "$ref": "#/definitions/SignatureScheme"
+        },
+        "signature": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/SignatureHex"
+            }
+          ],
+          "description": "64-byte signature, lowercase hex."
+        }
+      },
+      "required": [
+        "message",
+        "scheme",
+        "signature"
+      ],
+      "type": "object"
+    },
+    "SignatureHex": {
+      "pattern": "^[0-9a-f]{128}$",
+      "type": "string"
+    },
+    "SignatureScheme": {
+      "description": "Signature scheme of a custody signatory's proof-of-possession.",
+      "oneOf": [
+        {
+          "enum": [
+            "sr25519",
+            "ed25519"
+          ],
+          "type": "string"
+        },
+        {
+          "description": "Decodes only so validation can refuse it with `custody_pop_scheme`: an ecdsa AccountId32 is blake2_256 of the public key, so no public key exists to verify a signature against.",
+          "enum": [
+            "ecdsa"
+          ],
+          "type": "string"
+        }
+      ]
     },
     "SourceSnapshot": {
       "additionalProperties": false,
@@ -1177,6 +1342,14 @@
     "contractVersion": {
       "type": "string"
     },
+    "custody": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/CustodyCeremony"
+        }
+      ],
+      "description": "RC7 (D9-400 ruling 4): the proof-of-possession ceremony every custody signatory's signature binds to."
+    },
     "purpose": {
       "$ref": "#/definitions/Purpose"
     },
@@ -1193,6 +1366,7 @@
     "chain",
     "changes",
     "contractVersion",
+    "custody",
     "purpose",
     "source",
     "state"

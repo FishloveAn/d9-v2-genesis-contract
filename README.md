@@ -15,10 +15,10 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [schema.json](schema.json) | Input schema generated from the Rust DTOs |
 | [binding.schema.json](binding.schema.json) | Detached final-artifact binding |
 | [inventory.json](inventory.json) | 137 provenance entries with explicit disposition references |
-| [rules.json](rules.json) | 23 rules and their implementation owners |
+| [rules.json](rules.json) | 24 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
-| [fixtures/cases.json](fixtures/cases.json) | 129 mutations and expected failures |
+| [fixtures/cases.json](fixtures/cases.json) | 172 mutations and expected failures |
 | [fixture-manifest.json](fixture-manifest.json) | Exact hashes of the shared artifacts |
 | [evidence-amm-mainnet-23802000.json](evidence-amm-mainnet-23802000.json) | Read-only V1 mainnet AMM LP extraction receipt at block 23,802,000 |
 | [REVIEW.md](REVIEW.md) | Pending downstream compatibility acknowledgements |
@@ -173,7 +173,15 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
   nested-role signatory, no PalletId, validator-account, session-key or development
   key) and binds each address: `address == multisig_account(signatories, threshold)`,
   the pallet-multisig account. Sudo stays distinct from the USDT owner and every
-  admin. d9-v2-tools `derive_admins` keeps a second, independent copy of the
+  admin, and shares no signatory with them (yvan 2026-09-14 04:34 UTC); admin-side
+  multisigs may still share signatories. Every signatory carries a
+  proof-of-possession over `custody_pop_message` (network, chain id, role, multisig,
+  signatory, `custody.ceremonyNonce`), as a `signature` or, for enclave-held keys, as
+  `enclaveAttested` (a Nitro attestation whose `user_data` is
+  `custody_pop_message_sha256`). Keyless accounts cannot be custodians and a proof
+  cannot be replayed across networks, roles or ceremonies. The contract checks an
+  attestation's structure and message binding only; the producer verifies the
+  document with `d9-enclave-common` `attest_verify` against the PCR0 ledger. d9-v2-tools `derive_admins` keeps a second, independent copy of the
   derivation; both are pinned to the same polkadot-js golden vectors, and tools
   `d9-genesis-composition` `custody::cross_check_derivations` (tools PR #72, not yet
   merged) cross-checks them.
@@ -188,13 +196,17 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
   `migration-input` requires `Live`; only `migration-input` may be labelled
   `mainnet`; a testnet-labelled rehearsal with real data remains valid. The producer
   must match its manifest and chain-spec metadata and reject boot nodes and telemetry.
+- D9 rehomes may credit only `miningPoolAccount` or `ammAccount`; asset rehomes only
+  `ammAccount`. Any other destination needs a new contract RC.
 - `bootstrap.assetIds` declares the complete V2 asset ID set. The producer must
   require the asset definition and metadata ID sets to equal it exactly.
 
 `parse` returns `Result<ContractInput, ParseError>`: a readable but different
 `contractVersion` is `ParseError::UnsupportedVersion { found }` before typed decoding,
 so an RC6 document reports its version rather than an unknown-field error; anything
-else is `ParseError::Decode(message)`. `multisig_account`, `MULTISIG_MAX_SIGNATORIES`
-and `well_known_development_key` are exported so producers do not retype the
-derivation, the bound or the deny list. RC6 acknowledgements do not
+else is `ParseError::Decode(message)`. `multisig_account`, `custody_pop_message`,
+`custody_pop_message_sha256`, `custody_pop_payload`, `MULTISIG_MAX_SIGNATORIES` and `well_known_development_key`
+are exported so producers and signers do not retype the derivation, the PoP message,
+the bound or the deny list. `examples/custody_pop_fixture.rs` regenerates the
+synthetic custody fixture from OS randomness without writing any seed. RC6 acknowledgements do not
 cover RC7 bytes.

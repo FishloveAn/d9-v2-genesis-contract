@@ -9,13 +9,13 @@ address to its signatories in the contract (CS-1 = A), required multisig custody
 every purpose and ladder rung, and made sudo distinct from other roles (CS-4). S-6 (chain identity not bound to purpose) and R-4
 (extra asset IDs pass) are included.
 
-Contract digest: `becc34d02db24844f53eb354be72e1d187900b908797da989e69ee4a22f2afce`. Input digest: `f21a9e88d27aa7d7e9b31aee002d1e854949f91cf00159a8946feb947cb75f87`.
-Rejection corpus: 146 cases. Exact SHA-256 pins:
-- complete fixture: `e7a2a7e7d88b0d2d9caddead7ac3e3d6e4c963e31d088d753f463270e368f7aa`
-- expected: `b6b951556f652191f8abaea43735a8963a9eb654b765ca7fc0929ca224a2ade3`
-- cases: `758fd4190e15d1c293b790fc3bfb058b87310d345fee96cd85f70fdc95bbf7c4`
-- rules: `a960efd8df45c82a28d8ba035023a509ee2d0159f82fa613e53fd44657824297`
-- schema: `c29a9f5e9c2865bf4d7f278822722992babc7ec79d2239de8c1413450ffb7968`
+Contract digest: `4e63a8b64aaed3a3cae794d1d19d338f797c677b804b9dcdb1ec144b2293e358`. Input digest: `44eedf0375efe21f538d86b2ad1368262fc40a64da794c22e0e0bc34c1ee1daa`.
+Rejection corpus: 179 cases. Exact SHA-256 pins:
+- complete fixture: `2b257c31240fc3f5a42e6fa3b6ab2c2b40397d0e60585b632c12cd8c90726834`
+- expected: `01237c74f62d4b5b0d4c59592048334aa405ca1aa1ca793185411bb7620ea406`
+- cases: `81283369aec1089a7e17b17cd6a777b9aaa82b6efa9f5542bac3e8c144e42175`
+- rules: `a9825507587b4c0dcaad9a9a52872b401b40c75a4a0ec9f437ab8d868dd10be9`
+- schema: `b014afba23b601aac024f90b3579fa6f2e0fec055541d7943f28288beb67b7d3`
 - inventory: `20f1bfd0323ecd4c8209fc7ea029bea8e8dc4273721a48a63df46ba46f47da9a`
 
 Review points:
@@ -62,8 +62,9 @@ Rulings applied (Yvan 2026-09-14 03:33 UTC):
 - Multisig custody applies to every purpose and ladder rung (Keel, Χ, Genie, Ψ, Ω);
   there is no single-key rehearsal exception.
 - CS-4: sudo differs from the USDT owner and every admin
-  (`authority_role_not_distinct`); admins may share one multisig, the USDT owner may
-  equal an admin, and signatories may repeat across multisigs (positive tests).
+  (`authority_role_not_distinct`); admins may share one multisig and the USDT owner may
+  equal an admin (positive tests). The 03:33 allowance for signatories repeating
+  across sudo and admins is superseded by ruling 2 of 04:34 below.
 
 Revision 3 after the round-2 review and audit of `6971f5a..537855b`:
 - CR2-1: the deny list adds d9's committed authority SURIs, `//LocalValidator1..6`
@@ -78,8 +79,31 @@ Revision 3 after the round-2 review and audit of `6971f5a..537855b`:
   PalletId accounts (`authority_pallet_account`).
 - Evidence: the producer projection of sudo.key, admins and asset owners, and the
   proof-of-possession ceremony wording, are listed in `independentEvidenceRequired`.
-- Held pending Yvan: quorum containment (CS2-3) and the rehome destination allowlist
-  (CS2-1).
+- CS2-3 (quorum containment) and CS2-1 (rehome allowlist) were held here and are
+  resolved by the 04:34 UTC rulings below.
+
+Revision 4, Yvan's rulings of 2026-09-14 04:34 UTC:
+- Ruling 1 (CS2-1): `changes.rehomes[].to` must be `miningPoolAccount` or
+  `ammAccount`; `changes.assetRehomes[].to` must be `ammAccount`
+  (`rehome_destination_not_allowed`). Destinations also pass the dev-key, validator,
+  session-key and custody identity checks. topUps, refunds and reward credits are
+  exact-derived from source.
+- Ruling 2: sudo and the admin side are fully independent. `sudo.signatories` are
+  disjoint from usdtOwner and every admin (`sudo_signatory_not_independent`); this
+  subsumes quorum containment (CS2-3). Admin-side overlap remains allowed.
+- Ruling 4: every custody signatory carries a proof-of-possession over the canonical
+  `custody_pop_message` bound to network, chain id, role, multisig, signatory and
+  `custody.ceremonyNonce` (`custody_pop_invalid`, `custody_pop_scheme` for ecdsa).
+  All 42 fixture signatories were regenerated from OS randomness by
+  `examples/custody_pop_fixture.rs`; seeds were never written, and the generator's
+  scan with a positive canary control found none.
+- Addendum (yvan 2026-09-14 04:57 UTC): enclave-held signatories, in any role, use
+  `enclaveAttested` evidence with `user_data = custody_pop_message_sha256(...)`. The
+  contract checks structure (`custody_pop_attestation_malformed`) and the message
+  binding (`custody_pop_attestation_binding`) only. It does not verify the
+  attestation; `independentEvidenceRequired` names the producer's `attest_verify`
+  and the PCR0 ledger. Negative cases use a synthetic document labelled
+  `synthetic-not-a-real-attestation`; no real attestation is claimed.
 
 No downstream acknowledgement exists for RC7. Tools, node and the pallets adapter
 must repin and adopt the new fields before integrated enforcement is claimed.

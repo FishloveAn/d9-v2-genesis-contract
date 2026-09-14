@@ -140,3 +140,6 @@ macro_rules! hex_string {
 }
 hex_string!(Digest, 64, "^[0-9a-f]{64}$");
 hex_string!(Commit, 40, "^[0-9a-f]{40}$");
+hex_string!(CeremonyNonce, 64, "^[0-9a-f]{64}$");
+hex_string!(SignatureHex, 128, "^[0-9a-f]{128}$");
+hex_string!(Pcr0Hex, 96, "^[0-9a-f]{96}$");

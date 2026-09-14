@@ -1,3 +1,4 @@
+use super::pop;
 use super::*;
 use std::collections::BTreeSet;
 
@@ -1139,7 +1140,7 @@ fn multisig(authority: &MultisigAuthority, path: &str, reserved: &Reserved) -> C
     let address = bytes(&authority.address);
     let mut previous: Option<[u8; 32]> = None;
     for (index, signatory) in authority.signatories.iter().enumerate() {
-        let key = bytes(signatory);
+        let key = bytes(&signatory.address);
         let signatory_path = format!("{path}/signatories/{index}");
         if previous.is_some_and(|previous| previous >= key) {
             return Err(fail(
@@ -1156,8 +1157,8 @@ fn multisig(authority: &MultisigAuthority, path: &str, reserved: &Reserved) -> C
             ));
         }
         not_development(&key, signatory_path.clone())?;
-        // Nesting outside this document (a signatory that is some other
-        // multisig) is undetectable here; it is ceremony evidence (rule CUSTODY).
+        // A signatory that is a multisig defined outside this document cannot be
+        // seen here; its proof-of-possession cannot be produced, so PoP refuses it.
         if let Some((role, _)) = reserved
             .roles
             .iter()
@@ -1177,7 +1178,11 @@ fn multisig(authority: &MultisigAuthority, path: &str, reserved: &Reserved) -> C
     let address_path = format!("{path}/address");
     not_development(&address, address_path.clone())?;
     reserved.identity(&address, address_path.clone())?;
-    let signatories: Vec<[u8; 32]> = authority.signatories.iter().map(bytes).collect();
+    let signatories: Vec<[u8; 32]> = authority
+        .signatories
+        .iter()
+        .map(|signatory| bytes(&signatory.address))
+        .collect();
     if multisig_account(&signatories, authority.threshold) != address {
         return Err(fail(
             "multisig_address_not_derived",
@@ -1188,33 +1193,54 @@ fn multisig(authority: &MultisigAuthority, path: &str, reserved: &Reserved) -> C
     Ok(())
 }
 
+/// One custody role: JSON path, PoP role label and the authority.
+struct Role<'a> {
+    path: String,
+    label: String,
+    authority: &'a MultisigAuthority,
+}
+
+fn roles(b: &Bootstrap) -> Vec<Role<'_>> {
+    let mut roles = vec![
+        Role {
+            path: "/bootstrap/sudo".to_owned(),
+            label: "sudo".to_owned(),
+            authority: &b.sudo,
+        },
+        Role {
+            path: "/bootstrap/usdtOwner".to_owned(),
+            label: "usdtOwner".to_owned(),
+            authority: &b.usdt_owner,
+        },
+    ];
+    for (index, admin) in b.admins.iter().enumerate() {
+        roles.push(Role {
+            path: format!("/bootstrap/admins/{index}/multisig"),
+            label: format!("admin/{}", admin.pallet),
+            authority: &admin.multisig,
+        });
+    }
+    roles
+}
+
 pub(super) fn check(i: &ContractInput) -> Check {
     let b = &i.bootstrap;
-    let mut authorities = vec![
-        ("/bootstrap/sudo".to_owned(), &b.sudo),
-        ("/bootstrap/usdtOwner".to_owned(), &b.usdt_owner),
-    ];
-    for (index, role) in b.admins.iter().enumerate() {
-        authorities.push((
-            format!("/bootstrap/admins/{index}/multisig"),
-            &role.multisig,
-        ));
-    }
+    let roles = roles(b);
     let reserved = Reserved {
         bootstrap: b,
-        roles: authorities
+        roles: roles
             .iter()
-            .map(|(path, authority)| (path.clone(), bytes(&authority.address)))
+            .map(|role| (role.path.clone(), bytes(&role.authority.address)))
             .collect(),
         validators: b.validators.iter().map(|v| bytes(&v.account)).collect(),
         session_keys: session_keys(b),
     };
-    for (path, authority) in &authorities {
-        multisig(authority, path, &reserved)?;
+    for role in &roles {
+        multisig(role.authority, &role.path, &reserved)?;
     }
     // CS-4 (yvan 2026-09-14): sudo is distinct from the USDT owner and from every
-    // pallet admin. The 12 admins may share one multisig, the USDT owner may equal an
-    // admin multisig, and one signatory may sit in several multisigs.
+    // pallet admin. The 12 admins may share one multisig and the USDT owner may equal
+    // an admin multisig.
     // CHOICE: usdtOwner == admin stays allowed; the ruling restricts only sudo, and
     // refusing it would add policy nobody approved.
     let sudo = &reserved.roles[0].1;
@@ -1229,6 +1255,107 @@ pub(super) fn check(i: &ContractInput) -> Check {
         );
         error.related_path = Some(format!("{role}/address"));
         return Err(error);
+    }
+    // Ruling 2 (yvan 2026-09-14 04:34 UTC, supersedes the 03:33 allowance): sudo and
+    // the admin side (usdtOwner and every pallet admin) share no signatory. A
+    // signatory may still sit in several admin-side multisigs. Disjointness subsumes
+    // the quorum-containment predicate (CS2-3): no admin-side key set can reach any
+    // part of the sudo quorum.
+    let mut admin_side = BTreeMap::new();
+    for role in &roles[1..] {
+        for (index, signatory) in role.authority.signatories.iter().enumerate() {
+            admin_side
+                .entry(bytes(&signatory.address))
+                .or_insert_with(|| format!("{}/signatories/{index}", role.path));
+        }
+    }
+    for (index, signatory) in b.sudo.signatories.iter().enumerate() {
+        if let Some(other) = admin_side.get(&bytes(&signatory.address)) {
+            let mut error = fail(
+                "sudo_signatory_not_independent",
+                format!("/bootstrap/sudo/signatories/{index}"),
+                "sudo signatories must be disjoint from the USDT owner and every pallet admin",
+            );
+            error.related_path = Some(other.clone());
+            return Err(error);
+        }
+    }
+    rehome_destinations(i, &roles, &reserved)?;
+    for role in &roles {
+        pop::check(i, role.authority, &role.path, &role.label)?;
+    }
+    Ok(())
+}
+
+/// Ruling 1 (yvan 2026-09-14 04:34 UTC). D9 rehomes may credit only the mining pool
+/// (it pays merchant redemptions, node rewards and burn withdrawals) or the AMM;
+/// asset rehomes only the AMM (the mining pool holds no assets). Any other
+/// destination requires a new contract RC. topUps, reserveRefunds and rewardCredits
+/// are exact-derived from source rows elsewhere, so rehome `to` is the only
+/// free-form value destination.
+fn rehome_destinations(i: &ContractInput, roles: &[Role<'_>], reserved: &Reserved) -> Check {
+    let b = &i.bootstrap;
+    // Both accounts are already required to equal their runtime PalletId derivation
+    // in composition.rs, so comparing against them does not retype the derivation.
+    let pool = bytes(&b.mining_pool_account);
+    let amm = bytes(&b.amm_account);
+    let mut custody = BTreeMap::new();
+    for role in roles {
+        custody
+            .entry(bytes(&role.authority.address))
+            .or_insert_with(|| format!("{}/address", role.path));
+        for (index, signatory) in role.authority.signatories.iter().enumerate() {
+            custody
+                .entry(bytes(&signatory.address))
+                .or_insert_with(|| format!("{}/signatories/{index}", role.path));
+        }
+    }
+    let destination = |to: &Address, path: String, allowed: &[[u8; 32]], names: &str| -> Check {
+        let key = bytes(to);
+        not_development(&key, path.clone())?;
+        // The PalletId identity check is not applied: both allowed destinations are
+        // PalletId accounts. Validator, session-key and custody identities are.
+        if reserved.validators.contains(&key) {
+            return Err(fail(
+                "authority_validator_account",
+                path,
+                "a validator account cannot receive a rehome",
+            ));
+        }
+        not_session_key(&key, &reserved.session_keys, path.clone())?;
+        if let Some(custody_path) = custody.get(&key) {
+            let mut error = fail(
+                "rehome_destination_not_allowed",
+                path,
+                format!("rehome destination is a custody account; only {names} is allowed"),
+            );
+            error.related_path = Some(custody_path.clone());
+            return Err(error);
+        }
+        if !allowed.contains(&key) {
+            return Err(fail(
+                "rehome_destination_not_allowed",
+                path,
+                format!("rehome destination must be {names}; any other destination requires a new contract RC"),
+            ));
+        }
+        Ok(())
+    };
+    for (index, row) in i.changes.rehomes.iter().enumerate() {
+        destination(
+            &row.to,
+            format!("/changes/rehomes/{index}/to"),
+            &[pool, amm],
+            "bootstrap.miningPoolAccount or bootstrap.ammAccount",
+        )?;
+    }
+    for (index, row) in i.changes.asset_rehomes.iter().enumerate() {
+        destination(
+            &row.to,
+            format!("/changes/assetRehomes/{index}/to"),
+            &[amm],
+            "bootstrap.ammAccount",
+        )?;
     }
     Ok(())
 }

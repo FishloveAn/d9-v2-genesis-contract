@@ -1,4 +1,4 @@
-use crate::{Address, Amount, Commit, Count, Digest, Millis};
+use crate::{Address, Amount, CeremonyNonce, Commit, Count, Digest, Millis, Pcr0Hex, SignatureHex};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -16,6 +16,9 @@ record!(ContractInput {
     purpose: Purpose,
     /// RC7 (S-6): the chain identity the producer's chain metadata must equal.
     chain: ChainIdentity,
+    /// RC7 (D9-400 ruling 4): the proof-of-possession ceremony every custody
+    /// signatory's signature binds to.
+    custody: CustodyCeremony,
     source: SourceSnapshot,
     build: BuildIdentity,
     state: MigratedState,
@@ -38,6 +41,16 @@ pub enum Network {
     Testnet,
 }
 
+impl Network {
+    /// The wire label, as serialized and as used in the custody PoP message.
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Mainnet => "mainnet",
+            Self::Testnet => "testnet",
+        }
+    }
+}
+
 /// Mirrors `sc_chain_spec::ChainType`'s unit variants and their serde names.
 /// `Custom(String)` is deliberately not representable.
 // VERIFIED: ~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sc-chain-spec-51.0.0/src/lib.rs
@@ -48,6 +61,32 @@ pub enum ChainType {
     Development,
     Local,
     Live,
+}
+
+record!(CustodyCeremony {
+    /// 32 bytes chosen for this ceremony; every PoP message includes it.
+    ceremony_nonce: CeremonyNonce,
+});
+
+/// Signature scheme of a custody signatory's proof-of-possession.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "kebab-case")]
+pub enum SignatureScheme {
+    Sr25519,
+    Ed25519,
+    /// Decodes only so validation can refuse it with `custody_pop_scheme`: an
+    /// ecdsa AccountId32 is blake2_256 of the public key, so no public key exists
+    /// to verify a signature against.
+    Ecdsa,
+}
+
+/// What the signature covers: the canonical message itself, or the polkadot-js
+/// `signRaw` wrapping `b"<Bytes>" ++ message ++ b"</Bytes>"`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "kebab-case")]
+pub enum PopMessageForm {
+    Raw,
+    BytesWrapped,
 }
 
 record!(ChainIdentity {
@@ -219,13 +258,53 @@ record!(AdminRole {
 });
 record!(
     /// DEC-21 k-of-n pallet_multisig authority. Validation requires
-    /// `address == multisig_account(signatories, threshold)`; it does not prove the
-    /// signatories are the intended custodians, which remains ceremony evidence.
+    /// `address == multisig_account(signatories, threshold)` and a valid
+    /// proof-of-possession from every signatory; it does not prove the signatories
+    /// are the intended custodians, which remains ceremony evidence.
     MultisigAuthority {
     address: Address,
     threshold: u16,
     /// Strictly ascending by AccountId32 bytes, as pallet_multisig requires.
-    signatories: Vec<Address>,
+    signatories: Vec<Signatory>,
+});
+record!(
+    /// One custody signatory and its proof-of-possession over
+    /// `custody_pop_message` for this role, multisig and ceremony.
+    Signatory {
+    /// The signatory's AccountId32, which is its sr25519 or ed25519 public key.
+    address: Address,
+    evidence: PossessionEvidence,
+});
+
+/// How a custody signatory proves possession of its key. Externally tagged:
+/// `{"signature": {..}}` or `{"enclaveAttested": {..}}`, exactly one key.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum PossessionEvidence {
+    /// A signature by the signatory key, verified by this contract.
+    Signature(SignatureEvidence),
+    /// A Nitro attestation from an enclave that holds the key. This contract checks
+    /// structure and the message binding only; the producer must verify the
+    /// document itself (see `independentEvidenceRequired`).
+    EnclaveAttested(EnclaveAttestation),
+}
+
+record!(SignatureEvidence {
+    scheme: SignatureScheme,
+    message: PopMessageForm,
+    /// 64-byte signature, lowercase hex.
+    signature: SignatureHex,
+});
+
+record!(EnclaveAttestation {
+    /// Standard base64 (with padding) of the COSE_Sign1 attestation document bytes,
+    /// at most 16 KiB decoded. Not verified by this contract.
+    attestation_document: String,
+    /// The signer enclave measurement the producer must require, 48-byte SHA-384 hex.
+    expected_pcr0: Pcr0Hex,
+    /// SHA-256 of `custody_pop_message` for this signatory, role and ceremony; the
+    /// attestation's `user_data` must equal it.
+    pop_message_sha256: Digest,
 });
 record!(Validator {
     account: Address,

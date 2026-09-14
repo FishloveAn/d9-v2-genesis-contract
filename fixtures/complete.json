@@ -7,6 +7,9 @@
     "name": "D9 Testnet Fixture",
     "chainType": "Live"
   },
+  "custody": {
+    "ceremonyNonce": "3e446c0cdf4302981ce99512b47c988d84b027dbd7ded42f0b0f608db41f680d"
+  },
   "source": {
     "genesisHash": "0000000000000000000000000000000000000000000000000000000000000001",
     "blockNumber": "23800000",
@@ -933,21 +936,75 @@
   },
   "bootstrap": {
     "sudo": {
-      "address": "whNczFM8ky3eRnrbNsZk7TPruWJz4QDL6rn24D7Y2d5aTyk",
+      "address": "vb4JmH765dr3kHxq7HsMssv4g2v4FgWAonQEdkMCLYLGgKi",
       "threshold": 2,
       "signatories": [
-        "xiYhr36eCCrtxXHoJXe9RQQUfwqCKBRXGj65e5HsRqrNokJ",
-        "xjs3vMeMDs3XPL1Xb2VxpMWVGrdfPmgepZCw8tX8YdhqqRv",
-        "xmBPzgC4FXE9p8jFsXMnDJcVsmS8UMwnNPKndhkPfRZK6MA"
+        {
+          "address": "uPzJ59tKG3iPJiUSmL9Ln6uT8G6A1WSqBx2sGb1XEG8QyKi",
+          "evidence": {
+            "signature": {
+              "scheme": "ed25519",
+              "message": "raw",
+              "signature": "c1809022ff2c06dbd9d953309859ca84782c2aae7161f66a50236cfd3a0bd071f620175abc092601d6a3666c024144b180d652b3d0b6f7c2cdc80338bf233101"
+            }
+          }
+        },
+        {
+          "address": "wBKmibJXujzgiKKppcMZkS357U8V8XnM3m244EMdJTVsNcR",
+          "evidence": {
+            "signature": {
+              "scheme": "sr25519",
+              "message": "bytes-wrapped",
+              "signature": "b2823e55e98d35d58eb415936fdaa58a88b04998cfc272e88a96bd0c0fa4801509092f1fa732b5d72780ad6f8344bac965163252054fdf544521b103d381328d"
+            }
+          }
+        },
+        {
+          "address": "yMC4UDCB5P7uWwRhR8jzeQddqAB251EitLm3rvg76SmEtD7",
+          "evidence": {
+            "signature": {
+              "scheme": "sr25519",
+              "message": "raw",
+              "signature": "7c370f05c7ab0bd84847a5d85e64851803baaebfe41062bb0a6cc033a6dabc10ef2ed2a9660e3e268d05b9e9c11406684247bbbdce9d4d3badfacedc56bc3785"
+            }
+          }
+        }
       ]
     },
     "usdtOwner": {
-      "address": "xpb3jed79adisdoM4RHehxRBnUCghygihsusneBpMRsjEiC",
+      "address": "y83xXevHSw3cunx3VRoEjxbTjDWWSNgRfQ7B9qarxWmSxuA",
       "threshold": 2,
       "signatories": [
-        "xnVk4zjmHBQnEwSzA2DbcFiWUgEbYxCuvDSe8WyenDQnAbx",
-        "xop69KHUJqbQfkAiSX5R1CpX5b34dYU3U3ZVdLCuu1GFCbx",
-        "xq8SDdqBLVn36YtSj1wEQ9vXgVqXi8jB1sgM89SB1o7iQkU"
+        {
+          "address": "ue8evwrzbMDfdePr8jTXAMzUDXw3UbGAMwAyxpbkzgCDGAW",
+          "evidence": {
+            "signature": {
+              "scheme": "ed25519",
+              "message": "raw",
+              "signature": "46b742098ec4f8ba006df9fda2b3fb8eda87043bbfd43e276ac678c3eef28f2e0b47dd5ddae14a4df619a2d16b7d277473503ce9aa47f3194055e4f792372706"
+            }
+          }
+        },
+        {
+          "address": "wSnJ17ybJnMySAtvo29jdwF4BmUuFfMQ45vzUr24b8jDnqF",
+          "evidence": {
+            "signature": {
+              "scheme": "sr25519",
+              "message": "bytes-wrapped",
+              "signature": "a2f2adfd0ec312398257ca2da3efe91d361d43fae6f7e0aa0246bc7c47eb7d1709c2b47173bf8e9705de8ef5d4e7609219f4ea0c960f3ad0ecd6d273b8d0be8d"
+            }
+          }
+        },
+        {
+          "address": "xyYhFUwGydD9YCyabZHjtnvbHd2Ck74uQqNk87ji6dV1uj5",
+          "evidence": {
+            "signature": {
+              "scheme": "sr25519",
+              "message": "raw",
+              "signature": "f4585beb4c5cd03804055e48d5712921a12c2589833d0b712ed64557d8c0047f56155e79557d269a9d00e0d2a2eb4bbd1f95d12e9c2e167224f523811068d488"
+            }
+          }
+        }
       ]
     },
     "validators": [
@@ -972,144 +1029,468 @@
       {
         "pallet": "d9-amm",
         "multisig": {
-          "address": "uSTa4gZD5b759c4bLSKQJkDEnn3cEpa1HUpCmpJSXBBFyEk",
+          "address": "vLj1b6G931KL4jji3R9VGJgVp6tbFzTmTemgBQFBmmZSssv",
           "threshold": 2,
           "signatories": [
-            "xrSnHxNtN9xfXMcB1Wo3o72YHQdznizJZhoCcxfS8ayBYFV",
-            "xsm8NGvbPp9HxAKuJ1esC48YtKSTsKFS7Xv47mthFNpekie",
-            "xu5USbUJRUKvNy3daWWgb1EZVEEvwuWZfN2ucb7xNAg7tQM"
+            {
+              "address": "x3Rnj4pMNPHDdky6K2txMy833dvPqy4mLtFFcXNoPv3EU3B",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "5ae17d60c0fa1ba6235e54043dfe5d7cd50abd0b96a7347435196d16714561504ba72b7c58ee2a47aef2978fb8ce6a567fea4730f6439924164e93f5ac3d3884"
+                }
+              }
+            },
+            {
+              "address": "x5ckhGeeWszmrMJjHhti3heKeUELdthuBcB9qwbMDNpdhLh",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "86df72df793542a09b64c4720ec806da5b7fd4196f7b3ba89ad64a8a1f493abc93fa4c5e00a66b48402e91ddee2a474ddd4659fc3ba4159ede27fda93a73c80b"
+                }
+              }
+            },
+            {
+              "address": "y5bjkNxEdC6NSqcvug3J85YRsG8eMgd7b8LCL7fiznEGE2t",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "a42874b1991a9f372285b52c4e316a10089b9b748055b883e903bdc8eb709d4ad73441d19a48cdf1fd7f7710e0bd8b5ce18d59f6752a4c31530d437ea677be88"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-burn-mining",
         "multisig": {
-          "address": "w3DRQQHAtkrYAchTwGMchPAo23Pw4DtWiVBNtkFQDFc6dmo",
+          "address": "wpRoe5JY3FZuQxYgB4qSqouQtK2BPW8xe3DAKp7NkLEx8es",
           "threshold": 2,
           "signatories": [
-            "xvPpWv21T8WYommMs1NVyxLa693Q2VmhDC9m7QMDUxXb6nm",
-            "xwiAbEZiUnhBEaV69WEKNuSah3qs762pm2GccDaUbkP3yCa",
-            "xy2WfZ7RWSsofPCpS168mrYbHxeLBgHxJrPU72ojiYEXBwL"
+            {
+              "address": "uaUwUMvQjE43g9mbjstdm7WN1TJaFnHiKhwf31pPt39428F",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "966b09c181458687fcb43f9e6ad0fb9ab8547027ca722f1e1709d1cda44ecd10d78edfa12427f17bcb971ad4ba88d70f3f4c99d34165f818a5b75d54eb986a0b"
+                }
+              }
+            },
+            {
+              "address": "uuTbdCCiJkgu2VbdxuPxkQQp9ghnnaMxm5nmV7yE8wEQ7sy",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "6e0773452b70b25f6d2435a0629b411c3882d0ac171a9ce1229b4e56b6ac0a7708826ce10ad14e73ddf4d6b45852e4a9c486f96da5c72d054b31edb418d1ab8f"
+                }
+              }
+            },
+            {
+              "address": "w6GnmLfAQGGpcEo6ZeUhga9EVC8MtNhT1HZJ4fKhydrZyf2",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "1a031f987f8c83b4f67b4dc43cdabc67d43438b5f2f857f20c173d78fb12f25c228caa176fabf94d22a8fbe9019abfd48a6c2046f595c95aa1efaa3ecc280e87"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-cross-chain",
         "multisig": {
-          "address": "vdzxgAjVV8L8prwwix7nDEdbWuKUXX6EX54sCGae8pHDaWQ",
+          "address": "xVBN17LBZZGNKEPW1WywojNXyV1wyLqa3xkjd95J7AYMZ3w",
           "threshold": 2,
           "signatories": [
-            "xzLrjsf8Y74S6BvYiVwxAoebtsSoGGZ5rgWKbr2zqL5zULN",
-            "y1fCpCCqZmF4WzeGzzomZkkcVnFGLrpDQWdB6fGFx7wTYBo",
-            "y2yYtWkYbRRgwoN1HVfaxhrd6h3jRT5LxLk2bUVX4unvfDB"
+            {
+              "address": "xiwyoGRfKHHxgsLwC7EFYaAe3GRz6fgh6dbNwm3jodHUCQY",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "face02f78b17e29411098807af92eef8bca175ce7c2faa8081c98ebed0dabc1c7143927536eb1b9b5345d7b9660c3b748f0863789925f763f377de02f56c2c8d"
+                }
+              }
+            },
+            {
+              "address": "ySeAAWMWCDh2UfFyCpRcUiceghKiMHzKn4JFfgxwg5EPqCy",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "ecc024f85833a29f291fef59274a32d57a6b42bd7aedad76cd47257cb0d79329e5fe34ed7f94d7777f6bb27911a6b4f37ee0487ebf16142c2e57cdfc0cb90d88"
+                }
+              }
+            },
+            {
+              "address": "z5QuFUUMBhDXjX1Y9LgFuWJqzhfuKAfAPjZRiS2zgtLq6p2",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "12dbacc636217d2b49b40402871ec0680698f92deaeb98434e2cace2e8e8ec426c77f72767279eb04e4f46b22c39023fdcc167463562e88004855220aa7bec0e"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-governance",
         "multisig": {
-          "address": "yZkrWfym6pjuQTjbHQXXwcSwMWRAxEM3mQTyZzBHXf8b6yd",
+          "address": "zp7Qfb4rGPRz87VUVVsJC9SyRFSgmwshgiSw9HccYboAAdw",
           "threshold": 2,
           "signatories": [
-            "y4HtxqJFd5cKNc5jZzXQMexdhbrCW3LUWArt6HinBhePnSy",
-            "y5cF39qxejnwoQoTrVPDkc4eJWefadbc3zyjb6x3JVVrx63",
-            "y6vb7UPfgPyaEDXC8zF39ZAeuRT8fDrjbq6b5vBJRHMKws7"
+            {
+              "address": "wuYGqzuAcAMpURiBUEuocWR8CsdxLTt3fHxwmbTE6e8a2Do",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "b836e9d01aa9576eb89f7a28fe16acaa6730e62c64d90a217193d03de15da64a58e2c1513f78af412da97421845c89225294064aae0d12978a911f5ccf113d80"
+                }
+              }
+            },
+            {
+              "address": "yaR3G8FheDuHe7d3hfgcjF2EX1HaZ3BytJXSwPUYAzqy5JC",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "7ab5a3aa5be5947d115b7e710239b6de32548438c23f704df8eb4dc7ba58c01d5247808dfbbd4d7026c19c5889164c54136fedf98c5baa152b14cccad2399880"
+                }
+              }
+            },
+            {
+              "address": "ziPyK2pivztAVEC172U2SZVcocDcMybt8obKAU6qH3UekaH",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "7c1c80541c67d7040dc871a2f74e287ac70e6d705611b526e4fdb3ad603075bc6d1a3338beb07a6ed42615b6e77f0db87e718ead7737cbdf57f662f2954ede03"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-judicial-penalty",
         "multisig": {
-          "address": "uSTwv9TEk8EUtSFqRpCDLNAVJBGQFg8c8RgLCRwZ2W9xW3u",
+          "address": "uUCnewxVcbf6w2Zh1y1XLhRNGG7RHGdXUsjRLzdAFTUKi8Z",
           "threshold": 2,
           "signatories": [
-            "y8EwBnwNi4ACf2EvRV6rYWGfWLFbjp7s9fDSajQZY5Co6Lg",
-            "y9ZHG7V5jiLq5pxehyxfwTNg7F44pQNzhVLJ5Ydpes4GD1Y",
-            "yAsdLS2nmNXTWdgNzUpVLQUgi9rXtze8FKT9aMs5meujJTj"
+            {
+              "address": "uh58DnkWWsfkU78kb3QFcz6Fhm1mNpyUPsWmQs5XdLGrWTp",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "f2a4cfbe87c0f964377bc0ef5933f2aec0b7d9f5bca51ad9cc2a121b57e7f2133180d9baa374a5571995511ff5a50039612c1bad3521fbf57038f71f54be3c83"
+                }
+              }
+            },
+            {
+              "address": "wFTXaxK8MiFuoRGYxfoAtBkioWfeEunp3rcWbHCQH4ra7sa",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "170e1066752b20d6c9297865422f7132496ecff5c330b93bd9b8944660fd0b0709c88ab83adc4381bcfef8e3866fa1237f1f4d925e3838302b62a3a31477ae08"
+                }
+              }
+            },
+            {
+              "address": "xYDiVUssjFiW6yiYodFQvkvU5eBfEFcz7XYjuvFoXgvmFPQ",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "9c8f4c81c2b6b1ec3e70efc527cd927806b79c1d9f89572d21a947087327aa7ec99c315a169b3bf6ff386572e66546e44d8252d80a208a06f454f124708e4081"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-merchant",
         "multisig": {
-          "address": "yYotEVtTAN5s1RXxp1dK4zLp7RVYVpLiaz1dqJtc8MhuGEd",
+          "address": "wuWrXs5use5qVFV2d7ebQH9CUr1rhKAU2cj7k26Q4JDdfHH",
           "threshold": 2,
           "signatories": [
-            "yCByQkaVo2i5wSQ7GygJjMahK4ezyauFo9a15B6LtSmCQx4",
-            "yDWKV58CpgtiNF7qZUY88JghuyTU4BAPLygrZzKc1EcfYzz",
-            "yEpfZPfurM5Lo3qZqyPwXFniWtFw8mRWtooi4oYs82U8b3s"
+            {
+              "address": "vBm1jf1kVBs58vmJhqrugeruYCqFwdBJn3Ln3r9qr68ipMo",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "ae7546874cbf38b7f99c418d26923d2b65d9bdbe89b3337931635f4f6f15c3073148ca3fe67a205ba6f6a900a84ab9773eab4820f2547eee4bb0cbd3b98a058f"
+                }
+              }
+            },
+            {
+              "address": "xB5d1agXsyACdHtDkB4FfPsnTiyDtoZZJcSKGkQHWLRAt3S",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "3493e08a2bab84f081f86c7779805476211221cbf93fd21436be9ca8764dfe252ec3e98f7e30923352d434a6e5ab7e7624b62ce1347721e83ad56412a20ec084"
+                }
+              }
+            },
+            {
+              "address": "zHXD9NDRH8odAqto6HSiXTYAdae54RS3F7L7SZVd9PaymeH",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "d3727fbe5438220d40871bc0ee5ae94420182a646f13fee8a782d49cf0fc539a623685ca23d135bdbc9b61907e96fa3a8a793eea2c80b1d6f52f57592ae3ad0e"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-mining-pool",
         "multisig": {
-          "address": "vMiHKrP2VYTst4oPUzs4R33HGhPZS9A64HLRDAAuknBTL1p",
+          "address": "zbpLdWJ5D6ZQxgVDiH3LjdyjzA74N53EAo8bwp5j4Q3axfh",
           "threshold": 2,
           "signatories": [
-            "yG91diDct1FyDrZJ8UFkvCtj7o4QDMgeSdvZZcn8EpKbvnz",
-            "yHTMi2mKufSbefH2Qy7aK9zjihrsHwwmzU3R4S1PMcB4sNh",
-            "yJmhnMK2wKdE5TzkhTyPi76kKcfLNYCuYJAGZFEeUQ2Y4XE"
+            {
+              "address": "yAWxBze73YzVPnNQ633mjnUfNhb1QvKPbEjWQHjJf3CLo7P",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "aa0ace902b71223f15cff31c018f88b7b8ed766e24501fe3cebfe0700c74995cf963094dbb9f0c89d82cd92a66271e1ee1916753fa98227202ede748d5e95d8c"
+                }
+              }
+            },
+            {
+              "address": "yLUMVUQeHt9e7CwV62FKJuEQGz6U97RLXuBsJtLfw7anzuG",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "44317a84302633f344fe9416d6742b2138bb707e646017b23310fc0eb89c476f8bfe22f04c18fea43b31feca4b1875b3fdebcdde3e67be2b1319b03326d16f83"
+                }
+              }
+            },
+            {
+              "address": "zXqNDWxgDwndkUc8PBxCny4euoRGhBn7VHEUWmPNrxVNgoD",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "ddc2442802b0539fc64264d689351ceff3c145f86be0e8823bed1d7f8c00769488cd3b9cb03a4105269b38a7cdd88c7b7cfd6b649cf141f47325fb37dac57301"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-node-registry",
         "multisig": {
-          "address": "z3X3nxbZhZY8fB8QSPpCuzFDrror1zqsxiSagjXdkPej283",
+          "address": "vHLzsw7RKjLsGdfxXygYejpQR9GZembZmyhQa2mgdzAaNAs",
           "threshold": 2,
           "signatories": [
-            "yL63rfrjxyorWGiUyxqD74CkvXToT8U368H844TubBt1HPh",
-            "yMQPvzQSzdzUw5SDGTh2W1JmXSGGXijAdxPyYshAhyjUR9G",
-            "yNik1JxA2JB7Mt9wYxYqtxQn8M4jcJzJBnWq3gvRpmawXRY"
+            {
+              "address": "ucVYnxezKD7vVToGksxybezxd5e5pHeXMV7AoSbqCVnAd3n",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "45303828fdf181c3480ff8a180988c4bb8aa86b1ecefdddbeb84c88fb7ea9728cb7bb526f1ac31a75dba490ae6cfb70c0b2c2ee2ab69f6fc2908cfb9e95a7e08"
+                }
+              }
+            },
+            {
+              "address": "xfDG38V8oQwRyWxfW8fkp4BDP4Xh3QkeWgihphSthzYR91N",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "1ab4d34bad02740ad49df55516c6cd4d8409a4412ffb45e18e9a31bb10a6af55a0509bddcdb4127c0943d3c122e993c56dbf370f35aa68e6d07ed35392edee8d"
+                }
+              }
+            },
+            {
+              "address": "zUChoeRbqjqiT8qfGBo2wNYfZs7wofUxsHptVUbsBuadAiz",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "98f5c7d50e1127def0f239b59046f05906715159d7e091a95421a9681d23ea48e006c60fda9d2265b791ae5d5b3be5b1ca0c67edf0ee203e269fba7c441e818e"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-node-rewards",
         "multisig": {
-          "address": "zrWKqmdWWcg4zryLAKis5bFyrnir24ye1Q3WCMFPrvK9G4c",
+          "address": "x5puVYRQFhJcHAiRakR7vjsiUHTLxBLBJr3AKYcyEfgsour",
           "threshold": 2,
           "signatories": [
-            "yQ365dVs3xMjngsfqTQfHuWnjFsCguFRjcdgYW9gwZSQX7d",
-            "yRMS9x3a5cYNDVbQ7xGUgrcoLAffmVWZHSkY3KNx4MHsoFE",
-            "ySfnEGbH7GizeJK8QT8J5oiow5U8r5mgqGsPY8cDB99M5Q8"
+            {
+              "address": "xVoVN7x1XxuNR9wMuMXrD63oB89g4gTQQS4syzMknL1WPyE",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "8222bc02186114c58afaaeef3c0e9bde1d6945eddfb2bba3966dbd9772b9da245d87fa3d5fa7a6bfa8222184ea14231b02104fcb13191bde401adafa98167384"
+                }
+              }
+            },
+            {
+              "address": "y8SkNKxDh99DLqYoaU9vuFVkmQ7FRrHyx6NwyMYcx8xPr1b",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "0310352acb367a1fe8522cafe08c763fded2926bf6a71767520bbeeb85b0ff665eb4aa5b2cdbac0812312a62f24d955211799537888d07568c0c691b0917d60f"
+                }
+              }
+            },
+            {
+              "address": "yomiWcGsoCXcc2rn578TxzK9FdduMmuw9tN1yea9aYvYAPY",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "0c8dcddd1a685e79d1b5afd601431e214d860a76a5ce922a3c9f0baaa9c77369f71e03205fdcb37b0864ec127497e748edeec30f5b5dbf998abb4faa60ab418e"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-referrals",
         "multisig": {
-          "address": "wnm8rYT24x4pZNKLjxwXk99shPnonz2UoLkwPuHKhZFTM6s",
+          "address": "wtBH84FjhhfUSxf8QDGubsqJnFBzkvQTy1QKKYJbqFWLZnu",
           "threshold": 2,
           "signatories": [
-            "yTz8Jb8z8vud572rgwz7UkppXzGbvg2pP6zF2wqUHvzouUr",
-            "yVJUNughAb6FVukaySqvshvq8u551GHwvw76Xm4jQirH5YW",
-            "yWcpTEEQCFGsviUKFwhkGf2qjosY5rZ5UmDx2aHzXWhk9rQ"
+            {
+              "address": "ugb1ZNLgUa5wTE5pm35wSafHF5ppDCiWWW5UZNG6XEqAxwS",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "829be53c0d8bd2a7d6ebf91a1c86256dd01a456eb6716009597287e833b2360dd510da9c6f815835ed296c343712c0eb7ba9614cb46cf971e029357c9a5fc68f"
+                }
+              }
+            },
+            {
+              "address": "wBYsWaMuzjeGv4XJiDgCyyouAzyGufbkkb1izJirktH7Ny7",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "d8ed74fb2b3c35f34f0730bc7039cb417ce09a6c1711e275a8e7912c227878b0d413bd950b55dfe7c25f629f906162d2d00255fdc48809ccf3fb4fc22d8e4a02"
+                }
+              }
+            },
+            {
+              "address": "xfAAhSydCGscFEZxrjqg6vCroeZ7SkoGd7dooZ6zeMhHa4h",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "224f47a5675f0b8333aaf592ab850e098508f9a41734f54d0006a5cf7e9b815a40f5a31b51ab1c406065490cd24ac5a85874edb6aedc54406fb4c0ad116bd583"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-upgrade-coordinator",
         "multisig": {
-          "address": "xB5ENW3jbK7jU2v8ALdjRBawU2bTqDrasXMQqB1vcqYsod3",
+          "address": "ukNzBpKrfyWqDMFoTntvSNduBNyNeqUEAGvo4Q26u2mMxwU",
           "threshold": 2,
           "signatories": [
-            "yXwAXYn7DuTWMXC3YSZZfc8rLig1ASpD2bLoXPXFeJZDXnp",
-            "yZFWbsKpFZe8nKumpwRP4ZErwdUUF35LaRTf2CkWm6QgQzK",
-            "yaZrgBsXHDpmD8dW7SHCTWLsYYGwKdLU8FaWX1ymstG9YKp"
+            {
+              "address": "vqMqPYVtsVtEseDwpxPcGexA5XqnxFzWiZxTzQJeQFvUDrD",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "1191e7db86e1136d5a0d568c5093f61116968afd75c330ee6d509adc632e7401b6cc120fdd5445698c993791b0f43ef2073c0b51fb9b6856abdd68ddf396f40b"
+                }
+              }
+            },
+            {
+              "address": "wUzVoouFcPaHLq8outT7MCAwCuiER8W62RbXrztEDVPzCoB",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "9258f98ffbf1eb9549a4f16e9634267b69caf0e8993bb3c74fa140eb34c82d697087505acc8e5e0ce00d89d28288b7d50f065a7382e912d79322949e216afe8c"
+                }
+              }
+            },
+            {
+              "address": "wd5EexRaXopjGVTYrqneYUCicfPPiEQET9o5fP5twqvyVXH",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "f6fdc6ed07dc8b34b628d1f1093dda7f2e46aeca89817f55aa96b7c4d2f44a4c871c88bf1167f6dc1fba88889b659dfe2482f667a7a6e7381d4f116ad703318a"
+                }
+              }
+            }
           ]
         }
       },
       {
         "pallet": "d9-voting",
         "multisig": {
-          "address": "xHiyszWWnAaP2kHPZqrNygMvBsajjf9MQWUfVPH5ed6bZjZ",
+          "address": "zn6GB9FXtJcVQUdXaeNtC1YtBvhaMWkyDNv5TKyiyadEPc7",
           "threshold": 2,
           "signatories": [
-            "ybtCkWREJt1PdwMEPw91rTSt9T5QQDbbg5hN1qD2zg7csEt",
-            "ydCYppxwLYC24k4xgRzqFQYtkMssUorjDupDWeSJ7Ty61AL",
-            "yeWtu9WeNCNeVYngxvreeMeuMGgLZQ7rmjw51TfZEFpYz2o"
+            {
+              "address": "xVAxsGjLTvn9hpev5dH6GNj3AK6d1C7trSsUPz7ybSfideN",
+              "evidence": {
+                "signature": {
+                  "scheme": "ed25519",
+                  "message": "raw",
+                  "signature": "5a0828b5635df29590bf847ca37e3092a30efeed2e9bd08eb47739b07d9d41563a8fcc59df11a878ed3ff270801164483f4996841c99b6a15f47c32f595e3d01"
+                }
+              }
+            },
+            {
+              "address": "xdN9wRtjQpNd1m35ncSKa5R3wK8VM7X7KpCSh7XXbdn14zc",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "bytes-wrapped",
+                  "signature": "2ec8119b670e8b95e1dbb174d4fb580384492d84476fcf3a01a251fddfe761191d9447eb99992569f97441db63c9f33defaf4fb1b587b78463283ae9c9cf598f"
+                }
+              }
+            },
+            {
+              "address": "yPRm39KakkeCJvEDBtLw1VQBf79z9WXQjr5R8sKSTWxCTJN",
+              "evidence": {
+                "signature": {
+                  "scheme": "sr25519",
+                  "message": "raw",
+                  "signature": "02c7b9143a82fd9e64fe243e2425eee72c8d39310a18fcf30169dd2be8684d3d7dde0ae3e033e493c8a09ea96f91bdf3eaddf8b01db99fc90142c6b3d10b7885"
+                }
+              }
+            }
           ]
         }
       }
