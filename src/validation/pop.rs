@@ -11,19 +11,20 @@ pub const CUSTODY_POP_DOMAIN: &[u8] = b"D9-V2-CUSTODY-POP/1";
 ///
 /// `CUSTODY_POP_DOMAIN` followed by six length-prefixed fields, each
 /// `u64 big-endian byte length || bytes` (the length encoding `dataset_digest` uses):
-/// network label (`"mainnet"`/`"testnet"`), `chain.id`, role (`"sudo"`,
-/// `"usdtOwner"` or `"admin/<pallet>"`), multisig AccountId32, signatory
+/// network label (`"mainnet"`/`"testnet"`), `chain.id`, role label
+/// (`CustodyRole::label`: `"sudo"`, `"usdtOwner"` or `"admin/<pallet>"`), multisig AccountId32, signatory
 /// AccountId32 (its sr25519/ed25519 public key) and the 32-byte ceremony nonce.
 /// Changing any of them invalidates the proof, so a testnet proof cannot be
 /// replayed on mainnet and a proof for one role or multisig cannot be reused.
 pub fn custody_pop_message(
     network: Network,
     chain_id: &str,
-    role: &str,
+    role: CustodyRole,
     multisig_address: &[u8; 32],
     signatory: &[u8; 32],
     nonce: &[u8; 32],
 ) -> Vec<u8> {
+    let role = role.label();
     let mut message = CUSTODY_POP_DOMAIN.to_vec();
     for field in [
         network.label().as_bytes(),
@@ -45,7 +46,7 @@ pub fn custody_pop_message(
 pub fn custody_pop_message_sha256(
     network: Network,
     chain_id: &str,
-    role: &str,
+    role: CustodyRole,
     multisig_address: &[u8; 32],
     signatory: &[u8; 32],
     nonce: &[u8; 32],
@@ -59,16 +60,6 @@ pub fn custody_pop_message_sha256(
         nonce,
     ))
     .into()
-}
-
-/// The bytes a signature covers for `form`: the message itself (`raw`), or the
-/// polkadot-js `signRaw` wrapping `b"<Bytes>" ++ message ++ b"</Bytes>"`
-/// (`bytes-wrapped`) that browser and hardware wallets apply.
-pub fn custody_pop_payload(form: PopMessageForm, message: &[u8]) -> Vec<u8> {
-    match form {
-        PopMessageForm::Raw => message.to_vec(),
-        PopMessageForm::BytesWrapped => [b"<Bytes>".as_slice(), message, b"</Bytes>"].concat(),
-    }
 }
 
 /// Largest accepted decoded attestation document. Nitro documents are a few KiB.
@@ -121,12 +112,50 @@ fn canonical_base64_len(text: &str) -> Option<usize> {
 /// Ruling 4 (yvan 2026-09-14 04:34 UTC): every custody signatory proves possession
 /// of its key. Runs after structure, identity, derivation, distinctness,
 /// independence and rehome checks, so those report first.
+/// Signer enclave measurements (48-byte SHA-384 PCR0) accepted for `enclaveAttested`
+/// custody evidence. A measurement is added only by a new contract RC after it is
+/// recorded in `d9-v2-docs` `docs/operations/pcr0-ledger` for the blessed signer EIF;
+/// empty until the mainnet sudo-signer attest-mode EIF (CUS-221) is built and blessed.
+/// While empty, every `enclaveAttested` signatory is refused (decision C, yvan
+/// 2026-09-14 05:46 UTC).
+pub const BLESSED_SIGNER_PCR0: &[[u8; 48]] = &[];
+
+/// The blessed set in force. Unit tests substitute a synthetic measurement to exercise
+/// the accept path; builds and integration tests use `BLESSED_SIGNER_PCR0`.
+fn blessed_signer_pcr0() -> &'static [[u8; 48]] {
+    #[cfg(test)]
+    {
+        tests::TEST_BLESSED_SIGNER_PCR0
+    }
+    #[cfg(not(test))]
+    {
+        BLESSED_SIGNER_PCR0
+    }
+}
+
 pub(super) fn check(
     i: &ContractInput,
     authority: &MultisigAuthority,
     path: &str,
-    role: &str,
+    role: CustodyRole,
 ) -> Check {
+    // Decision B (yvan 2026-09-14 05:46 UTC): enclave-attested signatories alone can
+    // never reach the threshold, so at least one verified signature is always needed.
+    let attested = authority
+        .signatories
+        .iter()
+        .filter(|signatory| matches!(signatory.evidence, PossessionEvidence::EnclaveAttested(_)))
+        .count();
+    if attested >= usize::from(authority.threshold) {
+        return Err(fail(
+            "custody_attested_quorum",
+            format!("{path}/signatories"),
+            format!(
+                "{attested} enclave-attested signatories reach threshold {}; at most threshold - 1 may be enclave-attested",
+                authority.threshold
+            ),
+        ));
+    }
     let nonce: [u8; 32] = hex_array(i.custody.ceremony_nonce.as_str());
     let multisig = bytes(&authority.address);
     for (index, signatory) in authority.signatories.iter().enumerate() {
@@ -152,7 +181,6 @@ pub(super) fn check(
 }
 
 fn signature(evidence: &SignatureEvidence, key: &[u8; 32], message: &[u8], path: &str) -> Check {
-    let payload = custody_pop_payload(evidence.message, message);
     let signature: [u8; 64] = hex_array(evidence.signature.as_str());
     // VERIFIED: sp-core 43.0.0 `src/sr25519.rs:49` (`SIGNING_CTX = b"substrate"`)
     // and `:265-269` (`verify` = schnorrkel `verify_simple(SIGNING_CTX, ..)`);
@@ -160,21 +188,14 @@ fn signature(evidence: &SignatureEvidence, key: &[u8; 32], message: &[u8], path:
     let valid = match evidence.scheme {
         SignatureScheme::Sr25519 => sr25519::Pair::verify(
             &sr25519::Signature::from_raw(signature),
-            &payload,
+            message,
             &sr25519::Public::from_raw(*key),
         ),
         SignatureScheme::Ed25519 => ed25519::Pair::verify(
             &ed25519::Signature::from_raw(signature),
-            &payload,
+            message,
             &ed25519::Public::from_raw(*key),
         ),
-        SignatureScheme::Ecdsa => {
-            return Err(fail(
-                "custody_pop_scheme",
-                format!("{path}/scheme"),
-                "ecdsa cannot prove possession for an AccountId32: the account is blake2_256 of the public key, so there is no public key to verify against; use sr25519 or ed25519",
-            ))
-        }
     };
     if !valid {
         return Err(fail(
@@ -216,19 +237,179 @@ fn enclave_attested(evidence: &EnclaveAttestation, message: &[u8], path: &str) -
             "popMessageSha256 must equal SHA-256 of custody_pop_message for this network, chain id, role, multisig, signatory and ceremony nonce",
         ));
     }
+    let pcr0: [u8; 48] = hex_array(evidence.expected_pcr0.as_str());
+    if !blessed_signer_pcr0().contains(&pcr0) {
+        return Err(fail(
+            "custody_attestation_pcr0_not_blessed",
+            format!("{path}/expectedPcr0"),
+            "expectedPcr0 is not in BLESSED_SIGNER_PCR0; enclave-attested custody cannot pass until a signer measurement is blessed by a new contract RC",
+        ));
+    }
     Ok(())
+}
+
+/// One enclave-attested custody signatory whose attestation document this contract
+/// did not verify. The producer must verify each with `d9-enclave-common`
+/// `attest_verify` before the input can be trusted (CR3-03).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PendingAttestationVerification {
+    pub path: String,
+    pub role: CustodyRole,
+    pub multisig: Address,
+    pub signatory: Address,
+    pub expected_pcr0: Pcr0Hex,
+    pub pop_message_sha256: Digest,
+}
+
+/// Every enclave-attested signatory of a document that has already passed validation.
+pub(super) fn pending_attestations(i: &ContractInput) -> Vec<PendingAttestationVerification> {
+    let mut pending = Vec::new();
+    for role in super::custody::roles(&i.bootstrap) {
+        for (index, signatory) in role.authority.signatories.iter().enumerate() {
+            if let PossessionEvidence::EnclaveAttested(evidence) = &signatory.evidence {
+                pending.push(PendingAttestationVerification {
+                    path: format!("{}/signatories/{index}/evidence/enclaveAttested", role.path),
+                    role: role.role,
+                    multisig: role.authority.address.clone(),
+                    signatory: signatory.address.clone(),
+                    expected_pcr0: evidence.expected_pcr0.clone(),
+                    pop_message_sha256: evidence.pop_message_sha256.clone(),
+                });
+            }
+        }
+    }
+    pending
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    /// A synthetic measurement blessed only in unit tests, to exercise the accept path.
+    pub(super) const TEST_BLESSED_SIGNER_PCR0: &[[u8; 48]] = &[[0xab; 48]];
+
+    fn fixture() -> ContractInput {
+        crate::parse(include_bytes!("../../fixtures/complete.json")).unwrap()
+    }
+
+    fn hex(bytes: &[u8]) -> String {
+        bytes.iter().map(|b| format!("{b:02x}")).collect()
+    }
+
+    /// Replace sudo with a `threshold`-of-(signed + attested) multisig: `signed` fresh
+    /// sr25519 keys with real proofs and `attested` fresh keys carrying synthetic
+    /// enclave evidence (NOT a real attestation) with the correct binding hash.
+    fn sudo_with(
+        input: &mut ContractInput,
+        threshold: u16,
+        signed: usize,
+        attested: usize,
+        pcr0: [u8; 48],
+    ) {
+        // Fresh keys from OsRng (sp-core `Pair::generate`), in memory only.
+        let mut keys: Vec<(sr25519::Pair, bool)> = (0..signed + attested)
+            .map(|index| (sr25519::Pair::generate().0, index < signed))
+            .collect();
+        keys.sort_by_key(|(key, _)| key.public().0);
+        let publics: Vec<[u8; 32]> = keys.iter().map(|(key, _)| key.public().0).collect();
+        let address = crate::multisig_account(&publics, threshold);
+        let nonce: [u8; 32] = hex_array(input.custody.ceremony_nonce.as_str());
+        let signatories = keys
+            .iter()
+            .map(|(key, signs)| {
+                let public = key.public().0;
+                let message = custody_pop_message(
+                    input.chain.network,
+                    &input.chain.id,
+                    CustodyRole::Sudo,
+                    &address,
+                    &public,
+                    &nonce,
+                );
+                let evidence = if *signs {
+                    PossessionEvidence::Signature(SignatureEvidence {
+                        scheme: SignatureScheme::Sr25519,
+                        signature: SignatureHex::try_from(hex(&key.sign(&message).0)).unwrap(),
+                    })
+                } else {
+                    PossessionEvidence::EnclaveAttested(EnclaveAttestation {
+                        // base64("synthetic-not-a-real-attestation")
+                        attestation_document: "c3ludGhldGljLW5vdC1hLXJlYWwtYXR0ZXN0YXRpb24=".into(),
+                        expected_pcr0: Pcr0Hex::try_from(hex(&pcr0)).unwrap(),
+                        pop_message_sha256: Digest::try_from(hex(&sha2::Sha256::digest(&message)))
+                            .unwrap(),
+                    })
+                };
+                Signatory {
+                    address: Address::from_account_id(public.into()),
+                    evidence,
+                }
+            })
+            .collect();
+        input.bootstrap.sudo = MultisigAuthority {
+            address: Address::from_account_id(address.into()),
+            threshold,
+            signatories,
+        };
+    }
+
+    #[test]
+    fn production_blessed_signer_set_is_empty_until_a_measurement_is_blessed() {
+        assert!(BLESSED_SIGNER_PCR0.is_empty());
+    }
+
+    #[test]
+    fn enclave_attested_signatories_cannot_reach_the_threshold() {
+        let mut input = fixture();
+        sudo_with(&mut input, 2, 1, 2, TEST_BLESSED_SIGNER_PCR0[0]);
+        let error = crate::validate(&input).unwrap_err();
+        assert_eq!(error.code, "custody_attested_quorum");
+        assert_eq!(error.path, "/bootstrap/sudo/signatories");
+        // 2-of-3 with one attested: accepted, and reported as pending.
+        sudo_with(&mut input, 2, 2, 1, TEST_BLESSED_SIGNER_PCR0[0]);
+        let report = crate::validate(&input).unwrap();
+        assert_eq!(report.check, CHECK_ATTESTATION_PENDING);
+        assert_eq!(report.pending_attestation_verifications.len(), 1);
+        let pending = &report.pending_attestation_verifications[0];
+        assert_eq!(pending.role, CustodyRole::Sudo);
+        assert_eq!(pending.multisig, input.bootstrap.sudo.address);
+        assert!(pending.path.starts_with("/bootstrap/sudo/signatories/"));
+        assert!(report
+            .independent_evidence_required
+            .iter()
+            .any(|line| line.contains("attest_verify") && line.contains("pcr0-ledger")));
+        // 3-of-3 with two attested: accepted, both pending.
+        sudo_with(&mut input, 3, 1, 2, TEST_BLESSED_SIGNER_PCR0[0]);
+        let report = crate::validate(&input).unwrap();
+        assert_eq!(report.check, CHECK_ATTESTATION_PENDING);
+        assert_eq!(report.pending_attestation_verifications.len(), 2);
+    }
+
+    #[test]
+    fn all_signature_documents_report_plain_conformance_and_unblessed_pcr0_is_refused() {
+        let mut input = fixture();
+        let report = crate::validate(&input).unwrap();
+        assert_eq!(report.check, CHECK_CONFORMANCE);
+        assert!(report.pending_attestation_verifications.is_empty());
+        assert!(!report
+            .independent_evidence_required
+            .iter()
+            .any(|line| line.contains("attest_verify")));
+        sudo_with(&mut input, 2, 2, 1, [0xcd; 48]);
+        let error = crate::validate(&input).unwrap_err();
+        assert_eq!(error.code, "custody_attestation_pcr0_not_blessed");
+        assert!(error
+            .path
+            .ends_with("/evidence/enclaveAttested/expectedPcr0"));
+    }
+
     #[test]
     fn custody_pop_message_matches_the_documented_byte_vector() {
         let message = custody_pop_message(
             Network::Testnet,
             "d9_testnet_fixture",
-            "admin/d9-amm",
+            CustodyRole::Admin(AdminPallet::D9Amm),
             &[0x11; 32],
             &[0x22; 32],
             &[0x33; 32],
@@ -238,15 +419,10 @@ mod tests {
         let hex: String = message.iter().map(|b| format!("{b:02x}")).collect();
         assert_eq!(message.len(), 200);
         assert_eq!(hex, expected);
-        let wrapped = custody_pop_payload(PopMessageForm::BytesWrapped, &message);
-        assert_eq!(&wrapped[..7], b"<Bytes>");
-        assert_eq!(&wrapped[7..207], message.as_slice());
-        assert_eq!(&wrapped[207..], b"</Bytes>");
-        assert_eq!(custody_pop_payload(PopMessageForm::Raw, &message), message);
         let digest = custody_pop_message_sha256(
             Network::Testnet,
             "d9_testnet_fixture",
-            "admin/d9-amm",
+            CustodyRole::Admin(AdminPallet::D9Amm),
             &[0x11; 32],
             &[0x22; 32],
             &[0x33; 32],

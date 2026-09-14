@@ -780,6 +780,7 @@ dependencies = [
 name = "d9-genesis-contract"
 version = "0.1.0-rc.7"
 dependencies = [
+ "curve25519-dalek",
  "frame-support",
  "schemars 0.8.22",
  "serde",

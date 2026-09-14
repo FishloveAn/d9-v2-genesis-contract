@@ -71,22 +71,12 @@ record!(CustodyCeremony {
 /// Signature scheme of a custody signatory's proof-of-possession.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "kebab-case")]
+// CHOICE: no ecdsa variant, so an unsupported scheme is unrepresentable and refused at
+// decode. An ecdsa AccountId32 is blake2_256 of the public key, so no public key exists
+// to verify a signature against.
 pub enum SignatureScheme {
     Sr25519,
     Ed25519,
-    /// Decodes only so validation can refuse it with `custody_pop_scheme`: an
-    /// ecdsa AccountId32 is blake2_256 of the public key, so no public key exists
-    /// to verify a signature against.
-    Ecdsa,
-}
-
-/// What the signature covers: the canonical message itself, or the polkadot-js
-/// `signRaw` wrapping `b"<Bytes>" ++ message ++ b"</Bytes>"`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
-#[serde(rename_all = "kebab-case")]
-pub enum PopMessageForm {
-    Raw,
-    BytesWrapped,
 }
 
 record!(ChainIdentity {
@@ -253,14 +243,77 @@ record!(Bootstrap {
     asset_ids: Vec<u32>,
 });
 record!(AdminRole {
-    pallet: String,
+    pallet: AdminPallet,
     multisig: MultisigAuthority,
 });
+
+// CHOICE: a closed enum instead of free slugs, so an unknown admin pallet is
+// unrepresentable (refused at decode) and the slug table exists once. Nothing pins
+// RC7 yet, so the wire change is free.
+macro_rules! admin_pallets {
+    ($($variant:ident => $slug:literal),* $(,)?) => {
+        /// The twelve admin-bearing D9 pallets, spelled as d9-v2-tools
+        /// `derive_admins::PALLET_ADMINS` and the genesis admin roles.
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, JsonSchema)]
+        pub enum AdminPallet { $(#[serde(rename = $slug)] $variant),* }
+        impl AdminPallet {
+            /// Every admin pallet, in slug order.
+            pub const ALL: [AdminPallet; 12] = [$(AdminPallet::$variant),*];
+            /// The wire slug, e.g. `"d9-amm"`.
+            pub fn slug(self) -> &'static str {
+                match self { $(AdminPallet::$variant => $slug),* }
+            }
+        }
+    };
+}
+admin_pallets! {
+    D9Amm => "d9-amm",
+    D9BurnMining => "d9-burn-mining",
+    D9CrossChain => "d9-cross-chain",
+    D9Governance => "d9-governance",
+    D9JudicialPenalty => "d9-judicial-penalty",
+    D9Merchant => "d9-merchant",
+    D9MiningPool => "d9-mining-pool",
+    D9NodeRegistry => "d9-node-registry",
+    D9NodeRewards => "d9-node-rewards",
+    D9Referrals => "d9-referrals",
+    D9UpgradeCoordinator => "d9-upgrade-coordinator",
+    D9Voting => "d9-voting",
+}
+
+/// A custody role, as bound into the proof-of-possession message.
+// CHOICE: typed role instead of a free label string, so a message can only be built
+// for a role that exists.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum CustodyRole {
+    Sudo,
+    UsdtOwner,
+    Admin(AdminPallet),
+}
+
+impl CustodyRole {
+    /// `"sudo"`, `"usdtOwner"` or `"admin/<pallet slug>"`.
+    pub fn label(self) -> String {
+        match self {
+            Self::Sudo => "sudo".to_owned(),
+            Self::UsdtOwner => "usdtOwner".to_owned(),
+            Self::Admin(pallet) => format!("admin/{}", pallet.slug()),
+        }
+    }
+}
+
+impl Serialize for CustodyRole {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(&self.label())
+    }
+}
 record!(
     /// DEC-21 k-of-n pallet_multisig authority. Validation requires
-    /// `address == multisig_account(signatories, threshold)` and a valid
-    /// proof-of-possession from every signatory; it does not prove the signatories
-    /// are the intended custodians, which remains ceremony evidence.
+    /// `address == multisig_account(signatories, threshold)`. Signature evidence is
+    /// verified here; enclave-attested evidence is checked here only for structure and
+    /// message binding, and its attestation is listed in the report's
+    /// `pendingAttestationVerifications` for the producer. Neither proves the
+    /// signatories are the intended custodians, which remains ceremony evidence.
     MultisigAuthority {
     address: Address,
     threshold: u16,
@@ -289,10 +342,12 @@ pub enum PossessionEvidence {
     EnclaveAttested(EnclaveAttestation),
 }
 
+// CHOICE: no message-form field. Decision D (yvan 2026-09-14 05:46 UTC) accepts raw
+// proofs only, so the signature always covers `custody_pop_message` itself and a
+// `message` field is an unknown field refused at decode.
 record!(SignatureEvidence {
     scheme: SignatureScheme,
-    message: PopMessageForm,
-    /// 64-byte signature, lowercase hex.
+    /// 64-byte signature over the raw `custody_pop_message`, lowercase hex.
     signature: SignatureHex,
 });
 

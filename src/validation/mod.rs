@@ -10,10 +10,12 @@ mod people;
 mod pop;
 mod source;
 
-pub use custody::{multisig_account, well_known_development_key, MULTISIG_MAX_SIGNATORIES};
+pub use custody::{
+    multisig_account, weak_public_key, well_known_development_key, MULTISIG_MAX_SIGNATORIES,
+};
 pub use pop::{
-    custody_pop_message, custody_pop_message_sha256, custody_pop_payload, CUSTODY_POP_DOMAIN,
-    MAX_ATTESTATION_DOCUMENT_BYTES,
+    custody_pop_message, custody_pop_message_sha256, PendingAttestationVerification,
+    BLESSED_SIGNER_PCR0, CUSTODY_POP_DOMAIN, MAX_ATTESTATION_DOCUMENT_BYTES,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -134,10 +136,21 @@ pub struct ContractReport {
     pub contract_version: &'static str,
     pub input_digest: Digest,
     pub contract_digest: Digest,
+    /// `input-contract-conformance`, or `CHECK_ATTESTATION_PENDING` when any custody
+    /// signatory's enclave attestation still needs producer verification.
     pub check: &'static str,
     pub release_gate_evaluated: bool,
     pub independent_evidence_required: Vec<&'static str>,
+    /// Enclave-attested signatories whose attestation documents this contract did not
+    /// verify; empty when every signatory proved possession with a verified signature.
+    pub pending_attestation_verifications: Vec<PendingAttestationVerification>,
 }
+
+/// `ContractReport::check` for a conforming input with no enclave-attested signatory.
+pub const CHECK_CONFORMANCE: &str = "input-contract-conformance";
+/// `ContractReport::check` when enclave attestations are pending producer verification.
+pub const CHECK_ATTESTATION_PENDING: &str =
+    "input-contract-conformance;attestation-verification-pending";
 
 /// Input conformance only. Does not authenticate V1/ABI, inspect raw storage,
 /// verify WASM, or acknowledge downstream review. Those remain release gates.
@@ -172,28 +185,39 @@ pub fn validate(input: &ContractInput) -> Result<ContractReport, Violation> {
         &input.state.counters,
         "/state/counters",
     )?;
+    let pending_attestation_verifications = pop::pending_attestations(input);
+    let mut independent_evidence_required = vec![
+        "D9-380 downstream reviews",
+        "D9-307 complete storage/field coverage and artifact provenance",
+        "D9-173 independent raw-spec/chain reconciliation",
+        "D9-370 final composition",
+        "D9-315 reproducible WASM",
+        "D9-380 ADR verified complete V1 resolution archive before cutover; delivery owner unassigned",
+        "D9-211 legacy settlement completion/refund or approved funded arrangement before irreversible cutover",
+        "D9-250 clean V2 processing boundary before bridge activation",
+        "D9-370/173 fresh zero/empty dispositions and opening reward watermark readback",
+        "D9-400 CUSTODY: producer projects sudo.key, every <pallet>.admin and the asset owners (asset 1 = usdtOwner, others = sudo) from these contract addresses",
+        "D9-400 CUSTODY ceremony: each signatory key belongs to its intended custodian (identity and custody records, raw proofs signed with an offline tool that displays the decoded message). The contract itself verifies signature proof-of-possession and refuses the all-zero sr25519 identity, every ed25519 small-order encoding and every ed25519 key that is not a canonical torsion-free point; it cannot tell whose key a valid proof comes from",
+        "D9-400 ASSET_SET: producer proves assets.assets and assets.metadata ID sets each equal bootstrap.assetIds",
+        "D9-400 NETWORK: producer proves chain-spec id/name/chainType and manifest network equal chain, with no bootNodes and null telemetryEndpoints",
+    ];
+    if !pending_attestation_verifications.is_empty() {
+        independent_evidence_required.push(
+            "D9-400 CUSTODY: enclave-attested custody signatories (listed in pendingAttestationVerifications): the producer verifies the attestation document with d9-enclave-common attest_verify (COSE signature, certificate chain to the pinned AWS Nitro root validated at the document's own timestamp, PCR0 == expectedPcr0, user_data == popMessageSha256), and expectedPcr0 equals the blessed signer measurement recorded in the PCR0 ledger (d9-v2-docs pcr0-ledger)",
+        );
+    }
     Ok(ContractReport {
         contract_version: CONTRACT_VERSION,
         input_digest: input_digest(input),
         contract_digest: contract_digest(),
-        check: "input-contract-conformance",
+        check: if pending_attestation_verifications.is_empty() {
+            CHECK_CONFORMANCE
+        } else {
+            CHECK_ATTESTATION_PENDING
+        },
         release_gate_evaluated: false,
-        independent_evidence_required: vec![
-            "D9-380 downstream reviews",
-            "D9-307 complete storage/field coverage and artifact provenance",
-            "D9-173 independent raw-spec/chain reconciliation",
-            "D9-370 final composition",
-            "D9-315 reproducible WASM",
-            "D9-380 ADR verified complete V1 resolution archive before cutover; delivery owner unassigned",
-            "D9-211 legacy settlement completion/refund or approved funded arrangement before irreversible cutover",
-            "D9-250 clean V2 processing boundary before bridge activation",
-            "D9-370/173 fresh zero/empty dispositions and opening reward watermark readback",
-            "D9-400 CUSTODY: producer projects sudo.key, every <pallet>.admin and the asset owners (asset 1 = usdtOwner, others = sudo) from these contract addresses",
-            "D9-400 CUSTODY ceremony: each declared signatory key demonstrated controllable by its custodian (proof-of-possession), which also excludes keyless accounts (pure proxies, derivatives, external multisigs)",
-            "D9-400 CUSTODY: enclave-attested custody signatories: the producer verifies the attestation document with d9-enclave-common attest_verify (COSE signature, certificate chain to the pinned AWS Nitro root validated at the document's own timestamp, PCR0 == expectedPcr0, user_data == popMessageSha256), and expectedPcr0 equals the blessed signer measurement recorded in the PCR0 ledger (d9-v2-docs pcr0-ledger)",
-            "D9-400 ASSET_SET: producer proves assets.assets and assets.metadata ID sets each equal bootstrap.assetIds",
-            "D9-400 NETWORK: producer proves chain-spec id/name/chainType and manifest network equal chain, with no bootNodes and null telemetryEndpoints",
-        ],
+        independent_evidence_required,
+        pending_attestation_verifications,
     })
 }
 

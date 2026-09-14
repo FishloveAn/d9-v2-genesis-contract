@@ -1,5 +1,6 @@
 use super::custody::{
-    bytes, hex32, not_development, not_pallet_account, not_session_key, session_key_slots,
+    bytes, hex32, not_development, not_ed25519_prime_order, not_pallet_account, not_session_key,
+    not_weak, session_key_slots,
 };
 use super::*;
 use sp_runtime::traits::AccountIdConversion;
@@ -61,6 +62,7 @@ pub(super) fn check(i: &ContractInput) -> Check {
     for (index, v) in b.validators.iter().enumerate() {
         let account = bytes(&v.account);
         let account_path = format!("/bootstrap/validators/{index}/account");
+        not_weak(&account, account_path.clone())?;
         not_development(&account, account_path.clone())?;
         not_pallet_account(&account, b, account_path)?;
         for (role, key) in session_key_slots(v) {
@@ -81,6 +83,10 @@ pub(super) fn check(i: &ContractInput) -> Check {
                 error.related_path = Some(first);
                 return Err(error);
             }
+            not_weak(&key, path.clone())?;
+            if role == "grandpa" {
+                not_ed25519_prime_order(&key, path.clone())?;
+            }
             not_development(&key, path)?;
         }
     }
@@ -91,23 +97,9 @@ pub(super) fn check(i: &ContractInput) -> Check {
             format!("/bootstrap/validators/{index}/account"),
         )?;
     }
-    keyed(&b.admins, |r| r.pallet.clone(), "/bootstrap/admins")?;
-    let required = [
-        "d9-amm",
-        "d9-burn-mining",
-        "d9-cross-chain",
-        "d9-governance",
-        "d9-judicial-penalty",
-        "d9-merchant",
-        "d9-mining-pool",
-        "d9-node-registry",
-        "d9-node-rewards",
-        "d9-referrals",
-        "d9-upgrade-coordinator",
-        "d9-voting",
-    ];
-    let actual: BTreeSet<_> = b.admins.iter().map(|r| r.pallet.as_str()).collect();
-    if actual != required.into_iter().collect() {
+    keyed(&b.admins, |r| r.pallet, "/bootstrap/admins")?;
+    let actual: BTreeSet<AdminPallet> = b.admins.iter().map(|r| r.pallet).collect();
+    if actual != AdminPallet::ALL.into_iter().collect() {
         return Err(fail(
             "admin_coverage",
             "/bootstrap/admins",

@@ -1009,6 +1009,89 @@ pub fn well_known_development_key(key: &[u8; 32]) -> Option<String> {
         .map(|(scheme, uri, _)| format!("{scheme} {uri}"))
 }
 
+// VERIFIED: forgeable ("weak") public keys (round-3 review/audit CR3-01 = CS3-1).
+// Each verifies a constant, message-independent signature under the verifiers sp-core
+// 43.0.0 and sp-io use, so anyone can sign for such an account. The unit test
+// `weak_keys_are_universally_forgeable_without_the_check` proves each forgery with
+// `sp_core::Pair::verify` and that all 14 ed25519 encodings found by the review are
+// covered.
+// - sr25519: only `[0; 32]`, the Ristretto identity. schnorrkel 0.11.5 decodes public
+//   keys via `RistrettoBoth::from_compressed` (`src/points.rs:75-77`, reached from
+//   `PublicKey::from_bytes`, `src/keys.rs:646-697`), i.e. curve25519-dalek 4.1.3
+//   `CompressedRistretto::decompress` (`src/ristretto.rs:255-266`), which refuses
+//   non-canonical and negative encodings. Ristretto has prime order, so the identity
+//   is the only small-order point and `[0; 32]` its only encoding.
+// - ed25519: every encoding that curve25519-dalek 4.1.3 `CompressedEdwardsY::decompress`
+//   accepts (`src/edwards.rs:194-203`; `FieldElement::from_bytes` reduces y mod p, so
+//   non-canonical y and sign bits decode, as ZIP215 requires) and whose point
+//   `is_small_order` (`src/edwards.rs:1227-1229`, [8]P == identity): the 8
+//   `EIGHT_TORSION` points and their non-canonical encodings.
+// CHOICE: refused in every account position whatever its declared scheme, because an
+// AccountId32 can be signed for with either curve through MultiSignature.
+const ALL_ZERO: [u8; 32] = [0; 32];
+
+/// Names why `key` is universally forgeable, if it is: the all-zero sr25519 Ristretto
+/// identity, or any encoding of an ed25519 small-order point.
+pub fn weak_public_key(key: &[u8; 32]) -> Option<&'static str> {
+    use curve25519_dalek::edwards::CompressedEdwardsY;
+    if *key == ALL_ZERO {
+        return Some("all-zero: the sr25519 Ristretto identity and an ed25519 order-4 point");
+    }
+    CompressedEdwardsY(*key)
+        .decompress()
+        .filter(|point| point.is_small_order())
+        .map(|_| "an ed25519 small-order point")
+}
+
+/// Refuses forgeable keys regardless of scheme or position: custody signatories and
+/// role addresses, validator accounts and session keys.
+pub(super) fn not_weak(key: &[u8; 32], path: String) -> Check {
+    match weak_public_key(key) {
+        Some(name) => Err(fail(
+            "custody_pop_weak_key",
+            path,
+            format!("forgeable public key ({name}): anyone can produce a valid signature for it"),
+        )),
+        None => Ok(()),
+    }
+}
+
+/// Decision A (yvan 2026-09-14 05:46 UTC): an ed25519 key must be a canonical encoding
+/// of a non-identity point in the prime-order subgroup. A torsioned key `A + T` verifies
+/// signatures made with `A`'s secret under ZIP215 while being a different AccountId32,
+/// so one secret could stand as several signatories or bypass sudo independence.
+// VERIFIED: curve25519-dalek 4.1.3 `CompressedEdwardsY::decompress`
+// (`src/edwards.rs:194-203`), `EdwardsPoint::compress` (`:566`),
+// `is_torsion_free` = [ℓ]P == identity (`:1257-1259`), `IsIdentity`
+// (`src/traits.rs:35-47`).
+// CHOICE: a precise sibling code `ed25519_key_not_prime_order` rather than
+// `custody_pop_weak_key`: a torsioned or non-canonical key is not universally
+// forgeable, it lets its holder claim extra identities.
+pub(super) fn not_ed25519_prime_order(key: &[u8; 32], path: String) -> Check {
+    use curve25519_dalek::edwards::CompressedEdwardsY;
+    use curve25519_dalek::traits::IsIdentity;
+    let refuse = |why: &str| {
+        Err(fail(
+            "ed25519_key_not_prime_order",
+            path.clone(),
+            format!("ed25519 key {why}; it must be a canonical, torsion-free, non-identity point"),
+        ))
+    };
+    let Some(point) = CompressedEdwardsY(*key).decompress() else {
+        return refuse("is not a curve point");
+    };
+    if point.compress().to_bytes() != *key {
+        return refuse("is a non-canonical encoding");
+    }
+    if !point.is_torsion_free() {
+        return refuse("has a torsion component");
+    }
+    if point.is_identity() {
+        return refuse("is the identity");
+    }
+    Ok(())
+}
+
 pub(super) fn bytes(address: &Address) -> [u8; 32] {
     *address.account_id().as_ref()
 }
@@ -1149,6 +1232,16 @@ fn multisig(authority: &MultisigAuthority, path: &str, reserved: &Reserved) -> C
                 "signatories must be unique and strictly ascending by AccountId32 bytes",
             ));
         }
+        // CR3-01: before any identity or signature check, so a forgeable key never
+        // reaches verification.
+        not_weak(&key, signatory_path.clone())?;
+        if let PossessionEvidence::Signature(SignatureEvidence {
+            scheme: SignatureScheme::Ed25519,
+            ..
+        }) = &signatory.evidence
+        {
+            not_ed25519_prime_order(&key, signatory_path.clone())?;
+        }
         if key == address {
             return Err(fail(
                 "multisig_self_signatory",
@@ -1176,6 +1269,7 @@ fn multisig(authority: &MultisigAuthority, path: &str, reserved: &Reserved) -> C
         previous = Some(key);
     }
     let address_path = format!("{path}/address");
+    not_weak(&address, address_path.clone())?;
     not_development(&address, address_path.clone())?;
     reserved.identity(&address, address_path.clone())?;
     let signatories: Vec<[u8; 32]> = authority
@@ -1193,30 +1287,30 @@ fn multisig(authority: &MultisigAuthority, path: &str, reserved: &Reserved) -> C
     Ok(())
 }
 
-/// One custody role: JSON path, PoP role label and the authority.
-struct Role<'a> {
-    path: String,
-    label: String,
-    authority: &'a MultisigAuthority,
+/// One custody role: JSON path, PoP role and the authority.
+pub(super) struct Role<'a> {
+    pub(super) path: String,
+    pub(super) role: CustodyRole,
+    pub(super) authority: &'a MultisigAuthority,
 }
 
-fn roles(b: &Bootstrap) -> Vec<Role<'_>> {
+pub(super) fn roles(b: &Bootstrap) -> Vec<Role<'_>> {
     let mut roles = vec![
         Role {
             path: "/bootstrap/sudo".to_owned(),
-            label: "sudo".to_owned(),
+            role: CustodyRole::Sudo,
             authority: &b.sudo,
         },
         Role {
             path: "/bootstrap/usdtOwner".to_owned(),
-            label: "usdtOwner".to_owned(),
+            role: CustodyRole::UsdtOwner,
             authority: &b.usdt_owner,
         },
     ];
     for (index, admin) in b.admins.iter().enumerate() {
         roles.push(Role {
             path: format!("/bootstrap/admins/{index}/multisig"),
-            label: format!("admin/{}", admin.pallet),
+            role: CustodyRole::Admin(admin.pallet),
             authority: &admin.multisig,
         });
     }
@@ -1280,9 +1374,9 @@ pub(super) fn check(i: &ContractInput) -> Check {
             return Err(error);
         }
     }
-    rehome_destinations(i, &roles, &reserved)?;
+    rehome_accounts(i, &roles)?;
     for role in &roles {
-        pop::check(i, role.authority, &role.path, &role.label)?;
+        pop::check(i, role.authority, &role.path, role.role)?;
     }
     Ok(())
 }
@@ -1293,55 +1387,96 @@ pub(super) fn check(i: &ContractInput) -> Check {
 /// destination requires a new contract RC. topUps, reserveRefunds and rewardCredits
 /// are exact-derived from source rows elsewhere, so rehome `to` is the only
 /// free-form value destination.
-fn rehome_destinations(i: &ContractInput, roles: &[Role<'_>], reserved: &Reserved) -> Check {
+///
+/// CS3-5: a rehome may not drain a custody account, a validator identity or the
+/// mining pool/AMM themselves.
+// CHOICE: one code per direction. Destinations always report
+// `rehome_destination_not_allowed` (CR3-04) with the matched identity kind in the
+// message and its path in `related_path`; sources report the separate
+// `rehome_source_not_allowed`, because the pool and AMM are valid destinations but
+// never valid sources.
+fn rehome_accounts(i: &ContractInput, roles: &[Role<'_>]) -> Check {
     let b = &i.bootstrap;
     // Both accounts are already required to equal their runtime PalletId derivation
     // in composition.rs, so comparing against them does not retype the derivation.
     let pool = bytes(&b.mining_pool_account);
     let amm = bytes(&b.amm_account);
-    let mut custody = BTreeMap::new();
+    let mut identities: BTreeMap<[u8; 32], (&'static str, String)> = BTreeMap::new();
+    let mut note = |key: [u8; 32], kind: &'static str, path: String| {
+        identities.entry(key).or_insert((kind, path));
+    };
     for role in roles {
-        custody
-            .entry(bytes(&role.authority.address))
-            .or_insert_with(|| format!("{}/address", role.path));
+        note(
+            bytes(&role.authority.address),
+            "custody multisig",
+            format!("{}/address", role.path),
+        );
         for (index, signatory) in role.authority.signatories.iter().enumerate() {
-            custody
-                .entry(bytes(&signatory.address))
-                .or_insert_with(|| format!("{}/signatories/{index}", role.path));
+            note(
+                bytes(&signatory.address),
+                "custody signatory",
+                format!("{}/signatories/{index}/address", role.path),
+            );
         }
     }
+    for (index, v) in b.validators.iter().enumerate() {
+        note(
+            bytes(&v.account),
+            "validator account",
+            format!("/bootstrap/validators/{index}/account"),
+        );
+    }
+    for (key, slot) in session_keys(b) {
+        note(key, "validator session key", slot);
+    }
+    note(
+        pool,
+        "mining pool account",
+        "/bootstrap/miningPoolAccount".to_owned(),
+    );
+    note(amm, "AMM account", "/bootstrap/ammAccount".to_owned());
+
     let destination = |to: &Address, path: String, allowed: &[[u8; 32]], names: &str| -> Check {
         let key = bytes(to);
-        not_development(&key, path.clone())?;
-        // The PalletId identity check is not applied: both allowed destinations are
-        // PalletId accounts. Validator, session-key and custody identities are.
-        if reserved.validators.contains(&key) {
-            return Err(fail(
-                "authority_validator_account",
-                path,
-                "a validator account cannot receive a rehome",
-            ));
-        }
-        not_session_key(&key, &reserved.session_keys, path.clone())?;
-        if let Some(custody_path) = custody.get(&key) {
+        let refuse = |kind: String, related: Option<String>| {
             let mut error = fail(
                 "rehome_destination_not_allowed",
-                path,
-                format!("rehome destination is a custody account; only {names} is allowed"),
+                path.clone(),
+                format!("rehome destination is {kind}; it must be {names}, and any other destination requires a new contract RC"),
             );
-            error.related_path = Some(custody_path.clone());
-            return Err(error);
+            error.related_path = related;
+            Err(error)
+        };
+        if let Some(name) = well_known_development_key(&key) {
+            return refuse(format!("a development key ({name})"), None);
         }
-        if !allowed.contains(&key) {
-            return Err(fail(
-                "rehome_destination_not_allowed",
+        if let Some(name) = weak_public_key(&key) {
+            return refuse(format!("a forgeable key ({name})"), None);
+        }
+        // Identities are noted custody, validators, session keys, then pool and AMM, so a
+        // pool/AMM key that is also any other identity reports that identity.
+        let pallet_target = |kind: &str| kind == "mining pool account" || kind == "AMM account";
+        match identities.get(&key) {
+            Some((kind, _)) if pallet_target(kind) && allowed.contains(&key) => Ok(()),
+            Some((kind, related)) => refuse(format!("a {kind}"), Some(related.clone())),
+            None if allowed.contains(&key) => Ok(()),
+            None => refuse("another account".to_owned(), None),
+        }
+    };
+    let source = |from: &Address, path: String| -> Check {
+        if let Some((kind, related)) = identities.get(&bytes(from)) {
+            let mut error = fail(
+                "rehome_source_not_allowed",
                 path,
-                format!("rehome destination must be {names}; any other destination requires a new contract RC"),
-            ));
+                format!("a rehome cannot move funds out of a {kind}"),
+            );
+            error.related_path = Some(related.clone());
+            return Err(error);
         }
         Ok(())
     };
     for (index, row) in i.changes.rehomes.iter().enumerate() {
+        source(&row.from, format!("/changes/rehomes/{index}/from"))?;
         destination(
             &row.to,
             format!("/changes/rehomes/{index}/to"),
@@ -1350,6 +1485,7 @@ fn rehome_destinations(i: &ContractInput, roles: &[Role<'_>], reserved: &Reserve
         )?;
     }
     for (index, row) in i.changes.asset_rehomes.iter().enumerate() {
+        source(&row.from, format!("/changes/assetRehomes/{index}/from"))?;
         destination(
             &row.to,
             format!("/changes/assetRehomes/{index}/to"),
@@ -1417,6 +1553,74 @@ mod tests {
             multisig_account(&[hex(ALICE), hex(BOB), hex(CHARLIE)], 3),
             abc
         );
+    }
+
+    /// The 14 ed25519 small-order encodings reported by the round-3 review/audit
+    /// (curve25519-dalek 4.1.3 `EIGHT_TORSION`, compressed, plus the 6 low-order
+    /// non-canonical encodings in ed25519-zebra 4.2.0 `tests/small_order.rs:21-24`).
+    const REVIEWED_ED25519_SMALL_ORDER: [&str; 14] = [
+        "0100000000000000000000000000000000000000000000000000000000000000",
+        "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a",
+        "0000000000000000000000000000000000000000000000000000000000000080",
+        "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05",
+        "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+        "26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85",
+        "0000000000000000000000000000000000000000000000000000000000000000",
+        "c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa",
+        "0100000000000000000000000000000000000000000000000000000000000080",
+        "ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+        "edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f",
+        "eeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    ];
+
+    #[test]
+    fn weak_keys_are_universally_forgeable_without_the_check() {
+        use curve25519_dalek::constants::EIGHT_TORSION;
+        let messages: [&[u8]; 2] = [b"any message", b"a different custody PoP message"];
+        // sr25519 identity: R = compressed Ristretto basepoint, s = 1 (marker bit set).
+        let mut sr_forgery = [0u8; 64];
+        sr_forgery[..32].copy_from_slice(&hex32(
+            "e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76",
+        ));
+        sr_forgery[32] = 1;
+        sr_forgery[63] |= 0x80;
+        for message in messages {
+            assert!(sr25519::Pair::verify(
+                &sr25519::Signature::from_raw(sr_forgery),
+                message,
+                &sr25519::Public::from_raw(ALL_ZERO),
+            ));
+        }
+        assert!(weak_public_key(&ALL_ZERO).is_some());
+        // ed25519 small-order keys: R = identity, s = 0 verifies for any message.
+        let mut ed_forgery = [0u8; 64];
+        ed_forgery[0] = 1;
+        for encoding in REVIEWED_ED25519_SMALL_ORDER {
+            let key = hex32(encoding);
+            for message in messages {
+                assert!(
+                    ed25519::Pair::verify(
+                        &ed25519::Signature::from_raw(ed_forgery),
+                        message,
+                        &ed25519::Public::from_raw(key),
+                    ),
+                    "forgery does not verify for {encoding}"
+                );
+            }
+            assert!(weak_public_key(&key).is_some(), "{encoding} not refused");
+        }
+        for point in EIGHT_TORSION {
+            assert!(weak_public_key(&point.compress().to_bytes()).is_some());
+        }
+        // Real keys are not weak.
+        for _ in 0..8 {
+            assert!(weak_public_key(&sr25519::Pair::generate().0.public().0).is_none());
+            let ed = ed25519::Pair::generate().0.public().0;
+            assert!(weak_public_key(&ed).is_none());
+            assert!(not_ed25519_prime_order(&ed, String::new()).is_ok());
+        }
     }
 
     #[test]

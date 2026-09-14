@@ -9,13 +9,13 @@ address to its signatories in the contract (CS-1 = A), required multisig custody
 every purpose and ladder rung, and made sudo distinct from other roles (CS-4). S-6 (chain identity not bound to purpose) and R-4
 (extra asset IDs pass) are included.
 
-Contract digest: `4e63a8b64aaed3a3cae794d1d19d338f797c677b804b9dcdb1ec144b2293e358`. Input digest: `44eedf0375efe21f538d86b2ad1368262fc40a64da794c22e0e0bc34c1ee1daa`.
-Rejection corpus: 179 cases. Exact SHA-256 pins:
-- complete fixture: `2b257c31240fc3f5a42e6fa3b6ab2c2b40397d0e60585b632c12cd8c90726834`
-- expected: `01237c74f62d4b5b0d4c59592048334aa405ca1aa1ca793185411bb7620ea406`
-- cases: `81283369aec1089a7e17b17cd6a777b9aaa82b6efa9f5542bac3e8c144e42175`
-- rules: `a9825507587b4c0dcaad9a9a52872b401b40c75a4a0ec9f437ab8d868dd10be9`
-- schema: `b014afba23b601aac024f90b3579fa6f2e0fec055541d7943f28288beb67b7d3`
+Contract digest: `e85bd779e974845c510cad1f0428c6d257a8ea154e22addcfe451dfc2800ac97`. Input digest: `5c8133b8c7ca6296a54074e7dd623ed44f27769f2d0b77f5d2df7af52451f0fd`.
+Rejection corpus: 195 cases. Exact SHA-256 pins:
+- complete fixture: `a19f7533ad56d690d08f74dfcca1711dbd7c7cda9938cd8497f3fe7010e7936b`
+- expected: `6562ce42d4b02ab4921e7d3a8cf6e87d414112af3e9090047056a3170d28cec0`
+- cases: `866b139fda35e0c29f9be5e053eadd0f1fbdaf215f1b3b160e44440cb33f67de`
+- rules: `5f9d7609e2c516eda7efb4ace97f8aa176c8c6f8c0368e615e16b8840cb2c2d7`
+- schema: `f03390dccf1039c842d6ea87cfaa018067c11b9c5c49ff72f5bf80ca8fdfaf70`
 - inventory: `20f1bfd0323ecd4c8209fc7ea029bea8e8dc4273721a48a63df46ba46f47da9a`
 
 Review points:
@@ -93,7 +93,8 @@ Revision 4, Yvan's rulings of 2026-09-14 04:34 UTC:
   subsumes quorum containment (CS2-3). Admin-side overlap remains allowed.
 - Ruling 4: every custody signatory carries a proof-of-possession over the canonical
   `custody_pop_message` bound to network, chain id, role, multisig, signatory and
-  `custody.ceremonyNonce` (`custody_pop_invalid`, `custody_pop_scheme` for ecdsa).
+  `custody.ceremonyNonce` (`custody_pop_invalid`; the revision-4 `custody_pop_scheme`
+  code for ecdsa was removed in revision 5).
   All 42 fixture signatories were regenerated from OS randomness by
   `examples/custody_pop_fixture.rs`; seeds were never written, and the generator's
   scan with a positive canary control found none.
@@ -104,6 +105,30 @@ Revision 4, Yvan's rulings of 2026-09-14 04:34 UTC:
   attestation; `independentEvidenceRequired` names the producer's `attest_verify`
   and the PCR0 ledger. Negative cases use a synthetic document labelled
   `synthetic-not-a-real-attestation`; no real attestation is claimed.
+
+Revision 5, round-3 review/audit of `537855b..b26f6f1` and Yvan's 05:46 UTC decisions:
+- CR3-01 = CS3-1 (Critical): forgeable public keys (the all-zero sr25519 identity and every
+  ed25519 small-order encoding) verified constant signatures and passed PoP. They are now
+  refused before verification in every account position (`custody_pop_weak_key`); a unit
+  test proves each forgery against `sp_core::Pair::verify` and covers all 14 reviewed
+  ed25519 encodings.
+- Decision A: `curve25519-dalek` 4.1.3 is a direct dependency (no new lock package); every
+  ed25519 signatory and grandpa key must be a canonical, torsion-free, non-identity point
+  (`ed25519_key_not_prime_order`), which refuses torsion twins, one-seed quorums and the
+  independence bypass.
+- Decision B: at most threshold - 1 enclave-attested signatories per role
+  (`custody_attested_quorum`).
+- Decision C: `BLESSED_SIGNER_PCR0` is empty; every enclave-attested signatory is refused
+  (`custody_attestation_pcr0_not_blessed`) until a measurement is blessed by a new RC.
+- Decision D: raw proofs only; the `message` form field and `custody_pop_payload` are gone.
+- CR3-02: `CustodyRole` and the closed `AdminPallet` set replace role strings and slug tables.
+- CR3-03 / CS3-3.3: `ContractReport.pendingAttestationVerifications`; `check` becomes
+  `input-contract-conformance;attestation-verification-pending` when non-empty.
+- `SignatureScheme::Ecdsa` removed; unknown schemes are decode errors.
+- CR3-04: all rehome destination refusals use `rehome_destination_not_allowed` with the
+  identity kind; cases assert `relatedPath`. CS3-5: `rehome_source_not_allowed`.
+- Fixture custody keys, grandpa keys and torsion-twin cases were regenerated from OS
+  randomness; the generator's seed scan found none.
 
 No downstream acknowledgement exists for RC7. Tools, node and the pallets adapter
 must repin and adopt the new fields before integrated enforcement is claimed.

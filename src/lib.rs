@@ -23,8 +23,9 @@ pub use inventory::{inventory, validate_inventory, Item as InventoryItem};
 pub use model::*;
 pub use scalar::*;
 pub use validation::{
-    custody_pop_message, custody_pop_message_sha256, custody_pop_payload, multisig_account,
-    validate, well_known_development_key, ContractReport, Violation, CUSTODY_POP_DOMAIN,
+    custody_pop_message, custody_pop_message_sha256, multisig_account, validate, weak_public_key,
+    well_known_development_key, ContractReport, PendingAttestationVerification, Violation,
+    BLESSED_SIGNER_PCR0, CHECK_ATTESTATION_PENDING, CHECK_CONFORMANCE, CUSTODY_POP_DOMAIN,
     MAX_ATTESTATION_DOCUMENT_BYTES, MULTISIG_MAX_SIGNATORIES,
 };
 

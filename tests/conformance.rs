@@ -4,6 +4,9 @@ use serde_json::{json, Value};
 use sp_core::crypto::{Ss58AddressFormat, Ss58Codec};
 use std::collections::BTreeSet;
 
+#[path = "support/torsion.rs"]
+mod torsion;
+
 fn input_value() -> Value {
     serde_json::from_str(include_str!("../fixtures/complete.json")).unwrap()
 }
@@ -35,6 +38,9 @@ struct Expected {
     phase: Phase,
     code: String,
     path_prefix: String,
+    /// Asserted exactly when a case declares it.
+    #[serde(default)]
+    related_path: Option<String>,
 }
 #[derive(Deserialize, Clone, Copy, PartialEq, Eq, Debug)]
 #[serde(rename_all = "lowercase")]
@@ -135,6 +141,9 @@ fn shared_negative_cases_refuse_at_the_declared_boundary() {
                 case.id,
                 error
             );
+            if let Some(related) = &case.expected.related_path {
+                assert_eq!(error.related_path.as_ref(), Some(related), "{}", case.id);
+            }
         }
     }
 }
@@ -297,8 +306,14 @@ fn migration_input_conformance_is_not_archive_settlement_or_release_approval() {
     let mut input = input();
     input.purpose = Purpose::MigrationInput;
     let report = validate(&input).unwrap();
-    assert_eq!(report.check, "input-contract-conformance");
+    assert_eq!(report.check, CHECK_CONFORMANCE);
+    assert!(report.pending_attestation_verifications.is_empty());
     assert!(!report.release_gate_evaluated);
+    // No enclave-attested signatory, so no attestation obligation is listed.
+    assert!(!report
+        .independent_evidence_required
+        .iter()
+        .any(|line| line.contains("attest_verify")));
     for required in [
         "resolution archive",
         "legacy settlement",
@@ -306,8 +321,7 @@ fn migration_input_conformance_is_not_archive_settlement_or_release_approval() {
         "watermark readback",
         "proof-of-possession",
         "projects sudo.key",
-        "excludes keyless accounts",
-        "attest_verify",
+        "not a canonical torsion-free point",
         "assets.metadata ID sets",
         "no bootNodes",
     ] {
@@ -397,7 +411,11 @@ fn rc7_rejection_codes_in_source_each_have_a_shared_case() {
         "sudo_signatory_not_independent",
         "rehome_destination_not_allowed",
         "custody_pop_invalid",
-        "custody_pop_scheme",
+        "custody_pop_weak_key",
+        "rehome_source_not_allowed",
+        "ed25519_key_not_prime_order",
+        "custody_attested_quorum",
+        "custody_attestation_pcr0_not_blessed",
         "custody_pop_attestation_malformed",
         "custody_pop_attestation_binding",
         "multisig_address_not_derived",
@@ -440,18 +458,48 @@ fn nonce(input: &ContractInput) -> [u8; 32] {
     std::array::from_fn(|i| u8::from_str_radix(&hex[2 * i..2 * i + 2], 16).unwrap())
 }
 
+/// A test custodian key: sr25519 or ed25519, in memory only.
+#[derive(Clone)]
+enum TestKey {
+    Sr(Box<sp_core::sr25519::Pair>),
+    Ed(Box<sp_core::ed25519::Pair>),
+}
+
+impl TestKey {
+    fn public(&self) -> [u8; 32] {
+        use sp_core::Pair;
+        match self {
+            TestKey::Sr(pair) => pair.public().0,
+            TestKey::Ed(pair) => pair.public().0,
+        }
+    }
+}
+
 /// A PoP-valid `threshold`-of-n multisig for `role` under `input`'s chain and nonce.
 fn issue(
     input: &ContractInput,
-    role: &str,
+    role: CustodyRole,
     threshold: u16,
     keys: &[sp_core::sr25519::Pair],
-    form: PopMessageForm,
+) -> MultisigAuthority {
+    let keys: Vec<TestKey> = keys
+        .iter()
+        .cloned()
+        .map(|key| TestKey::Sr(Box::new(key)))
+        .collect();
+    issue_keys(input, role, threshold, &keys)
+}
+
+fn issue_keys(
+    input: &ContractInput,
+    role: CustodyRole,
+    threshold: u16,
+    keys: &[TestKey],
 ) -> MultisigAuthority {
     use sp_core::Pair;
-    let mut keys: Vec<&sp_core::sr25519::Pair> = keys.iter().collect();
-    keys.sort_by_key(|key| key.public().0);
-    let publics: Vec<[u8; 32]> = keys.iter().map(|key| key.public().0).collect();
+    let mut keys: Vec<&TestKey> = keys.iter().collect();
+    keys.sort_by_key(|key| key.public());
+    let publics: Vec<[u8; 32]> = keys.iter().map(|key| key.public()).collect();
     let address = multisig_account(&publics, threshold);
     let signatories = keys
         .iter()
@@ -461,22 +509,18 @@ fn issue(
                 &input.chain.id,
                 role,
                 &address,
-                &key.public().0,
+                &key.public(),
                 &nonce(input),
             );
-            let signature = key.sign(&custody_pop_payload(form, &message)).0;
+            let (scheme, signature) = match key {
+                TestKey::Sr(pair) => (SignatureScheme::Sr25519, pair.sign(&message).0),
+                TestKey::Ed(pair) => (SignatureScheme::Ed25519, pair.sign(&message).0),
+            };
             Signatory {
-                address: Address::from_account_id(key.public().0.into()),
+                address: Address::from_account_id(key.public().into()),
                 evidence: PossessionEvidence::Signature(SignatureEvidence {
-                    scheme: SignatureScheme::Sr25519,
-                    message: form,
-                    signature: SignatureHex::try_from(
-                        signature
-                            .iter()
-                            .map(|b| format!("{b:02x}"))
-                            .collect::<String>(),
-                    )
-                    .unwrap(),
+                    scheme,
+                    signature: SignatureHex::try_from(hex(&signature)).unwrap(),
                 }),
             }
         })
@@ -488,14 +532,17 @@ fn issue(
     }
 }
 
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
 /// Replace every custody authority with fresh 2-of-3 keys valid for `input` as it is.
 fn reissue_custody(input: &mut ContractInput) {
-    input.bootstrap.sudo = issue(input, "sudo", 2, &fresh_keys(3), PopMessageForm::Raw);
-    input.bootstrap.usdt_owner = issue(input, "usdtOwner", 2, &fresh_keys(3), PopMessageForm::Raw);
+    input.bootstrap.sudo = issue(input, CustodyRole::Sudo, 2, &fresh_keys(3));
+    input.bootstrap.usdt_owner = issue(input, CustodyRole::UsdtOwner, 2, &fresh_keys(3));
     for index in 0..input.bootstrap.admins.len() {
-        let role = format!("admin/{}", input.bootstrap.admins[index].pallet);
-        input.bootstrap.admins[index].multisig =
-            issue(input, &role, 2, &fresh_keys(3), PopMessageForm::Raw);
+        let role = CustodyRole::Admin(input.bootstrap.admins[index].pallet);
+        input.bootstrap.admins[index].multisig = issue(input, role, 2, &fresh_keys(3));
     }
 }
 
@@ -503,19 +550,18 @@ fn reissue_custody(input: &mut ContractInput) {
 fn multisig_bounds_are_inclusive() {
     // threshold == n is valid (n-of-n).
     let mut input = input();
-    input.bootstrap.sudo = issue(&input, "sudo", 3, &fresh_keys(3), PopMessageForm::Raw);
+    input.bootstrap.sudo = issue(&input, CustodyRole::Sudo, 3, &fresh_keys(3));
     validate(&input).unwrap();
     // Exactly MULTISIG_MAX_SIGNATORIES is valid; one more is refused.
     let keys = fresh_keys(MULTISIG_MAX_SIGNATORIES + 1);
     input.bootstrap.sudo = issue(
         &input,
-        "sudo",
+        CustodyRole::Sudo,
         2,
         &keys[..MULTISIG_MAX_SIGNATORIES],
-        PopMessageForm::Raw,
     );
     validate(&input).unwrap();
-    input.bootstrap.sudo = issue(&input, "sudo", 2, &keys, PopMessageForm::Raw);
+    input.bootstrap.sudo = issue(&input, CustodyRole::Sudo, 2, &keys);
     assert_eq!(
         validate(&input).unwrap_err().code,
         "multisig_signatory_limit"
@@ -554,9 +600,8 @@ fn admins_may_share_one_multisig_and_usdt_owner_may_equal_an_admin() {
     let mut input = input();
     let keys = fresh_keys(3);
     for index in 0..input.bootstrap.admins.len() {
-        let role = format!("admin/{}", input.bootstrap.admins[index].pallet);
-        input.bootstrap.admins[index].multisig =
-            issue(&input, &role, 2, &keys, PopMessageForm::Raw);
+        let role = CustodyRole::Admin(input.bootstrap.admins[index].pallet);
+        input.bootstrap.admins[index].multisig = issue(&input, role, 2, &keys);
     }
     let shared = &input.bootstrap.admins[0].multisig.address;
     assert!(input
@@ -565,7 +610,7 @@ fn admins_may_share_one_multisig_and_usdt_owner_may_equal_an_admin() {
         .iter()
         .all(|role| &role.multisig.address == shared));
     validate(&input).unwrap();
-    input.bootstrap.usdt_owner = issue(&input, "usdtOwner", 2, &keys, PopMessageForm::Raw);
+    input.bootstrap.usdt_owner = issue(&input, CustodyRole::UsdtOwner, 2, &keys);
     validate(&input).unwrap();
     // The same multisig needs a proof per role: admin 0's proofs do not cover admin 1.
     input.bootstrap.admins[1].multisig = input.bootstrap.admins[0].multisig.clone();
@@ -582,10 +627,10 @@ fn sudo_signatories_must_be_disjoint_from_usdt_owner_and_every_admin() {
     let others = fresh_keys(4);
     let mut input = input();
     let sudo_keys = [shared.clone(), others[0].clone(), others[1].clone()];
-    input.bootstrap.sudo = issue(&input, "sudo", 2, &sudo_keys, PopMessageForm::Raw);
+    input.bootstrap.sudo = issue(&input, CustodyRole::Sudo, 2, &sudo_keys);
     validate(&input).unwrap();
     let admin_keys = [shared, others[2].clone(), others[3].clone()];
-    input.bootstrap.usdt_owner = issue(&input, "usdtOwner", 2, &admin_keys, PopMessageForm::Raw);
+    input.bootstrap.usdt_owner = issue(&input, CustodyRole::UsdtOwner, 2, &admin_keys);
     let error = validate(&input).unwrap_err();
     assert_eq!(error.code, "sudo_signatory_not_independent");
     assert!(error.path.starts_with("/bootstrap/sudo/signatories/"));
@@ -595,13 +640,12 @@ fn sudo_signatories_must_be_disjoint_from_usdt_owner_and_every_admin() {
         .unwrap()
         .starts_with("/bootstrap/usdtOwner/signatories/"));
     let mut input = self::input();
-    input.bootstrap.sudo = issue(&input, "sudo", 2, &sudo_keys, PopMessageForm::Raw);
+    input.bootstrap.sudo = issue(&input, CustodyRole::Sudo, 2, &sudo_keys);
     input.bootstrap.admins[3].multisig = issue(
         &input,
-        "admin/d9-governance",
+        CustodyRole::Admin(AdminPallet::D9Governance),
         2,
         &admin_keys,
-        PopMessageForm::Raw,
     );
     let error = validate(&input).unwrap_err();
     assert_eq!(error.code, "sudo_signatory_not_independent");
@@ -624,39 +668,42 @@ fn a_signatory_may_sit_in_several_admin_side_multisigs() {
     let usdt = with_shared(fresh_keys(2));
     let admin0 = with_shared(fresh_keys(2));
     let admin5 = with_shared(fresh_keys(2));
-    input.bootstrap.usdt_owner = issue(&input, "usdtOwner", 2, &usdt, PopMessageForm::Raw);
+    input.bootstrap.usdt_owner = issue(&input, CustodyRole::UsdtOwner, 2, &usdt);
     input.bootstrap.admins[0].multisig =
-        issue(&input, "admin/d9-amm", 2, &admin0, PopMessageForm::Raw);
-    input.bootstrap.admins[5].multisig =
-        issue(&input, "admin/d9-merchant", 2, &admin5, PopMessageForm::Raw);
+        issue(&input, CustodyRole::Admin(AdminPallet::D9Amm), 2, &admin0);
+    input.bootstrap.admins[5].multisig = issue(
+        &input,
+        CustodyRole::Admin(AdminPallet::D9Merchant),
+        2,
+        &admin5,
+    );
     validate(&input).unwrap();
 }
 
 #[test]
-fn proofs_are_accepted_in_raw_and_bytes_wrapped_form_for_both_schemes() {
+fn raw_proofs_are_accepted_for_both_schemes() {
     let input = input();
-    let mut forms = BTreeSet::new();
+    let mut schemes = BTreeSet::new();
     for authority in std::iter::once(&input.bootstrap.sudo)
         .chain(std::iter::once(&input.bootstrap.usdt_owner))
         .chain(input.bootstrap.admins.iter().map(|role| &role.multisig))
     {
         for signatory in &authority.signatories {
             if let PossessionEvidence::Signature(evidence) = &signatory.evidence {
-                forms.insert(format!("{:?}/{:?}", evidence.scheme, evidence.message));
+                schemes.insert(format!("{:?}", evidence.scheme));
             }
         }
     }
-    for form in ["Sr25519/Raw", "Sr25519/BytesWrapped", "Ed25519/Raw"] {
-        assert!(forms.contains(form), "fixture lacks {form}");
-    }
+    assert!(schemes.contains("Sr25519") && schemes.contains("Ed25519"));
+    // Fresh ed25519 and sr25519 custodians with raw proofs validate.
+    use sp_core::Pair;
     let mut input = input;
-    input.bootstrap.sudo = issue(
-        &input,
-        "sudo",
-        2,
-        &fresh_keys(3),
-        PopMessageForm::BytesWrapped,
-    );
+    let keys = vec![
+        TestKey::Ed(Box::new(sp_core::ed25519::Pair::generate().0)),
+        TestKey::Ed(Box::new(sp_core::ed25519::Pair::generate().0)),
+        TestKey::Sr(Box::new(sp_core::sr25519::Pair::generate().0)),
+    ];
+    input.bootstrap.sudo = issue_keys(&input, CustodyRole::Sudo, 2, &keys);
     validate(&input).unwrap();
 }
 
@@ -786,7 +833,7 @@ fn synthetic_enclave_sudo_signatory(input: &ContractInput, index: usize) -> Sign
     let digest = custody_pop_message_sha256(
         input.chain.network,
         &input.chain.id,
-        "sudo",
+        CustodyRole::Sudo,
         &account(&authority.address),
         &account(&signatory.address),
         &nonce(input),
@@ -809,15 +856,15 @@ fn synthetic_enclave_sudo_signatory(input: &ContractInput, index: usize) -> Sign
 }
 
 #[test]
-fn synthetic_enclave_attestation_passes_only_the_contract_side_checks() {
+fn synthetic_enclave_attestation_is_refused_until_a_signer_pcr0_is_blessed() {
     let mut input = input();
     input.bootstrap.sudo.signatories[0] = synthetic_enclave_sudo_signatory(&input, 0);
-    let report = validate(&input).unwrap();
-    assert!(!report.release_gate_evaluated);
-    assert!(report
-        .independent_evidence_required
-        .iter()
-        .any(|line| line.contains("attest_verify") && line.contains("pcr0-ledger")));
+    // With the production blessed set empty, a structurally valid, correctly bound
+    // attestation is still refused; the accept path is unit-tested with a test-only
+    // measurement (`pop::tests`).
+    assert!(BLESSED_SIGNER_PCR0.is_empty());
+    let error = validate(&input).unwrap_err();
+    assert_eq!(error.code, "custody_attestation_pcr0_not_blessed");
     // The binding covers role, chain and nonce like a signature does.
     let mut moved = input.clone();
     moved.custody.ceremony_nonce = CeremonyNonce::try_from("44".repeat(32)).unwrap();
@@ -839,12 +886,205 @@ fn synthetic_enclave_attestation_passes_only_the_contract_side_checks() {
             unreachable!()
         };
         evidence.attestation_document = "A".repeat(decoded / 3 * 4);
-        match validate(&sized) {
-            Ok(_) => assert!(accepted, "{decoded} bytes accepted"),
-            Err(error) => {
-                assert!(!accepted, "{decoded} bytes refused: {error:?}");
-                assert_eq!(error.code, "custody_pop_attestation_malformed");
-            }
+        let code = validate(&sized).unwrap_err().code;
+        if accepted {
+            // Within the bound the document reaches the blessed-set check.
+            assert_eq!(
+                code, "custody_attestation_pcr0_not_blessed",
+                "{decoded} bytes"
+            );
+        } else {
+            assert_eq!(code, "custody_pop_attestation_malformed", "{decoded} bytes");
         }
+    }
+}
+
+/// CR3-01: each forgeable key signs any message with a constant signature under
+/// sp-core's verifiers; the contract must refuse it before verification.
+#[test]
+fn forgeable_signatory_keys_are_refused_before_verification() {
+    use sp_core::Pair;
+    let mut sr_forgery = [0u8; 64];
+    let basepoint = "e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76";
+    for (i, byte) in sr_forgery[..32].iter_mut().enumerate() {
+        *byte = u8::from_str_radix(&basepoint[2 * i..2 * i + 2], 16).unwrap();
+    }
+    sr_forgery[32] = 1;
+    sr_forgery[63] |= 0x80;
+    let mut ed_forgery = [0u8; 64];
+    ed_forgery[0] = 1;
+    let mut identity = [0u8; 32];
+    identity[0] = 1;
+    let original = input();
+    for (key, scheme, forgery) in [
+        ([0u8; 32], SignatureScheme::Sr25519, sr_forgery),
+        (identity, SignatureScheme::Ed25519, ed_forgery),
+        (
+            curve25519_dalek::constants::EIGHT_TORSION[1]
+                .compress()
+                .to_bytes(),
+            SignatureScheme::Ed25519,
+            ed_forgery,
+        ),
+    ] {
+        let mut input = original.clone();
+        let multisig = input.bootstrap.sudo.address.clone();
+        let message = custody_pop_message(
+            input.chain.network,
+            &input.chain.id,
+            CustodyRole::Sudo,
+            &account(&multisig),
+            &key,
+            &nonce(&input),
+        );
+        let verifies = match scheme {
+            SignatureScheme::Sr25519 => sp_core::sr25519::Pair::verify(
+                &sp_core::sr25519::Signature::from_raw(forgery),
+                &message,
+                &sp_core::sr25519::Public::from_raw(key),
+            ),
+            SignatureScheme::Ed25519 => sp_core::ed25519::Pair::verify(
+                &sp_core::ed25519::Signature::from_raw(forgery),
+                &message,
+                &sp_core::ed25519::Public::from_raw(key),
+            ),
+        };
+        assert!(verifies, "the forgery works without the check");
+        let signatories = &mut input.bootstrap.sudo.signatories;
+        signatories[2] = Signatory {
+            address: Address::from_account_id(key.into()),
+            evidence: PossessionEvidence::Signature(SignatureEvidence {
+                scheme,
+                signature: SignatureHex::try_from(hex(&forgery)).unwrap(),
+            }),
+        };
+        signatories.sort_by_key(|signatory| account(&signatory.address));
+        let error = validate(&input).unwrap_err();
+        assert_eq!(error.code, "custody_pop_weak_key");
+        assert!(error.path.starts_with("/bootstrap/sudo/signatories/"));
+    }
+}
+
+/// Decision A: a torsion twin `A + T` verifies signatures made with `A`'s secret, so it
+/// is refused as a signatory, as a second key of the same secret, and as a way around
+/// sudo independence. Twins come from a fresh in-memory key and are never written.
+#[test]
+fn ed25519_torsion_twins_are_refused_although_their_signatures_verify() {
+    use sp_core::Pair;
+    let (pair, seed) = sp_core::ed25519::Pair::generate();
+    let real = pair.public().0;
+    let twins: Vec<[u8; 32]> = (1..8).map(|index| torsion::twin(&real, index)).collect();
+    let input = input();
+    // Sign for a twin-bearing sudo: sr keys sign normally, twins sign with the twin signer.
+    let sudo_from = |input: &ContractInput, sr: &[sp_core::sr25519::Pair], ed: &[[u8; 32]]| {
+        let mut keys: Vec<[u8; 32]> = sr.iter().map(|key| key.public().0).collect();
+        keys.extend_from_slice(ed);
+        keys.sort();
+        let address = multisig_account(&keys, 2);
+        let signatories = keys
+            .iter()
+            .map(|key| {
+                let message = custody_pop_message(
+                    input.chain.network,
+                    &input.chain.id,
+                    CustodyRole::Sudo,
+                    &address,
+                    key,
+                    &nonce(input),
+                );
+                let (scheme, signature) = match sr.iter().find(|pair| pair.public().0 == *key) {
+                    Some(pair) => (SignatureScheme::Sr25519, pair.sign(&message).0),
+                    None => {
+                        let signature = if *key == real {
+                            pair.sign(&message).0
+                        } else {
+                            torsion::sign_as(&seed, key, &message)
+                        };
+                        assert!(
+                            sp_core::ed25519::Pair::verify(
+                                &sp_core::ed25519::Signature::from_raw(signature),
+                                &message,
+                                &sp_core::ed25519::Public::from_raw(*key),
+                            ),
+                            "twin signature must verify under sp-core ed25519"
+                        );
+                        (SignatureScheme::Ed25519, signature)
+                    }
+                };
+                Signatory {
+                    address: Address::from_account_id((*key).into()),
+                    evidence: PossessionEvidence::Signature(SignatureEvidence {
+                        scheme,
+                        signature: SignatureHex::try_from(hex(&signature)).unwrap(),
+                    }),
+                }
+            })
+            .collect();
+        MultisigAuthority {
+            address: Address::from_account_id(address.into()),
+            threshold: 2,
+            signatories,
+        }
+    };
+    // Every twin verifies but is refused as a signatory.
+    for twin in &twins {
+        let mut changed = input.clone();
+        changed.bootstrap.sudo = sudo_from(&changed, &fresh_keys(2), &[*twin]);
+        let error = validate(&changed).unwrap_err();
+        assert_eq!(error.code, "ed25519_key_not_prime_order", "{error:?}");
+    }
+    // The real key itself is accepted.
+    let mut accepted = input.clone();
+    accepted.bootstrap.sudo = sudo_from(&accepted, &fresh_keys(2), &[real]);
+    validate(&accepted).unwrap();
+    // One secret as a 2-of-3: {A, A + T1, A + T2}.
+    let mut one_secret = input.clone();
+    one_secret.bootstrap.sudo = sudo_from(&one_secret, &[], &[real, twins[0], twins[1]]);
+    assert_eq!(
+        validate(&one_secret).unwrap_err().code,
+        "ed25519_key_not_prime_order"
+    );
+    // Independence bypass: the admin side holds A, sudo holds A + T3.
+    let mut bypass = accepted.clone();
+    let admin_keys = vec![
+        TestKey::Ed(Box::new(pair)),
+        TestKey::Sr(Box::new(fresh_keys(1).remove(0))),
+        TestKey::Sr(Box::new(fresh_keys(1).remove(0))),
+    ];
+    bypass.bootstrap.sudo = sudo_from(&bypass, &fresh_keys(2), &[twins[2]]);
+    bypass.bootstrap.admins[3].multisig = issue_keys(
+        &bypass,
+        CustodyRole::Admin(AdminPallet::D9Governance),
+        2,
+        &admin_keys,
+    );
+    assert_eq!(
+        validate(&bypass).unwrap_err().code,
+        "ed25519_key_not_prime_order"
+    );
+}
+
+#[test]
+fn rehome_sources_cannot_be_custody_validator_or_pallet_accounts() {
+    let original = input();
+    for (from, related) in [
+        (
+            original.bootstrap.sudo.address.clone(),
+            "/bootstrap/sudo/address",
+        ),
+        (
+            original.bootstrap.validators[0].account.clone(),
+            "/bootstrap/validators/0/account",
+        ),
+        (
+            original.bootstrap.mining_pool_account.clone(),
+            "/bootstrap/miningPoolAccount",
+        ),
+    ] {
+        let mut input = original.clone();
+        input.changes.rehomes[1].from = from;
+        let error = validate(&input).unwrap_err();
+        assert_eq!(error.code, "rehome_source_not_allowed");
+        assert_eq!(error.related_path.as_deref(), Some(related));
     }
 }

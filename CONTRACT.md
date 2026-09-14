@@ -245,11 +245,11 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 |---|---|---|
 | bootstrap.sudo | MultisigAuthority | 见下 |
 | bootstrap.usdtOwner | MultisigAuthority | asset 1 的 owner；与 d9-v2-tools derive_admins 的 usdt-owner 角色对应 |
-| bootstrap.admins[] | {pallet, multisig: MultisigAuthority} | 12 个 pallet 恰好各一次（admin_coverage 不变） |
-| MultisigAuthority | {address, threshold: u16, signatories: Signatory[]} | 2 ≤ threshold ≤ n ≤ 20；signatories 按 AccountId32 字节严格升序（不重复）；任何 signatory 不得等于自身 address 或其他角色 address；address 与 signatories 均不得是开发密钥、PalletId 账户（ammAccount、miningPoolAccount 或任何以 b"modl" 开头的账户）或 validator 账户；address 必须等于 multisig_account(signatories, threshold)；每个 signatory 须有有效 PoP（9.6） |
+| bootstrap.admins[] | {pallet: AdminPallet, multisig: MultisigAuthority} | pallet 为 12 个固定 slug 之一（未知 slug 解码时拒绝）；12 个 pallet 恰好各一次（admin_coverage） |
+| MultisigAuthority | {address, threshold: u16, signatories: Signatory[]} | 2 ≤ threshold ≤ n ≤ 20；signatories 按 AccountId32 字节严格升序（不重复）；address 必须等于 multisig_account(signatories, threshold)；身份检查见下表；每个 signatory 须有 PoP（9.6） |
 | Signatory | {address, evidence} | address 即 sr25519/ed25519 公钥；evidence 为恰好一个键的外部标记枚举 |
-| evidence.signature | {scheme: "sr25519"\|"ed25519", message: "raw"\|"bytes-wrapped", signature: 64 字节小写 hex} | 未知 scheme/message 或长度错误在解码时拒绝；"ecdsa" 可解码但在验证时拒绝 |
-| evidence.enclaveAttested | {attestationDocument: COSE_Sign1 字节的标准 base64（带填充），expectedPcr0: 96 位小写 hex（48 字节 SHA-384），popMessageSha256: 64 位小写 hex} | hex 长度在解码时检查；文档非空、规范 base64、解码后 ≤ 16 KiB，PCR0 非全零，popMessageSha256 == SHA-256(custody_pop_message)；本契约不验证文档本身 |
+| evidence.signature | {scheme: "sr25519"\|"ed25519", signature: 64 字节小写 hex} | 只接受 raw proof；未知 scheme（包括 ecdsa）、`message` 字段或长度错误在解码时拒绝 |
+| evidence.enclaveAttested | {attestationDocument: COSE_Sign1 字节的标准 base64（带填充），expectedPcr0: 96 位小写 hex（48 字节 SHA-384），popMessageSha256: 64 位小写 hex} | hex 长度在解码时检查；文档非空、规范 base64、解码后 ≤ 16 KiB，PCR0 非全零，popMessageSha256 == SHA-256(custody_pop_message)，expectedPcr0 ∈ BLESSED_SIGNER_PCR0；本契约不验证文档本身 |
 
 | 拒绝代码 | 条件 |
 |---|---|
@@ -257,6 +257,8 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 | multisig_signatory_limit | n > 20（runtime MaxSignatories） |
 | multisig_threshold_exceeds_signatories | threshold > n |
 | multisig_signatory_order | signatories 未按字节严格升序或重复 |
+| custody_pop_weak_key | 任一 signatory、multisig address、validators[].account 或 session key 是可被任何人伪造签名的公钥：全零（sr25519 Ristretto 单位元，也是 ed25519 order-4 点），或任何 ed25519 small-order 点的编码（含非规范编码）；在签名验证之前检查，与 scheme 无关 |
+| ed25519_key_not_prime_order | scheme 为 ed25519 的 signatory 或 grandpa session key 不是曲线点、不是规范编码、带 torsion 分量或为单位元（torsion twin `A + T` 用 `A` 的私钥即可签名，会让一个私钥冒充多个 signatory） |
 | multisig_self_signatory | signatory 等于其 multisig address |
 | dev_key_authority | multisig address/signatory、validators[].account 或任一 session key（babe、grandpa、imOnline、discovery、liveness）等于开发密钥。以下每个 URI 均含 sr25519 与 ed25519 公钥及 ecdsa 账户 blake2_256(压缩公钥)，共 183 个：sp-keyring 48.0.0 的 //Alice、//Bob、//Charlie、//Dave、//Eve、//Ferdie 及各自 //stash、//One、//Two，sp-core DEV_PHRASE 根密钥；d9 自身提交的 authority SURI：//LocalValidator1..6（d9-v2-node e13a19d `runtime/src/genesis_config_presets.rs` 的 LOCAL_DEV_*_PUBS 与 `local-keys/README.md`）、//Mainnet0..5//{stash,babe,imon,audi,live,grandpa}、//OCWTest//{Babe,Grandpa,Liveness,Discovery} |
 | multisig_nested_signatory | signatory 等于本文档中另一个角色的 multisig address |
@@ -267,11 +269,13 @@ RC3 保留 RC2 的 X1 schema，更新版本、规则、inventory 和 fixture/bin
 | multisig_address_not_derived | address 不等于 multisig_account(signatories, threshold) |
 | authority_role_not_distinct | sudo.address 等于 usdtOwner.address 或任一 admins[].multisig.address |
 | sudo_signatory_not_independent | sudo 的任一 signatory 同时是 usdtOwner 或任一 admin 的 signatory（related_path 指向该 admin 侧 signatory） |
-| custody_pop_scheme | signatory scheme 为 ecdsa：ecdsa AccountId32 是公钥的 blake2_256，没有可验证的公钥 |
-| custody_pop_invalid | 签名未能以该 signatory 公钥验证 9.6 的消息（任何 network、chain.id、role、multisig address、signatory 或 nonce 变化都会使其失效） |
+| rehome_source_not_allowed | changes.rehomes[].from 或 changes.assetRehomes[].from 是 custody address/signatory、validator 账户、session key、miningPoolAccount 或 ammAccount（related_path 指向该身份，见 9.7） |
+| rehome_destination_not_allowed | rehome 目标是开发密钥、可伪造公钥、custody address/signatory、validator 账户或 session key，或 D9 目标不是 miningPoolAccount/ammAccount、资产目标不是 ammAccount（消息写明身份类型，匹配到文档内身份时 related_path 指向它，见 9.7） |
+| custody_attested_quorum | 某角色中 enclaveAttested signatory 数量 ≥ threshold（最多 threshold − 1 个） |
+| custody_pop_invalid | 签名未能以该 signatory 公钥验证 9.6 的 raw 消息（任何 network、chain.id、role、multisig address、signatory 或 nonce 变化都会使其失效） |
 | custody_pop_attestation_malformed | enclaveAttested 的文档为空、非规范 base64、解码后超过 16 KiB，或 expectedPcr0 全为零 |
 | custody_pop_attestation_binding | popMessageSha256 不等于该 signatory、role 与仪式的 SHA-256(custody_pop_message) |
-| rehome_destination_not_allowed | changes.rehomes[].to 不是 miningPoolAccount 或 ammAccount，或 changes.assetRehomes[].to 不是 ammAccount，或目标是 custody address/signatory（见 9.7） |
+| custody_attestation_pcr0_not_blessed | expectedPcr0 不在 `BLESSED_SIGNER_PCR0` 中；该集合目前为空，因此所有 enclaveAttested signatory 都被拒绝 |
 
 契约绑定地址（Yvan 2026-09-14 裁定 CS-1 = A）：公开函数
 `multisig_account(signatories, threshold)` 计算 pallet_multisig `multi_account_id` 的规则
@@ -285,7 +289,7 @@ address 等于该推导。这是有意保留的第二份实现：d9-v2-tools `d9
 sudo.address（node MainnetAssetOwners）。
 
 multisig 托管适用于所有 purpose 与阶梯的每一级（Keel、Χ、Genie、Ψ、Ω）；没有单钥演练例外
-（Yvan 2026-09-14）。开发密钥拒绝同样对所有 purpose 生效，合成 fixture 也不例外。
+（Yvan 2026-09-14）。开发密钥与可伪造公钥的拒绝同样对所有 purpose 生效，合成 fixture 也不例外。
 
 角色区分（CS-4，Yvan 2026-09-14）：sudo.address 必须不同于 usdtOwner.address 和每个
 admins[].multisig.address。允许：12 个 pallet admin 共用一个 multisig；usdtOwner 等于某个
@@ -293,16 +297,34 @@ admin multisig。
 
 sudo 与 admin 完全独立（Yvan 2026-09-14 04:34 UTC，取代 03:33 允许 sudo/admin 共享 signatory 的裁定）：
 sudo.signatories 与 usdtOwner 及每个 admin 的 signatories 不得相交（usdtOwner 视为 admin 侧）。
-同一 signatory 仍可出现在多个 admin 侧 multisig 中。该不相交条件已涵盖 quorum containment（CS2-3）：
-admin 侧任何密钥集合都触及不到 sudo quorum 的任一部分，因此不再单独实现该谓词。
+同一 signatory 仍可出现在多个 admin 侧 multisig 中。该不相交条件已涵盖 quorum containment（CS2-3）。
+由于 ed25519 torsion twin 已被拒绝，不能用同一私钥的另一 AccountId32 绕过这一条件。
 
-每个 signatory 必须提交 proof-of-possession（Yvan 2026-09-14 04:34 UTC，见 9.6），这排除无私钥账户
-（pure proxy、派生账户、本文档之外的 multisig、PalletId、错误地址），并把仪式绑定到本链。PoP 证明
-私钥存在且被持有，不证明持有人就是预定的保管人；后者仍是仪式证据。由 enclave 持有的 custody
-signatory（sudo-signer enclave 是 DEC-21 sudo 参与者，以后也可能有 admin-signer）使用 enclaveAttested
-证据（Yvan 2026-09-14 04:57 UTC，任何角色都可使用）：signer 的专用 attest 模式从 KMS 解密 seed、推导公钥，
-请求 NSM attestation document，其 `user_data = SHA-256(custody_pop_message(...))`，然后清零并退出；
-enclave 不产生签名，其 extrinsic allowlist 不变。本契约只检查结构与消息绑定，不声称验证 attestation；enclave 证明的 custody signatory：producer 用 d9-enclave-common `attest_verify` 验证 attestation document（COSE 签名、以文档自身时间戳校验到固定 AWS Nitro root 的证书链、PCR0 == expectedPcr0、user_data == popMessageSha256），且 expectedPcr0 等于 PCR0 ledger（d9-v2-docs `pcr0-ledger`）中记录的受认可 signer 度量值，这一项列在 independentEvidenceRequired 中。COSE/X.509 栈不进入本 crate。
+公钥安全（CR3-01 与决定 A，Yvan 2026-09-14 05:46 UTC）：签名验证之前，本契约拒绝全零 sr25519 公钥
+（schnorrkel 0.11.5 经 curve25519-dalek 4.1.3 `CompressedRistretto::decompress` 规范解码，单位元只有这一种编码），
+拒绝任何 ed25519 small-order 点编码（curve25519-dalek 4.1.3 `CompressedEdwardsY::decompress` 接受非规范
+y 与符号位，`is_small_order`），并要求 scheme 为 ed25519 的 key 是规范编码、torsion-free、非单位元的点
+（`compress`、`is_torsion_free`）。本契约显式拒绝的公钥只有：全零 sr25519 公钥、任何 ed25519 small-order
+编码，以及 scheme 为 ed25519 的非规范、带 torsion 或单位元的 key。其他无私钥账户（pure proxy、派生账户、
+本文档之外的 multisig）之所以无法通过，只是因为无人能为其产生有效签名；PoP 证明私钥存在且被持有，不证明
+持有人就是预定的保管人，后者仍是仪式证据。
+
+由 enclave 持有的 custody signatory（sudo-signer enclave 是 DEC-21 sudo 参与者，以后也可能有 admin-signer）
+使用 enclaveAttested 证据（Yvan 2026-09-14 04:57 UTC，任何角色都可使用）：signer 的专用 attest 模式从 KMS
+解密 seed、推导公钥，请求 NSM attestation document，其 `user_data = SHA-256(custody_pop_message(...))`，
+然后清零并退出；enclave 不产生签名，其 extrinsic allowlist 不变。决定 B：每个角色的 enclaveAttested
+signatory 最多 threshold − 1 个，因此至少需要一个经本契约验证的签名。决定 C：`expectedPcr0` 必须属于
+`BLESSED_SIGNER_PCR0`；该集合只由新的契约 RC 在测量值记入 `d9-v2-docs` `docs/operations/pcr0-ledger`
+之后加入，在 mainnet sudo-signer attest-mode EIF（CUS-221）构建并认可之前为空，因此 enclave 证明的 custody
+目前无法通过。本契约只检查结构、消息绑定与 PCR0 集合，不声称验证 attestation；通过验证的 enclaveAttested
+signatory 会出现在报告的 `pendingAttestationVerifications` 中，`check` 变为
+`input-contract-conformance;attestation-verification-pending`，并附加 independentEvidenceRequired：producer 用
+d9-enclave-common `attest_verify` 验证 attestation document（COSE 签名、以文档自身时间戳校验到固定 AWS Nitro
+root 的证书链、PCR0 == expectedPcr0、user_data == popMessageSha256），且 expectedPcr0 等于 PCR0 ledger 中记录的
+受认可 signer 度量值。COSE/X.509 栈不进入本 crate。
+
+仪式要求（决定 D）：保管人用离线、专用的工具对 raw 规范消息签名，签名前工具必须显示解码后的各字段；
+不接受浏览器或 dApp `signRaw` 产生的 proof。
 
 ### 9.2 链身份与 purpose 绑定（NETWORK）
 
@@ -337,38 +359,44 @@ metadata decimals 等于 state 账本。
 版本不符，而不是 `chain` 未知字段等类型错误。无法读取版本（非法 JSON、缺失、非字符串、
 重复字段）时仍交由严格解码拒绝。validate 对已构造的输入继续检查版本。
 
-### 9.5 producer 独立证据
+### 9.5 报告与 producer 独立证据
 
-报告的 independentEvidenceRequired 新增五项：producer 从这些契约地址投影 sudo.key、每个 `<pallet>.admin`
-与资产 owner；每个声明的 signatory 密钥由其保管人证明可控（proof-of-possession，同时排除 pure proxy、
-派生账户与外部 multisig 等无私钥账户）；enclave 证明的 custody signatory：producer 用 d9-enclave-common `attest_verify` 验证 attestation document（COSE 签名、以文档自身时间戳校验到固定 AWS Nitro root 的证书链、PCR0 == expectedPcr0、user_data == popMessageSha256），且 expectedPcr0 等于 PCR0 ledger（d9-v2-docs `pcr0-ledger`）中记录的受认可 signer 度量值；assets.assets 与 assets.metadata 的 ID
-集合等于 assetIds；chain spec id/name/chainType 与 manifest network 等于 chain，
-且无 bootNodes、telemetryEndpoints 为 null。输入检查通过不代表这些已被证明。
+`ContractReport` 新增 `pendingAttestationVerifications`：每个 enclaveAttested signatory 一项
+（path、role、multisig、signatory、expectedPcr0、popMessageSha256）。列表为空时 `check` 为
+`input-contract-conformance`；非空时为 `input-contract-conformance;attestation-verification-pending`，
+并且只有此时才附加 attestation 验证义务。
+
+independentEvidenceRequired 的 D9-400 项：producer 从这些契约地址投影 sudo.key、每个 `<pallet>.admin` 与资产
+owner；每个 signatory 密钥属于其预定保管人（身份与保管记录；本契约已验证签名 PoP 并拒绝可伪造与非
+prime-order 公钥，但无法判断有效 proof 来自谁）；assets.assets 与 assets.metadata 的 ID 集合等于 assetIds；
+chain spec id/name/chainType 与 manifest network 等于 chain，且无 bootNodes、telemetryEndpoints 为 null；
+存在 enclaveAttested signatory 时还需上述 attestation 验证。输入检查通过不代表这些已被证明。
 
 ### 9.6 Custody proof-of-possession（PoP）
 
-验证顺序：结构、开发密钥、保留身份、地址推导、角色区分、sudo 独立性、rehome 目标之后，才验证 PoP，
-因此既有拒绝代码不变。唯一的消息构造函数是公开的
-`custody_pop_message(network, chain_id, role, multisig_address, signatory, nonce) -> Vec<u8>`：
+验证顺序：结构、可伪造公钥、ed25519 prime-order、开发密钥、保留身份、地址推导、角色区分、sudo 独立性、
+rehome 账户之后，才检查 enclave 证明数量上限并逐个验证 PoP，因此既有拒绝代码不变。唯一的消息构造函数是公开的
+`custody_pop_message(network, chain_id, role: CustodyRole, multisig_address, signatory, nonce) -> Vec<u8>`，
+role 为 `CustodyRole::{Sudo, UsdtOwner, Admin(AdminPallet)}`，其 `label()` 写入消息：
 
 ```text
 message = b"D9-V2-CUSTODY-POP/1"                    (19 字节，无长度前缀)
        || field(network label)   "mainnet" | "testnet"
        || field(chain.id)        UTF-8
-       || field(role)            "sudo" | "usdtOwner" | "admin/<pallet>"
+       || field(role label)      "sudo" | "usdtOwner" | "admin/<pallet>"
        || field(multisig address) 32 字节 AccountId32
        || field(signatory)       32 字节 AccountId32（sr25519/ed25519 公钥）
        || field(ceremonyNonce)   32 字节
 field(x) = u64 big-endian len(x) || x              （与 dataset_digest 相同的长度编码）
 ```
 
-签名覆盖的字节由 `custody_pop_payload(form, message)` 给出：`raw` 为 message 本身；`bytes-wrapped`
-为 polkadot-js `signRaw` 的包装 `b"<Bytes>" || message || b"</Bytes>"`，便于浏览器与硬件钱包签名。
+签名直接覆盖 message 本身（决定 D：只接受 raw proof，没有 `<Bytes>` 包装形式）。
 sr25519 用 sp-core 43.0.0 `sr25519::Pair::verify`（signing context `b"substrate"`，`src/sr25519.rs:49,265-269`）；
 ed25519 用 `ed25519::Pair::verify`（`src/ed25519.rs:118-124`）。
 
 字节级示例（单元测试 `custody_pop_message_matches_the_documented_byte_vector` 锁定）：network=testnet，
-chain.id=`d9_testnet_fixture`，role=`admin/d9-amm`，multisig=`11`×32，signatory=`22`×32，nonce=`33`×32，共 200 字节：
+chain.id=`d9_testnet_fixture`，role=`CustodyRole::Admin(AdminPallet::D9Amm)`（`admin/d9-amm`），
+multisig=`11`×32，signatory=`22`×32，nonce=`33`×32，共 200 字节：
 
 ```text
 44392d56322d435553544f44592d504f502f31                                   "D9-V2-CUSTODY-POP/1"
@@ -380,25 +408,26 @@ chain.id=`d9_testnet_fixture`，role=`admin/d9-amm`，multisig=`11`×32，signat
 0000000000000020 3333333333333333333333333333333333333333333333333333333333333333
 ```
 
-`bytes-wrapped` 形式在其前加 `3c42797465733e`（`<Bytes>`），其后加 `3c2f42797465733e`（`</Bytes>`），共 215 字节。
-
 `enclaveAttested` 证据的 `user_data` 规则：`user_data` 必须恰好是 32 字节
 `custody_pop_message_sha256(network, chain.id, role, multisig address, signatory, ceremonyNonce)`，
-即上述 message 的 SHA-256（不含 `<Bytes>` 包装），并与 `popMessageSha256` 相等。示例消息的 SHA-256 为
+即上述 message 的 SHA-256，并与 `popMessageSha256` 相等。示例消息的 SHA-256 为
 `f1e23b3ad4e34e4fdb7d135f4f088a2301dae85465a3aeea27edcb9b2ccf9281`（同一单元测试锁定）。complete fixture
 全部使用签名证据；attestation 负例使用标为 `synthetic-not-a-real-attestation` 的合成文档，只覆盖本契约侧
-检查，不是真实 Nitro attestation，producer 的 `attest_verify` 会拒绝它。
+检查，不是真实 Nitro attestation。接受路径只在单元测试中用测试专用的 PCR0 值演示。
 
-合成 fixture 的 42 个 signatory 由提交的 `examples/custody_pop_fixture.rs` 以 OS 随机数新生成
-（每个角色 2-of-3：sr25519 raw、sr25519 bytes-wrapped、ed25519 raw），在内存中签名后只写出公钥、
-地址、签名与 nonce；seed 从不写入或打印，运行结束前扫描给定目录确认 seed 不存在。
+合成 fixture 的 42 个 signatory、两个 grandpa key 以及 torsion-twin 负例由提交的
+`examples/custody_pop_fixture.rs` 以 OS 随机数新生成（每个角色 2-of-3：两个 sr25519、一个 ed25519，全部 raw），
+在内存中签名后只写出公钥、地址、签名与 nonce；seed 从不写入或打印，运行结束前扫描给定目录确认 seed 不存在。
+torsion twin 的签名由 `tests/support/torsion.rs`（仅用于负例的攻击构造）生成，并在写出前以 sp-core ed25519 验证。
 
-### 9.7 Rehome 目标（Yvan 2026-09-14 04:34 UTC）
+### 9.7 Rehome 账户（Yvan 2026-09-14 04:34 UTC；round-3 CR3-04、CS3-5）
 
 V2 d9-merchant 没有 pallet 账户；商户兑付、节点奖励与 burn 提现都由 mining pool 支付；mining pool
 不持有资产。因此：`changes.rehomes[].to` 只能等于 `bootstrap.miningPoolAccount` 或
 `bootstrap.ammAccount`；`changes.assetRehomes[].to` 只能等于 `bootstrap.ammAccount`（这两个账户已在
-composition 中按 runtime PalletId 推导校验）。其他目标需要新的契约 RC，代码 rehome_destination_not_allowed。
-目标也先经过开发密钥、validator 账户、session key 与 custody address/signatory 检查（PalletId 检查不适用，
-因为允许的目标本身就是 PalletId 账户）。topUps、reserveRefunds、rewardCredits 的接收方都由源数据精确推导
-（第 4 节），不是自由字段，因此不另作目标检查。
+composition 中按 runtime PalletId 推导校验）。其他目标需要新的契约 RC。所有目标拒绝都使用同一代码
+rehome_destination_not_allowed，消息写明匹配到的身份类型（开发密钥、可伪造公钥、custody multisig/signatory、
+validator 账户、validator session key 或其他账户），匹配到文档内身份时 related_path 指向它。
+来源（`from`）不得是 custody multisig/signatory、validator 账户、session key、mining pool 或 AMM 账户，代码
+rehome_source_not_allowed（CHOICE：单独代码，因为 pool 与 AMM 是合法目标但绝不是合法来源）。
+topUps、reserveRefunds、rewardCredits 的接收方都由源数据精确推导（第 4 节），不是自由字段，因此不另作检查。

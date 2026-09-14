@@ -18,7 +18,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [rules.json](rules.json) | 24 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
-| [fixtures/cases.json](fixtures/cases.json) | 172 mutations and expected failures |
+| [fixtures/cases.json](fixtures/cases.json) | 195 mutations and expected failures |
 | [fixture-manifest.json](fixture-manifest.json) | Exact hashes of the shared artifacts |
 | [evidence-amm-mainnet-23802000.json](evidence-amm-mainnet-23802000.json) | Read-only V1 mainnet AMM LP extraction receipt at block 23,802,000 |
 | [REVIEW.md](REVIEW.md) | Pending downstream compatibility acknowledgements |
@@ -164,40 +164,49 @@ acknowledgements do not automatically cover the extended inventory.
 ## RC7 multisig custody, chain identity and asset set
 
 [D9-400](https://linear.app/d9-network/issue/D9-400) applies Yvan's 2026-09-14
-ruling to enforce DEC-21 k-of-n `pallet_multisig` custody, with audit finding S-6
+rulings to enforce DEC-21 k-of-n `pallet_multisig` custody, with audit finding S-6
 and review finding R-4. RC7 is not wire-compatible with RC6:
 
 - `bootstrap.sudo`, the new `bootstrap.usdtOwner` and every `bootstrap.admins[].multisig`
-  are `{address, threshold, signatories}`. The contract checks structure
-  (2 <= threshold <= n <= 20, strictly ascending unique signatories, no self or
-  nested-role signatory, no PalletId, validator-account, session-key or development
-  key) and binds each address: `address == multisig_account(signatories, threshold)`,
-  the pallet-multisig account. Sudo stays distinct from the USDT owner and every
-  admin, and shares no signatory with them (yvan 2026-09-14 04:34 UTC); admin-side
-  multisigs may still share signatories. Every signatory carries a
-  proof-of-possession over `custody_pop_message` (network, chain id, role, multisig,
-  signatory, `custody.ceremonyNonce`), as a `signature` or, for enclave-held keys, as
-  `enclaveAttested` (a Nitro attestation whose `user_data` is
-  `custody_pop_message_sha256`). Keyless accounts cannot be custodians and a proof
-  cannot be replayed across networks, roles or ceremonies. The contract checks an
-  attestation's structure and message binding only; the producer verifies the
-  document with `d9-enclave-common` `attest_verify` against the PCR0 ledger. d9-v2-tools `derive_admins` keeps a second, independent copy of the
-  derivation; both are pinned to the same polkadot-js golden vectors, and tools
-  `d9-genesis-composition` `custody::cross_check_derivations` (tools PR #72, not yet
-  merged) cross-checks them.
+  are `{address, threshold, signatories}`; `admins[].pallet` is the closed
+  `AdminPallet` set. The contract checks structure (2 <= threshold <= n <= 20,
+  strictly ascending unique signatories, no self or nested-role signatory, no PalletId,
+  validator-account, session-key or development key) and binds each address:
+  `address == multisig_account(signatories, threshold)`, the pallet-multisig account.
+  Sudo stays distinct from the USDT owner and every admin and shares no signatory with
+  them; admin-side multisigs may still share signatories. d9-v2-tools `derive_admins`
+  keeps a second, independent copy of the derivation; both are pinned to the same
+  polkadot-js golden vectors, and tools `d9-genesis-composition`
+  `custody::cross_check_derivations` (tools PR #72, not yet merged) cross-checks them.
+- Every signatory carries a raw proof-of-possession over `custody_pop_message`
+  (network, chain id, `CustodyRole`, multisig, signatory, `custody.ceremonyNonce`), as a
+  `signature` or, for enclave-held keys, as `enclaveAttested`. Proofs cannot be replayed
+  across networks, roles or ceremonies. Custodians sign the raw message with an offline
+  tool that displays the decoded fields; `signRaw`-wrapped proofs are not accepted.
+- Before any signature check the contract refuses forgeable public keys (the all-zero
+  sr25519 identity and every ed25519 small-order encoding) in every account position,
+  and requires every ed25519 signatory and grandpa key to be a canonical, torsion-free,
+  non-identity point (curve25519-dalek). Other keyless accounts fail only because
+  nobody can sign for them; a valid proof does not show whose key it is.
+- Enclave-attested evidence: at most `threshold - 1` per role, and `expectedPcr0` must be
+  in `BLESSED_SIGNER_PCR0`, which is empty until the mainnet sudo-signer attest-mode EIF is
+  blessed, so **enclave-attested custody cannot pass yet**. The contract checks structure
+  and message binding only; accepted attestations appear in the report's
+  `pendingAttestationVerifications` for the producer's `attest_verify`.
 - Multisig custody applies to every purpose and ladder rung; there is no
   single-key rehearsal exception.
-- Validator accounts and all five session keys also refuse development keys; validator
-  accounts refuse PalletId accounts and session keys; session keys are unique across
-  every slot. The deny list (183 keys) covers the sp-keyring URIs, the DEV_PHRASE
-  roots and d9's committed authority SURIs (`//LocalValidator1..6`, `//Mainnet0..5//*`,
-  `//OCWTest//*`), each in sr25519, ed25519 and the ecdsa-derived account.
+- Validator accounts and all five session keys also refuse development and forgeable
+  keys; validator accounts refuse PalletId accounts and session keys; session keys are
+  unique across every slot. The deny list (183 keys) covers the sp-keyring URIs, the
+  DEV_PHRASE roots and d9's committed authority SURIs (`//LocalValidator1..6`,
+  `//Mainnet0..5//*`, `//OCWTest//*`), each in sr25519, ed25519 and the ecdsa-derived account.
 - The new top-level `chain` declares `network`, `id`, `name` and `chainType`.
   `migration-input` requires `Live`; only `migration-input` may be labelled
   `mainnet`; a testnet-labelled rehearsal with real data remains valid. The producer
   must match its manifest and chain-spec metadata and reject boot nodes and telemetry.
 - D9 rehomes may credit only `miningPoolAccount` or `ammAccount`; asset rehomes only
-  `ammAccount`. Any other destination needs a new contract RC.
+  `ammAccount`. Rehome sources may not be custody, validator, session-key, pool or AMM
+  accounts. Any other destination needs a new contract RC.
 - `bootstrap.assetIds` declares the complete V2 asset ID set. The producer must
   require the asset definition and metadata ID sets to equal it exactly.
 
@@ -205,8 +214,8 @@ and review finding R-4. RC7 is not wire-compatible with RC6:
 `contractVersion` is `ParseError::UnsupportedVersion { found }` before typed decoding,
 so an RC6 document reports its version rather than an unknown-field error; anything
 else is `ParseError::Decode(message)`. `multisig_account`, `custody_pop_message`,
-`custody_pop_message_sha256`, `custody_pop_payload`, `MULTISIG_MAX_SIGNATORIES` and `well_known_development_key`
-are exported so producers and signers do not retype the derivation, the PoP message,
-the bound or the deny list. `examples/custody_pop_fixture.rs` regenerates the
-synthetic custody fixture from OS randomness without writing any seed. RC6 acknowledgements do not
-cover RC7 bytes.
+`custody_pop_message_sha256`, `weak_public_key`, `well_known_development_key`,
+`BLESSED_SIGNER_PCR0` and `MULTISIG_MAX_SIGNATORIES` are exported so producers and
+signers do not retype the derivation, the PoP message or the key lists.
+`examples/custody_pop_fixture.rs` regenerates the synthetic custody fixture from OS
+randomness without writing any seed. RC6 acknowledgements do not cover RC7 bytes.

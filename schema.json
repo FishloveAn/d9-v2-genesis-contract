@@ -6,6 +6,24 @@
       "pattern": "^[1-9A-HJ-NP-Za-km-z]{47,48}$",
       "type": "string"
     },
+    "AdminPallet": {
+      "description": "The twelve admin-bearing D9 pallets, spelled as d9-v2-tools `derive_admins::PALLET_ADMINS` and the genesis admin roles.",
+      "enum": [
+        "d9-amm",
+        "d9-burn-mining",
+        "d9-cross-chain",
+        "d9-governance",
+        "d9-judicial-penalty",
+        "d9-merchant",
+        "d9-mining-pool",
+        "d9-node-registry",
+        "d9-node-rewards",
+        "d9-referrals",
+        "d9-upgrade-coordinator",
+        "d9-voting"
+      ],
+      "type": "string"
+    },
     "AdminRole": {
       "additionalProperties": false,
       "properties": {
@@ -13,7 +31,7 @@
           "$ref": "#/definitions/MultisigAuthority"
         },
         "pallet": {
-          "type": "string"
+          "$ref": "#/definitions/AdminPallet"
         }
       },
       "required": [
@@ -876,7 +894,7 @@
     },
     "MultisigAuthority": {
       "additionalProperties": false,
-      "description": "DEC-21 k-of-n pallet_multisig authority. Validation requires `address == multisig_account(signatories, threshold)` and a valid proof-of-possession from every signatory; it does not prove the signatories are the intended custodians, which remains ceremony evidence.",
+      "description": "DEC-21 k-of-n pallet_multisig authority. Validation requires `address == multisig_account(signatories, threshold)`. Signature evidence is verified here; enclave-attested evidence is checked here only for structure and message binding, and its attestation is listed in the report's `pendingAttestationVerifications` for the producer. Neither proves the signatories are the intended custodians, which remains ceremony evidence.",
       "properties": {
         "address": {
           "$ref": "#/definitions/Address"
@@ -928,14 +946,6 @@
         "item"
       ],
       "type": "object"
-    },
-    "PopMessageForm": {
-      "description": "What the signature covers: the canonical message itself, or the polkadot-js `signRaw` wrapping `b\"<Bytes>\" ++ message ++ b\"</Bytes>\"`.",
-      "enum": [
-        "raw",
-        "bytes-wrapped"
-      ],
-      "type": "string"
     },
     "PossessionEvidence": {
       "description": "How a custody signatory proves possession of its key. Externally tagged: `{\"signature\": {..}}` or `{\"enclaveAttested\": {..}}`, exactly one key.",
@@ -1056,9 +1066,6 @@
     "SignatureEvidence": {
       "additionalProperties": false,
       "properties": {
-        "message": {
-          "$ref": "#/definitions/PopMessageForm"
-        },
         "scheme": {
           "$ref": "#/definitions/SignatureScheme"
         },
@@ -1068,11 +1075,10 @@
               "$ref": "#/definitions/SignatureHex"
             }
           ],
-          "description": "64-byte signature, lowercase hex."
+          "description": "64-byte signature over the raw `custody_pop_message`, lowercase hex."
         }
       },
       "required": [
-        "message",
         "scheme",
         "signature"
       ],
@@ -1084,22 +1090,11 @@
     },
     "SignatureScheme": {
       "description": "Signature scheme of a custody signatory's proof-of-possession.",
-      "oneOf": [
-        {
-          "enum": [
-            "sr25519",
-            "ed25519"
-          ],
-          "type": "string"
-        },
-        {
-          "description": "Decodes only so validation can refuse it with `custody_pop_scheme`: an ecdsa AccountId32 is blake2_256 of the public key, so no public key exists to verify a signature against.",
-          "enum": [
-            "ecdsa"
-          ],
-          "type": "string"
-        }
-      ]
+      "enum": [
+        "sr25519",
+        "ed25519"
+      ],
+      "type": "string"
     },
     "SourceSnapshot": {
       "additionalProperties": false,
