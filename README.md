@@ -14,7 +14,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [CONTRACT.md](CONTRACT.md) | Field semantics, units, invariant ownership and encoding |
 | [schema.json](schema.json) | Input schema generated from the Rust DTOs |
 | [binding.schema.json](binding.schema.json) | Detached final-artifact binding |
-| [inventory.json](inventory.json) | 138 provenance entries with explicit disposition references |
+| [inventory.json](inventory.json) | 150 provenance entries with explicit disposition references |
 | [rules.json](rules.json) | 19 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
@@ -88,7 +88,7 @@ D9-380 still requires downstream acknowledgement. D9-307 owns complete provenanc
 checks, D9-173 owns independent final-state reconciliation, D9-370 owns composition,
 and D9-315 owns reproducible WASM. See [D9-380](https://linear.app/d9-network/issue/D9-380).
 
-## RC2 exclusion revision
+## Historical RC2 exclusion revision (superseded by D9-195)
 
 RC2 applies the settled D9-195 / DEC-20 dangling-lock rule with a required
 `changes.excludedJudicialLocks` array, pinned declared absence evidence and
@@ -161,6 +161,18 @@ This classification changes the reviewed inventory and contract digest without
 changing the RC6 wire schema, complete fixture or input digest. Prior RC6 bundle
 acknowledgements do not automatically cover the extended inventory.
 
+## D9-195 amendment, 2026-09-14
+
+The declared judicial exclusion array must now be empty, and state locks must
+match every source lock, including accounts without native balance. Final
+composition classifies the genesis rows as Funded or RecordOnly; the pallet
+checks actual provider state. No OnNewAccount hook is required. This retains
+the RC6 source DTO shape but changes the rule-bundle digest, so old bindings
+must be regenerated. The complete synthetic fixture contains both records.
+
+Source authenticity and runtime debit enforcement remain separate acceptance
+gates; this conformance checker does not approve a cutover.
+
 ## D9-383 governance voter-snapshot inventory extension
 
 [D9-383](https://linear.app/d9-network/issue/D9-383/governance-cast-vote-has-no-voter-set-snapshot-a-proposal-spanning-a-session-rotation-mixes-validator-generations-and-re-bases-its-own-threshold)
@@ -174,3 +186,50 @@ RC6 wire schema, fixture payloads (`complete`, `expected`, and `cases`), or
 input digest. `fixtures/binding.json` and its manifest hash are regenerated to
 bind the new contract digest. Prior RC6 bundle acknowledgements do not
 automatically cover the extended inventory.
+
+## D9-48 AMM TWAP oracle inventory extension
+
+[D9-48](https://linear.app/d9-network/issue/D9-48) adds the `d9-amm` oracle storage
+`PriceAccumulatorState`, `ShortCheckpoints`, `LongCheckpoints`, `TwapShort` and
+`TwapLong`, classified `NotMigrated`: the oracle ring starts empty at genesis and
+fills from `on_initialize`, so nothing is seeded or imported from V1. The same PR adds
+the `d9-merchant::GovernedPoolLegBreakerPercent` governed parameter (the
+`send_payment` pool-leg TWAP breaker), also `NotMigrated`: it has no V1 equivalent. `HighestD9Price`
+stays `NotMigrated`; its decision now cites the 2026-09-14 ADR that keeps the 70%
+redemption floor on a `twap_long` high-water mark (superseding DEC-17). The new
+entries remain `proposed` until d9-v2-pallets PR #80 is merged.
+
+This changes the reviewed inventory and contract digest without changing the
+RC6 wire schema, fixture payloads (`complete`, `expected`, and `cases`), or
+input digest. `fixtures/binding.json` and its manifest hash are regenerated to
+bind the new contract digest. Prior RC6 bundle acknowledgements do not
+automatically cover the extended inventory.
+
+## D9-265 bounded operator-sweep cursor inventory extension
+
+[D9-265](https://linear.app/d9-network/issue/D9-265/c10-enforce-500-total-registered-operators-and-bounded)
+adds `d9-node-registry::{ValidationCleanupCursor, RotationCleanupCursor}` and
+`d9-liveness::{LivenessSweepCursor, CooldownSweepCursor}`. All four are
+`NotMigrated`: they are durable V2 bounded-sweep cursors that start absent, so
+there is no V1 value or genesis field to import. The entries remain `proposed`
+until the corresponding pallets change is merged.
+
+This changes the reviewed inventory and contract digest without changing the
+RC6 wire schema, fixture payloads, or input digest. `fixtures/binding.json` and
+its manifest hash are regenerated to bind the new contract digest. Prior RC6
+bundle acknowledgements do not automatically cover the extended inventory.
+
+## D9-342 stored AMM reserves inventory extension
+
+[D9-342](https://linear.app/d9-network/issue/D9-342) adds
+`d9-amm::{D9Reserve, UsdtReserve}`, both classified `Derived`: stored reserves are
+derived from accepted AMM account funding and LP migration reserves, while direct
+D9 or USDT transfers are donations and never enter quote reserves. D9-48's TWAP
+and mandatory `min_out` remain in force. The entries remain `proposed` until the
+corresponding pallets change is merged.
+
+This changes the reviewed inventory and contract digest without changing the RC6
+wire schema, fixture payloads (`complete`, `expected`, and `cases`), or input
+digest. `fixtures/binding.json` and its manifest hash are regenerated to bind the
+new contract digest. Prior RC6 bundle acknowledgements do not automatically cover
+the extended inventory.

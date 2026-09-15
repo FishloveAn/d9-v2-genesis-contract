@@ -619,6 +619,11 @@
         "account": "u9tN9qGahr6Hp4LLeQnrJF8rB23ttSU67UY6eEPx3iwwYUr",
         "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
         "session": 912
+      },
+      {
+        "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
+        "frozenBy": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",
+        "session": 912
       }
     ],
     "lp": {
@@ -915,15 +920,7 @@
       }
     ],
     "unresolved": [],
-    "excludedJudicialLocks": [
-      {
-        "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
-        "reason": "missing_system_account",
-        "v1LockAmount": "1",
-        "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
-        "systemAccountExists": false
-      }
-    ]
+    "excludedJudicialLocks": []
   },
   "bootstrap": {
     "sudo": "vDkderxq3nhouv9c1oAFtu1LTohqcCjCuU6CzW9CYt2vPPv",

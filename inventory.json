@@ -71,6 +71,16 @@
   },
   {
     "pallet": "d9-amm",
+    "storage": "D9Reserve",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/lp/d9Reserve",
+    "owner": "D9-342",
+    "decision": "D9-342: stored D9 reserve is derived from accepted AMM account funding and LP migration reserves; direct transfers are donations and never enter quote reserves; D9-48 TWAP and mandatory min_out remain in force",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
     "storage": "FeePercent",
     "provenance": "NotMigrated",
     "genesisField": "fee_percent",
@@ -85,8 +95,8 @@
     "provenance": "NotMigrated",
     "genesisField": null,
     "inputPath": "external-runtime-config",
-    "owner": "D9-370",
-    "decision": "DEC-17: floor removed/disabled at launch; D9-185 implementation still required",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (supersedes DEC-17): floor kept at 70%; mark derived from twap_long only, starts at 0, no genesis seed, V1 key 999,999,999 not migrated",
     "implementation": "existing"
   },
   {
@@ -111,6 +121,16 @@
   },
   {
     "pallet": "d9-amm",
+    "storage": "LongCheckpoints",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
     "storage": "PendingAdmin",
     "provenance": "NotMigrated",
     "genesisField": null,
@@ -121,6 +141,26 @@
   },
   {
     "pallet": "d9-amm",
+    "storage": "PriceAccumulatorState",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "ShortCheckpoints",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
     "storage": "TotalLpTokens",
     "provenance": "Derived",
     "genesisField": null,
@@ -128,6 +168,36 @@
     "owner": "D9-307",
     "decision": "checked sum; /state/lp/total is a source assertion, never a separate writer",
     "implementation": "existing"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "TwapLong",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "TwapShort",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "UsdtReserve",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/lp/usdtReserve",
+    "owner": "D9-342",
+    "decision": "D9-342: stored USDT reserve is derived from accepted AMM account funding and LP migration reserves; direct transfers are donations and never enter quote reserves; D9-48 TWAP and mandatory min_out remain in force",
+    "implementation": "proposed"
   },
   {
     "pallet": "d9-burn-mining",
@@ -621,6 +691,16 @@
   },
   {
     "pallet": "d9-liveness",
+    "storage": "CooldownSweepCursor",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-265",
+    "decision": "D9-265: durable V2 bounded-sweep cursor; starts absent and never imports V1 values. https://linear.app/d9-network/issue/D9-265/c10-enforce-500-total-registered-operators-and-bounded",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-liveness",
     "storage": "KeyOwner",
     "provenance": "NotMigrated",
     "genesisField": null,
@@ -638,6 +718,16 @@
     "owner": "D9-370",
     "decision": "DEC-20: fresh V2 operational state; never import V1 values",
     "implementation": "existing"
+  },
+  {
+    "pallet": "d9-liveness",
+    "storage": "LivenessSweepCursor",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-265",
+    "decision": "D9-265: durable V2 bounded-sweep cursor; starts absent and never imports V1 values. https://linear.app/d9-network/issue/D9-265/c10-enforce-500-total-registered-operators-and-bounded",
+    "implementation": "proposed"
   },
   {
     "pallet": "d9-liveness",
@@ -748,6 +838,16 @@
     "owner": "D9-370",
     "decision": "DEC-20: fresh V2 operational state; never import V1 values",
     "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "GovernedPoolLegBreakerPercent",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "D9-48 ruling 4: fresh V2 governed parameter (send_payment pool-leg TWAP breaker, default 20%); no V1 equivalent, never imported",
+    "implementation": "proposed"
   },
   {
     "pallet": "d9-merchant",
@@ -1081,12 +1181,32 @@
   },
   {
     "pallet": "d9-node-registry",
+    "storage": "RotationCleanupCursor",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-265",
+    "decision": "D9-265: durable V2 bounded-sweep cursor; starts absent and never imports V1 values. https://linear.app/d9-network/issue/D9-265/c10-enforce-500-total-registered-operators-and-bounded",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-node-registry",
     "storage": "SessionRanking",
     "provenance": "NotMigrated",
     "genesisField": null,
     "inputPath": "external-runtime-config",
     "owner": "D9-204",
     "decision": "Yvan 2026-09-12 / D9-204: fresh V2 session-planning state derived from eligible operators; never import V1 values. https://linear.app/d9-network/issue/D9-204/align-v2-validator-election-and-reward-eligibility-zero-vote-operators",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-node-registry",
+    "storage": "ValidationCleanupCursor",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-265",
+    "decision": "D9-265: durable V2 bounded-sweep cursor; starts absent and never imports V1 values. https://linear.app/d9-network/issue/D9-265/c10-enforce-500-total-registered-operators-and-bounded",
     "implementation": "proposed"
   },
   {

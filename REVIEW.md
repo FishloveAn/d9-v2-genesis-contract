@@ -1,5 +1,29 @@
 # D9-380 review handoff
 
+## D9-265 bounded operator-sweep cursor inventory extension — 2026-09-14
+
+D9-265 introduces four durable V2 sweep cursors so registry validation, key
+rotation, liveness, and cooldown processing remain bounded per interval.
+`d9-node-registry::{ValidationCleanupCursor, RotationCleanupCursor}` and
+`d9-liveness::{LivenessSweepCursor, CooldownSweepCursor}` are classified as
+`NotMigrated`: they start absent and have no V1 value or genesis field to
+import. The rows remain `proposed` until the corresponding pallets change is
+merged.
+
+Contract digest:
+`19fba553659fd36c16d03f7b83ef94f71f7b6534a1db0677ca5340cde32fc586`.
+The 148-entry inventory and detached binding were regenerated coherently. All
+18 shared tests passed, including the 80-case rejection corpus and exact
+manifest/binding digest checks. The RC6 wire schema, complete fixture and input
+digest are unchanged.
+
+The previous contract digest
+`27d16dc4c6b1524e1f89ed128bfc1ded24bc0121bb0152a225a5879230102302`
+(D9-48 AMM TWAP oracle inventory, on D9-383 + D9-195) does not cover this inventory extension.
+This record classifies the proposed operational cursors; it does not merge the
+pallet change, verify final runtime composition, or satisfy the separate
+release gates.
+
 ## D9-204 SessionRanking inventory extension — 2026-09-13
 
 Yvan's approved D9-204 behavior records the eligible operator ranking for each
