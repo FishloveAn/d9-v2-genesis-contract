@@ -2,10 +2,10 @@
 
 ## D9-265 bounded operator-sweep cursor inventory extension — 2026-09-14
 
-The inventory now contains 142 unique pallet-storage rows. The four added
+The inventory now contains 148 unique pallet-storage rows. The four added
 cursor rows are `NotMigrated`, have no genesis field, and are marked `proposed`
 pending the pallets implementation merge. The contract digest is
-`53c9a19311028db0db6a54f905936878c08a8e4f6670db5b9b1f27a430adfb37`;
+`19fba553659fd36c16d03f7b83ef94f71f7b6534a1db0677ca5340cde32fc586`;
 the fixture binding and manifest hashes were regenerated from the changed
 inventory bytes.
 
