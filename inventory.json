@@ -801,6 +801,16 @@
   },
   {
     "pallet": "d9-merchant",
+    "storage": "GovernedPoolLegBreakerPercent",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "D9-48 ruling 4: fresh V2 governed parameter (send_payment pool-leg TWAP breaker, default 20%); no V1 equivalent, never imported",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-merchant",
     "storage": "GovernedSubscriptionFee",
     "provenance": "NotMigrated",
     "genesisField": null,
