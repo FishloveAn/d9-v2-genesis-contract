@@ -71,6 +71,16 @@
   },
   {
     "pallet": "d9-amm",
+    "storage": "D9Reserve",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/lp/d9Reserve",
+    "owner": "D9-342",
+    "decision": "D9-342: stored D9 reserve is derived from accepted AMM account funding and LP migration reserves; direct transfers are donations and never enter quote reserves; D9-48 TWAP and mandatory min_out remain in force",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
     "storage": "FeePercent",
     "provenance": "NotMigrated",
     "genesisField": "fee_percent",
@@ -177,6 +187,16 @@
     "inputPath": "external-runtime-config",
     "owner": "D9-48",
     "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "UsdtReserve",
+    "provenance": "Derived",
+    "genesisField": null,
+    "inputPath": "/state/lp/usdtReserve",
+    "owner": "D9-342",
+    "decision": "D9-342: stored USDT reserve is derived from accepted AMM account funding and LP migration reserves; direct transfers are donations and never enter quote reserves; D9-48 TWAP and mandatory min_out remain in force",
     "implementation": "proposed"
   },
   {
