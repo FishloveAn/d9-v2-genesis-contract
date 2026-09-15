@@ -5,11 +5,11 @@
 The inventory now contains 142 unique pallet-storage rows. The four added
 cursor rows are `NotMigrated`, have no genesis field, and are marked `proposed`
 pending the pallets implementation merge. The contract digest is
-`ca005fee014f1c84d89562e7936b527398714164af884ae075fae90ef3e35aa8`;
+`53c9a19311028db0db6a54f905936878c08a8e4f6670db5b9b1f27a430adfb37`;
 the fixture binding and manifest hashes were regenerated from the changed
 inventory bytes.
 
-`cargo test --locked --workspace` passed all 17 tests, including the 80-case
+`cargo test --locked --workspace` passed all 18 tests, including the 80-case
 rejection corpus, inventory validation, exact artifact hashes and detached
 binding checks. `cargo run --locked -q -- check fixtures/complete.json` returned
 the same contract digest and retained input digest

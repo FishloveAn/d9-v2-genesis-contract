@@ -174,41 +174,10 @@ pub(super) fn check(i: &ContractInput) -> Check {
 
 pub(super) fn check_locks(i: &ContractInput) -> Check {
     let s = &i.source;
-    let mut locks = keyed(&s.locks, |r| r.account.clone(), "/source/locks")?;
-    let exclusions = keyed(
-        &i.changes.excluded_judicial_locks,
-        |r| r.account.clone(),
-        "/changes/excludedJudicialLocks",
-    )?;
-    let source_accounts = keyed(&s.balances, |r| r.account.clone(), "/source/balances")?;
-    let funded = balances_map(&i.state.balances, "/state/balances")?;
-    for (id, exclusion) in exclusions {
-        // D9-195 / DEC-20: this one never-funded V1 lock is excluded and recorded.
-        // Address and RPC declarations are input conformance, not source authentication.
-        if id.as_str() != "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq"
-            || !locks.contains_key(&id)
-            || source_accounts.contains_key(&id)
-            || funded.contains_key(&id)
-            || exclusion.system_account_exists
-            || exclusion.block_hash != s.block_hash
-            || exclusion.v1_lock_amount.0 != 1
-        {
-            return Err(fail(
-                "invalid_lock_exclusion",
-                "/changes/excludedJudicialLocks",
-                "requires the approved raw lock, same-pin System.Account absence and council/ amount 1; account must be absent from both balance sets",
-            ));
-        }
-        locks.remove(&id);
-    }
-    for id in locks.keys() {
-        if !funded.contains_key(id) {
-            return Err(fail(
-                "unfunded_lock",
-                "/source/locks",
-                "unfunded lock requires the explicit approved D9-195 exclusion; unknown accounts require a new disposition",
-            ));
-        }
+    let locks = keyed(&s.locks, |r| r.account.clone(), "/source/locks")?;
+    if !i.changes.excluded_judicial_locks.is_empty() {
+        return Err(fail("invalid_lock_exclusion", "/changes/excludedJudicialLocks",
+            "D9-195 2026-09-14: all source locks must be retained; Funded/RecordOnly is determined from final composition"));
     }
     same_map(
         &locks,

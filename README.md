@@ -88,7 +88,7 @@ D9-380 still requires downstream acknowledgement. D9-307 owns complete provenanc
 checks, D9-173 owns independent final-state reconciliation, D9-370 owns composition,
 and D9-315 owns reproducible WASM. See [D9-380](https://linear.app/d9-network/issue/D9-380).
 
-## RC2 exclusion revision
+## Historical RC2 exclusion revision (superseded by D9-195)
 
 RC2 applies the settled D9-195 / DEC-20 dangling-lock rule with a required
 `changes.excludedJudicialLocks` array, pinned declared absence evidence and
@@ -160,6 +160,18 @@ change is merged.
 This classification changes the reviewed inventory and contract digest without
 changing the RC6 wire schema, complete fixture or input digest. Prior RC6 bundle
 acknowledgements do not automatically cover the extended inventory.
+
+## D9-195 amendment, 2026-09-14
+
+The declared judicial exclusion array must now be empty, and state locks must
+match every source lock, including accounts without native balance. Final
+composition classifies the genesis rows as Funded or RecordOnly; the pallet
+checks actual provider state. No OnNewAccount hook is required. This retains
+the RC6 source DTO shape but changes the rule-bundle digest, so old bindings
+must be regenerated. The complete synthetic fixture contains both records.
+
+Source authenticity and runtime debit enforcement remain separate acceptance
+gates; this conformance checker does not approve a cutover.
 
 ## D9-383 governance voter-snapshot inventory extension
 

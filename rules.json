@@ -75,7 +75,7 @@
     "id": "LOCK",
     "owner": "D9-195 + Yvan",
     "phase": "locks",
-    "rule": "Preserve all raw source locks; state locks equal source minus explicit D9-195/DEC-20 approved dangling account exclusion. Exclusion requires same-pin System.Account absence declaration and council/ amount 1, absent source/target balance account, exact known raw account and no duplicates. Unknown/stale/funded exclusions refuse. Independently authenticate raw observations in D9-378/173; actual set_freeze effect remains pallet/output verification."
+    "rule": "D9-195 amended 2026-09-14: retain every raw source lock with identical account, nominator and lock_index. Judicial exclusions must be empty. The runtime genesis and final composition explicitly distinguish Funded (record plus currency freeze) from RecordOnly (no provider, record only). No OnNewAccount hook; record-keyed runtime guards enforce later debits. Independently authenticate source and verify final runtime enforcement."
   },
   {
     "id": "COUNTERS",

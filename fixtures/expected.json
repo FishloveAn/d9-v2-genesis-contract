@@ -1,5 +1,5 @@
 {
-  "inputDigest": "5eb35bf564b4982e5e4243ab95f300315b9590c2fc795221d2799ec72b328a55",
+  "inputDigest": "64427427d11e7595275aa948ad37f9726f95873e2d95fa71a33eab843395b921",
   "sourceDatasetDigests": {
     "balances": "d5b1a9413072962df215d4b6cf75f27b83d053914df33dadbd5256c7ce3354fc",
     "assets": "6974ece501dd639d7c180e144388ed0ae66e42b87f6e178b90e2553595f0c4aa",
@@ -67,16 +67,8 @@
   "ammAccount": "wZRduDNbkWgGaQmzZMToFsU6ALt9cQcmVmwtGx67PZrWY9V",
   "miningPoolAccount": "wZRduDNbkWhWkb8F8dn7nSmyfS8vsrHLPUnZ3Ug38WRGXtF",
   "rawLockCount": "2",
-  "seededLockCount": "1",
-  "excludedJudicialLocks": [
-    {
-      "account": "wGdkbufhUKmNWjEXPqVdunXUAZqFRw5WSbDamTExHd3rFMq",
-      "reason": "missing_system_account",
-      "v1LockAmount": "1",
-      "blockHash": "0000000000000000000000000000000000000000000000000000000000000002",
-      "systemAccountExists": false
-    }
-  ],
+  "seededLockCount": "2",
+  "excludedJudicialLocks": [],
   "d9ReserveFloor": "600000000000000000",
   "usdtReserveFloor": "600000000000"
 }

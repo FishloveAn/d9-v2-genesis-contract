@@ -11,15 +11,15 @@ import. The rows remain `proposed` until the corresponding pallets change is
 merged.
 
 Contract digest:
-`ca005fee014f1c84d89562e7936b527398714164af884ae075fae90ef3e35aa8`.
+`53c9a19311028db0db6a54f905936878c08a8e4f6670db5b9b1f27a430adfb37`.
 The 142-entry inventory and detached binding were regenerated coherently. All
-17 shared tests passed, including the 80-case rejection corpus and exact
+18 shared tests passed, including the 80-case rejection corpus and exact
 manifest/binding digest checks. The RC6 wire schema, complete fixture and input
 digest are unchanged.
 
 The previous contract digest
-`79417081b3663cbc36a681eec78511f17025065eb8eaca76ed27295d776a9556`
-(D9-383 governance voter snapshots) does not cover this inventory extension.
+`e9ad98faf873ab6e1f213a1bcc4641966c3826888e2d68a95f5a73861d821503`
+(D9-383 governance voter snapshots with retained D9-195 bindings) does not cover this inventory extension.
 This record classifies the proposed operational cursors; it does not merge the
 pallet change, verify final runtime composition, or satisfy the separate
 release gates.
