@@ -14,7 +14,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [CONTRACT.md](CONTRACT.md) | Field semantics, units, invariant ownership and encoding |
 | [schema.json](schema.json) | Input schema generated from the Rust DTOs |
 | [binding.schema.json](binding.schema.json) | Detached final-artifact binding |
-| [inventory.json](inventory.json) | 144 provenance entries with explicit disposition references |
+| [inventory.json](inventory.json) | 148 provenance entries with explicit disposition references |
 | [rules.json](rules.json) | 19 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
@@ -204,3 +204,17 @@ RC6 wire schema, fixture payloads (`complete`, `expected`, and `cases`), or
 input digest. `fixtures/binding.json` and its manifest hash are regenerated to
 bind the new contract digest. Prior RC6 bundle acknowledgements do not
 automatically cover the extended inventory.
+
+## D9-265 bounded operator-sweep cursor inventory extension
+
+[D9-265](https://linear.app/d9-network/issue/D9-265/c10-enforce-500-total-registered-operators-and-bounded)
+adds `d9-node-registry::{ValidationCleanupCursor, RotationCleanupCursor}` and
+`d9-liveness::{LivenessSweepCursor, CooldownSweepCursor}`. All four are
+`NotMigrated`: they are durable V2 bounded-sweep cursors that start absent, so
+there is no V1 value or genesis field to import. The entries remain `proposed`
+until the corresponding pallets change is merged.
+
+This changes the reviewed inventory and contract digest without changing the
+RC6 wire schema, fixture payloads, or input digest. `fixtures/binding.json` and
+its manifest hash are regenerated to bind the new contract digest. Prior RC6
+bundle acknowledgements do not automatically cover the extended inventory.
