@@ -85,8 +85,8 @@
     "provenance": "NotMigrated",
     "genesisField": null,
     "inputPath": "external-runtime-config",
-    "owner": "D9-370",
-    "decision": "DEC-17: floor removed/disabled at launch; D9-185 implementation still required",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (supersedes DEC-17): floor kept at 70%; mark derived from twap_long only, starts at 0, no genesis seed, V1 key 999,999,999 not migrated",
     "implementation": "existing"
   },
   {
@@ -111,6 +111,16 @@
   },
   {
     "pallet": "d9-amm",
+    "storage": "LongCheckpoints",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
     "storage": "PendingAdmin",
     "provenance": "NotMigrated",
     "genesisField": null,
@@ -121,6 +131,26 @@
   },
   {
     "pallet": "d9-amm",
+    "storage": "PriceAccumulatorState",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "ShortCheckpoints",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
     "storage": "TotalLpTokens",
     "provenance": "Derived",
     "genesisField": null,
@@ -128,6 +158,26 @@
     "owner": "D9-307",
     "decision": "checked sum; /state/lp/total is a source assertion, never a separate writer",
     "implementation": "existing"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "TwapLong",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
+  },
+  {
+    "pallet": "d9-amm",
+    "storage": "TwapShort",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "ADR 2026-09-14 redemption-floor-twap-high-water (D9-48): TWAP oracle state starts empty at genesis and fills from on_initialize; never seeded, never imported from V1",
+    "implementation": "proposed"
   },
   {
     "pallet": "d9-burn-mining",
@@ -748,6 +798,16 @@
     "owner": "D9-370",
     "decision": "DEC-20: fresh V2 operational state; never import V1 values",
     "implementation": "existing"
+  },
+  {
+    "pallet": "d9-merchant",
+    "storage": "GovernedPoolLegBreakerPercent",
+    "provenance": "NotMigrated",
+    "genesisField": null,
+    "inputPath": "external-runtime-config",
+    "owner": "D9-48",
+    "decision": "D9-48 ruling 4: fresh V2 governed parameter (send_payment pool-leg TWAP breaker, default 20%); no V1 equivalent, never imported",
+    "implementation": "proposed"
   },
   {
     "pallet": "d9-merchant",

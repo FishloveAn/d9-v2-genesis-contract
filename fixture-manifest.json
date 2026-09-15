@@ -1,6 +1,6 @@
 {
   "contractVersion": "d9-native-genesis/0.1.0-rc.6",
-  "contractDigest": "e9ad98faf873ab6e1f213a1bcc4641966c3826888e2d68a95f5a73861d821503",
+  "contractDigest": "27d16dc4c6b1524e1f89ed128bfc1ded24bc0121bb0152a225a5879230102302",
   "purpose": "synthetic-conformance-only",
   "negativeCases": 80,
   "files": [
@@ -16,8 +16,8 @@
     },
     {
       "path": "inventory.json",
-      "size": 44549,
-      "sha256": "6c674573b6561ab93c5d3cdddfbc58e95a18c22ae566a71ef2dc7f41373c6371"
+      "size": 47088,
+      "sha256": "2dd96d54d3ee6ae7f1965117d281bb5a98d819d315b28e0fa1ca582eb3b29745"
     },
     {
       "path": "rules.json",
@@ -42,7 +42,7 @@
     {
       "path": "fixtures/binding.json",
       "size": 892,
-      "sha256": "821b9fd89f15113a1556832096c7fb0ec06fda3deea894b2747f6dd922c79653"
+      "sha256": "0c1b151e70277c8491f225954744275602adbb15567e2db70c8d7c639f8a34c6"
     },
     {
       "path": "fixtures/mock-spec.bytes",

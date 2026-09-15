@@ -14,7 +14,7 @@ commit `423900b882fbaaabf67f1eab84c3cae5a3a6e710`.
 | [CONTRACT.md](CONTRACT.md) | Field semantics, units, invariant ownership and encoding |
 | [schema.json](schema.json) | Input schema generated from the Rust DTOs |
 | [binding.schema.json](binding.schema.json) | Detached final-artifact binding |
-| [inventory.json](inventory.json) | 138 provenance entries with explicit disposition references |
+| [inventory.json](inventory.json) | 144 provenance entries with explicit disposition references |
 | [rules.json](rules.json) | 19 rules and their implementation owners |
 | [fixtures/complete.json](fixtures/complete.json) | Complete synthetic input |
 | [fixtures/expected.json](fixtures/expected.json) | Independently authored expected values and digests |
@@ -180,6 +180,24 @@ adds `d9-governance::VotingBodies`, classified `NotMigrated`: governance is
 introduced in V2, so there is no V1 proposal history or voter cohort to import.
 Each new V2 proposal captures its immutable validator cohort. The entry remains
 `proposed` until the corresponding pallets change is merged.
+
+This changes the reviewed inventory and contract digest without changing the
+RC6 wire schema, fixture payloads (`complete`, `expected`, and `cases`), or
+input digest. `fixtures/binding.json` and its manifest hash are regenerated to
+bind the new contract digest. Prior RC6 bundle acknowledgements do not
+automatically cover the extended inventory.
+
+## D9-48 AMM TWAP oracle inventory extension
+
+[D9-48](https://linear.app/d9-network/issue/D9-48) adds the `d9-amm` oracle storage
+`PriceAccumulatorState`, `ShortCheckpoints`, `LongCheckpoints`, `TwapShort` and
+`TwapLong`, classified `NotMigrated`: the oracle ring starts empty at genesis and
+fills from `on_initialize`, so nothing is seeded or imported from V1. The same PR adds
+the `d9-merchant::GovernedPoolLegBreakerPercent` governed parameter (the
+`send_payment` pool-leg TWAP breaker), also `NotMigrated`: it has no V1 equivalent. `HighestD9Price`
+stays `NotMigrated`; its decision now cites the 2026-09-14 ADR that keeps the 70%
+redemption floor on a `twap_long` high-water mark (superseding DEC-17). The new
+entries remain `proposed` until d9-v2-pallets PR #80 is merged.
 
 This changes the reviewed inventory and contract digest without changing the
 RC6 wire schema, fixture payloads (`complete`, `expected`, and `cases`), or
